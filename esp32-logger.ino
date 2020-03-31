@@ -1,10 +1,14 @@
+#include "credentials.h"
+#include "definitions.h"
+
+/* TODO
+ - Bring this back together with the mesh networking stuff to make an unholy spaghetti mess.
+
 #include <Wire.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
-#include "credentials.h"
-#include "definitions.h"
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
@@ -47,18 +51,22 @@ String readTemperature() {
   return String(tempC);
 }
 
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Booted.");
-  connectWifi();
-  initNtp();
+  /* connectWifi(); */
+  /* initNtp(); */
 }
 
 void loop() {
-  if (wifi.run() != WL_CONNECTED) {
-    Serial.println("WiFi not connected!");
-  }
-  Serial.print("Temp: ");
-  Serial.println(readTemperature());
-  delay(500);
+  /* if (wifi.run() != WL_CONNECTED) { */
+    /* Serial.println("WiFi not connected!"); */
+  /* } */
+  /* Serial.print("Temp: "); */
+  /* Serial.println(readTemperature()); */
+  int lightRaw = analogRead(LIGHT_SENSOR_PIN);
+  /* Serial.println(lightRaw); */
+  delay(100);
 }
+*/
