@@ -36,6 +36,17 @@ void initNtp() {
   Serial.println(timeClient.getEpochTime());
 }
 
+String readTemperature() {
+  int raw = analogRead(13);
+  Serial.print("RAW: ");
+  Serial.println(raw);
+  double voltage = (raw / 2048.0) * 3300;
+  Serial.print("Voltage: ");
+  Serial.println(voltage);
+  double tempC = voltage * 0.1;
+  return String(tempC);
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Booted.");
@@ -47,4 +58,7 @@ void loop() {
   if (wifi.run() != WL_CONNECTED) {
     Serial.println("WiFi not connected!");
   }
+  Serial.print("Temp: ");
+  Serial.println(readTemperature());
+  delay(500);
 }
