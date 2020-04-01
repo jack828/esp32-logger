@@ -208,18 +208,18 @@ String readTemperature() {
 void setup() {
   Serial.begin(115200);
   Serial.println("Booted.");
-  /* connectWifi(); */
-  /* initNtp(); */
+  connectWifi();
+  initNtp();
 }
 
 void loop() {
-  /* if (wifi.run() != WL_CONNECTED) { */
-    /* Serial.println("WiFi not connected!"); */
-  /* } */
-  /* Serial.print("Temp: "); */
-  /* Serial.println(readTemperature()); */
+  if (wifi.run() != WL_CONNECTED) {
+    Serial.println("WiFi not connected!");
+  }
+  Serial.print("Temp: ");
+  Serial.println(readTemperature());
   int lightRaw = analogRead(LIGHT_SENSOR_PIN);
-  /* Serial.println(lightRaw); */
+  Serial.println(lightRaw);
   delay(100);
 }
 */
