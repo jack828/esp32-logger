@@ -110,7 +110,7 @@ void setup() {
   connectWifi();
   initNtp();
 
-  Node *node = new Node("http://192.168.0.17:3001/node");
+  Node *node = new Node(ROOT_URI);
 
   digitalWrite(LED_PIN, HIGH);
   delay(200);
