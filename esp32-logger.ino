@@ -28,7 +28,7 @@ class Node {
     virtual void identify() {
       Serial.println("Node identify");
       Serial.println(this->rootUri);
-      String identifyUrl = this->rootUri + "/test-identifier";
+      String identifyUrl = this->rootUri + "/identify/" + this->nodeId;
       getRequest(identifyUrl);
     }
 };
