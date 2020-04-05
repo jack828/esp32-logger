@@ -131,5 +131,5 @@ void loop() {
   int lightRaw = analogRead(LIGHT_SENSOR_PIN);
   Serial.println(timeClient.getFormattedTime());
   Serial.println(lightRaw);
-  delay(10000);
+  delay(10 * 1000);
 }
