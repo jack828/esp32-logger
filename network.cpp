@@ -15,10 +15,10 @@ String getRequest(String uri) {
     Serial.printf("[ HTTP ] [ GET ] code: %d\n", httpCode);
 
     if (httpCode == HTTP_CODE_OK) {
-        String payload = http.getString();
-        result = payload;
-        Serial.printf("[ HTTP ] [ GET ] payload: %d\n", payload.length());
-        Serial.println(payload);
+      String payload = http.getString();
+      result = payload;
+      Serial.printf("[ HTTP ] [ GET ] payload: %d\n", payload.length());
+      Serial.println(payload);
     }
   } else {
     Serial.printf("[ HTTP ] [ GET ] failed, error: %s\n", http.errorToString(httpCode).c_str());
