@@ -1,6 +1,9 @@
 #include "definitions.h"
 #include <EEPROM.h>
 
+// TODO DEPRECATED - using mac address, kept for reference
+#define ID_SIZE 5
+#define ID_ADDRESS {0, 1, 2, 3, 4}
 int writeDeviceId(String idStr) {
   int idAddress[ID_SIZE] = ID_ADDRESS;
   const char* id = idStr.c_str();
