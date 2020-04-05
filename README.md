@@ -5,5 +5,21 @@
 You need:
  - Adafruit DHT
  - Adafruit Unified Sensor
- - [painlessMesh](https://gitlab.com/painlessMesh/painlessMesh)
- - [AsyncTCP](https://github.com/me-no-dev/AsyncTCP) for ESP32
+
+## Setup
+
+Fork the repo, clone, and setup to match your setup.
+
+You can change:
+
+| Name | Options | Use |
+| ---- | ------- | --- |
+| LED_PIN | any, default **2** | Status & debug LED, built-in or connected by pin |
+| LIGHT_SENSOR_PIN | any, default **D32** | Your photoresistor |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+
+## TODO
+
+ - Collision detection, no idea if identifying as an existing node
