@@ -7,11 +7,38 @@
 #include <WiFiUdp.h>
 #include <NTPClient.h>
 #include <HTTPClient.h>
+#include <EEPROM.h>
+
+#include "memory.h"
+#include "network.h"
+
+class Node {
+  private:
+    String rootUri;
+    String nodeId;
+  public:
+    int identifier;
+    Node(String rootUri) {
+      this->rootUri = rootUri;
+      this->nodeId = readDeviceId();
+      Serial.println("I am node:");
+      Serial.println(this->nodeId);
+      this->identify();
+    }
+    virtual void identify() {
+      Serial.println("Node identify");
+      Serial.println(this->rootUri);
+      String identifyUrl = this->rootUri + "/test-identifier";
+      getRequest(identifyUrl);
+    }
+};
 
 /*
  * How this will work:
  * 1. Boot & connect to WiFi
  * 2. Authenticate node with log server
+ *  2.1 If UUID present, send it to auth with root
+ *  2.2 If no UUID present, get one from root
  * 3. Sleep for some duration
  * 4. Wake, record readings with log server
  * 5. Repeat 3-4
@@ -20,30 +47,6 @@
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 WiFiMulti wifi;
-
-void getRequest(String uri) {
-  HTTPClient http;
-
-  Serial.print("[HTTP] begin...\n");
-
-  http.begin(uri);
-
-  Serial.print("[HTTP] GET...\n");
-  int httpCode = http.GET();
-
-  if (httpCode > 0) {
-    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-
-    if (httpCode == HTTP_CODE_OK) {
-        String payload = http.getString();
-        Serial.println(payload);
-    }
-  } else {
-    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-  }
-
-  http.end();
-}
 
 void connectWifi() {
   wifi.addAP(WIFI_SSID_1, WIFI_PSK_1);
@@ -90,11 +93,15 @@ String readTemperature() {
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Booted.");
+  EEPROM.begin(512);
+  /* Serial.println("Booted."); */
   pinMode(LED_PIN, OUTPUT);
   connectWifi();
   initNtp();
-  /* getRequest("http://192.168.0.17:3001/node/test-identifier"); */
+
+  /* writeDeviceId("test"); */
+
+  Node *node = new Node("http://192.168.0.17:3001/node");
 
   digitalWrite(LED_PIN, HIGH);
   delay(200);
@@ -107,9 +114,9 @@ void setup() {
 
 void loop() {
   if (wifi.run() != WL_CONNECTED) {
-    Serial.println("WiFi not connected!");
+    /* Serial.println("WiFi not connected!"); */
   }
   int lightRaw = analogRead(LIGHT_SENSOR_PIN);
   Serial.println(lightRaw);
-  delay(100);
+  delay(10000);
 }
