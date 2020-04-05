@@ -21,7 +21,14 @@ void connectWifi() {
     Serial.println(WiFi.localIP());
   } else {
     Serial.println("Not connected, rebooting...");
-    delay(1000);
+    digitalWrite(LED_PIN, HIGH);
+    delay(250);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
+    digitalWrite(LED_PIN, HIGH);
+    delay(250);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
     ESP.restart();
   }
 }
@@ -52,6 +59,7 @@ String readTemperature() {
 void setup() {
   Serial.begin(115200);
   Serial.println("Booted.");
+  pinMode(LED_PIN, OUTPUT);
   connectWifi();
   initNtp();
 }
