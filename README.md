@@ -23,3 +23,4 @@ You can change:
 ## TODO
 
  - Collision detection, no idea if identifying as an existing node
+ - flash-and-go setup with an app
