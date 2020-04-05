@@ -1,8 +1,9 @@
 #include "definitions.h"
 #include <EEPROM.h>
 
-int writeDeviceId(char* id) {
+int writeDeviceId(String idStr) {
   int idAddress[ID_SIZE] = ID_ADDRESS;
+  const char* id = idStr.c_str();
 
   for (int i = 0; i <= ID_SIZE; i++) {
     EEPROM.write(idAddress[i], id[i]);
@@ -19,18 +20,7 @@ String readDeviceId() {
 
   for (int i = 0; i < ID_SIZE; i++) {
     id[i] = (char) EEPROM.read(idAddress[i]);
-    Serial.print("i    '");
-    Serial.print(i);
-    Serial.println("'");
-    Serial.print("addr '");
-    Serial.print(idAddress[i]);
-    Serial.println("'");
-    Serial.print("resu '");
-    Serial.print(id[i]);
-    Serial.println("'");
   }
 
-  // Serial.println((char*) id);
-  // Serial.println();
   return String(id);
 }

@@ -1,7 +1,7 @@
 #ifndef Memory_h
 #define Memory_h
 
-int writeDeviceId(char* id);
+int writeDeviceId(String);
 String readDeviceId();
 
 #endif

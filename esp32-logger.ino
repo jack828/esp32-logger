@@ -21,15 +21,21 @@ class Node {
     Node(String rootUri) {
       this->rootUri = rootUri;
       this->nodeId = readDeviceId();
-      Serial.println("I am node:");
-      Serial.println(this->nodeId);
+      Serial.println("[ NODE ] ID: " + this->nodeId);
       this->identify();
     }
     virtual void identify() {
-      Serial.println("Node identify");
+      Serial.println(" [ NODE ] identify");
       Serial.println(this->rootUri);
       String identifyUrl = this->rootUri + "/identify/" + this->nodeId;
-      getRequest(identifyUrl);
+      String identifyResponse = getRequest(identifyUrl);
+      if (!identifyResponse.equals(this->nodeId)) {
+        Serial.println("[ NODE ] ID mismatch");
+        writeDeviceId(identifyResponse);
+        this->nodeId = readDeviceId();
+        Serial.println("[ NODE ] ID: " + this->nodeId);
+      }
+      Serial.println("[ NODE ] ID Check OK");
     }
 };
 

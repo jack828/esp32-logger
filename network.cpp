@@ -3,6 +3,7 @@
 
 String getRequest(String uri) {
   HTTPClient http;
+  String result = "";
 
   Serial.println("[ HTTP ] [ GET ] begin: " + uri);
 
@@ -15,6 +16,8 @@ String getRequest(String uri) {
 
     if (httpCode == HTTP_CODE_OK) {
         String payload = http.getString();
+        result = payload;
+        Serial.printf("[ HTTP ] [ GET ] payload: %d\n", payload.length());
         Serial.println(payload);
     }
   } else {
@@ -22,6 +25,5 @@ String getRequest(String uri) {
   }
 
   http.end();
-  String result = "";
   return result;
 }
