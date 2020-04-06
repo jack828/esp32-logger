@@ -93,10 +93,11 @@ void loop() {
     Serial.println("[ WIFI ] not connected!");
     /* connectWifi(); */
   }
-  while (!timeClient.update()) {
-    timeClient.forceUpdate();
-  }
+  timeClient.update();
+
   Serial.println(timeClient.getFormattedTime());
   Serial.println(node->readLight());
-  delay(10 * 1000);
+
+  node->sleep();
+  /* delay(10 * 1000); */
 }

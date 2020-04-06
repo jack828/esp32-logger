@@ -26,3 +26,20 @@ int Node::readLight() {
   int lightRaw = analogRead(LIGHT_SENSOR_PIN);
   return lightRaw;
 }
+
+void Node::sleep() {
+  Serial.println("[ NODE ] sleeping...");
+  esp_sleep_enable_timer_wakeup(LOG_PERIOD);
+  // Make sure we've written everything else
+  Serial.flush();
+  WiFi.disconnect();
+
+  int ret = esp_light_sleep_start();
+  Serial.printf("esp_light_sleep_start: %d\n", ret);
+  if (ret != 0) {
+    Serial.println("Error entering light sleep");
+  }
+}
+
+// TODO
+// void Node::wake() {}
