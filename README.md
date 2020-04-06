@@ -21,6 +21,7 @@ How this will work:
 
 Fork the repo, clone, and configure to match your setup.
 
+Please see [credentials.h](./credentials.h) for credential information. Use `.tpl` as a starting point.
 Please see [definitions.h](./definitions.h) for all configurables.
 
 ## TODO
