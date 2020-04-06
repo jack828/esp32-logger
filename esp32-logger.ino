@@ -19,7 +19,8 @@ WiFiMulti wifi;
 void connectWifi() {
   wifi.addAP(WIFI_SSID_1, WIFI_PSK_1);
 
-    Serial.println("[ WIFI ] connecting");
+  Serial.println("[ WIFI ] connecting");
+
   if (wifi.run() == WL_CONNECTED) {
     Serial.println("[ WIFI ] connected");
     Serial.println("[ WIFI ] IP address: " + WiFi.localIP());

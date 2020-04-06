@@ -13,7 +13,6 @@ class Node {
     String nodeId;
     long lastIdentified;
   public:
-    int identifier;
     Node();
     virtual void identify();
 };
