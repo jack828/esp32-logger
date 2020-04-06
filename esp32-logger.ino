@@ -3,7 +3,6 @@
 
 #include <WString.h>
 #include <WiFi.h>
-#include <WiFiMulti.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
 #include <HTTPClient.h>
@@ -14,29 +13,39 @@
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
-WiFiMulti wifi;
 Node* node;
 
 void connectWifi() {
-  wifi.addAP(WIFI_SSID_1, WIFI_PSK_1);
-
-  Serial.println("[ WIFI ] connecting");
-
-  if (wifi.run() == WL_CONNECTED) {
-    Serial.println("[ WIFI ] connected");
-    Serial.println("[ WIFI ] IP address: " + WiFi.localIP());
-  } else {
-    Serial.println("[ WIFI ] Not connected, rebooting...");
-    digitalWrite(LED_PIN, HIGH);
-    delay(250);
-    digitalWrite(LED_PIN, LOW);
-    delay(250);
-    digitalWrite(LED_PIN, HIGH);
-    delay(250);
-    digitalWrite(LED_PIN, LOW);
-    delay(250);
-    ESP.restart();
+  Serial.println("[ WIFI ] connecting WiFi");
+  if (WiFi.SSID() != WIFI_SSID) {
+    Serial.println(WiFi.SSID());
+    Serial.println("[ WIFI ] stored SSID different, beginning WiFi");
+    WiFi.begin(WIFI_SSID, WIFI_PSK);
+    WiFi.persistent(true);
+    WiFi.setAutoConnect(true);
+    WiFi.setAutoReconnect(true);
   }
+
+  Serial.print("[ WIFI ] connecting");
+  int retryCount = 0;
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    digitalWrite(LED_PIN, HIGH);
+    delay(250);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
+    digitalWrite(LED_PIN, HIGH);
+    delay(250);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
+    if (retryCount++ > 20) {
+      Serial.println("[ WIFI ] Could not connect, rebooting...");
+      ESP.restart();
+    }
+  }
+  Serial.println();
+  Serial.println("[ WIFI ] connected");
+  Serial.println("[ WIFI ] IP address: " + WiFi.localIP());
 }
 
 void initNtp() {
@@ -79,8 +88,10 @@ void setup() {
 }
 
 void loop() {
-  if (wifi.run() != WL_CONNECTED) {
+  Serial.println("loop start");
+  if (WiFi.status() != WL_CONNECTED) {
     Serial.println("[ WIFI ] not connected!");
+    /* connectWifi(); */
   }
   while (!timeClient.update()) {
     timeClient.forceUpdate();
