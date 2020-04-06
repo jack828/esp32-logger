@@ -42,7 +42,6 @@ void loop() {
   Serial.print("\t");
   Serial.println(node->readLight());
 
-  /* node->sleep(); */
-  /* node->wake(); */
-  delay(10 * 1000);
+  node->sleep();
+  node->wake();
 }
