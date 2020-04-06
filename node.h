@@ -5,15 +5,16 @@
 #include "network.h"
 #include <WString.h>
 #include <WiFi.h>
+#include <NTPClient.h>
 
 class Node {
   private:
-    String rootUri;
+    String rootUri = ROOT_URI;
     String nodeId;
     long lastIdentified;
   public:
     int identifier;
-    Node(String rootUri);
+    Node();
     virtual void identify();
 };
 

@@ -1,7 +1,6 @@
 #include "node.h"
 
-Node::Node(String rootUri) {
-  this->rootUri = rootUri;
+Node::Node() {
   this->nodeId = WiFi.macAddress();
   Serial.println("[ NODE ] ID: " + this->nodeId);
   Serial.println("[ NODE ] rootUri: " + this->rootUri);
@@ -13,12 +12,12 @@ void Node::identify() {
   String identifyUrl = this->rootUri + "/identify/" + this->nodeId;
   String identifyResponse = getRequest(identifyUrl);
 
-  // Serial.print("Got time: ");
-  // Serial.println(timeClient.getFormattedTime());
-  // Serial.print("Got epoch: ");
-  // Serial.println(timeClient.getEpochTime());
+  Serial.print("Got time: ");
+  Serial.println(timeClient.getFormattedTime());
+  Serial.print("Got epoch: ");
+  Serial.println(timeClient.getEpochTime());
 
-  // this->lastIdentified = timeClient.getEpochTime();
+  this->lastIdentified = timeClient.getEpochTime();
 
   if (!identifyResponse.equals(this->nodeId)) {
     // TODO now it's an issue :shrug:

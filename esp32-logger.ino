@@ -65,7 +65,7 @@ void setup() {
   connectWifi();
   initNtp();
 
-  Node *node = new Node(ROOT_URI);
+  Node *node = new Node();
 
   digitalWrite(LED_PIN, HIGH);
   delay(200);
