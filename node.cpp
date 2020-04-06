@@ -4,6 +4,8 @@ Node::Node() {
   this->nodeId = WiFi.macAddress();
   Serial.println("[ NODE ] ID: " + this->nodeId);
   Serial.println("[ NODE ] rootUri: " + this->rootUri);
+  this->initWifi();
+  this->connectWifi();
   this->identify();
 }
 
@@ -27,15 +29,58 @@ int Node::readLight() {
   return lightRaw;
 }
 
+void Node::initWifi() {
+  Serial.println("[ NODE ] [ WIFI ] init SSID: " + WiFi.SSID() + "");
+
+  // WiFi.mode(WIFI_AP_STA);
+
+  if (WiFi.SSID() != WIFI_SSID) {
+    Serial.println("[ NODE ] [ WIFI ] no stored SSID, init WiFi");
+    WiFi.begin(WIFI_SSID, WIFI_PSK);
+  }
+  WiFi.persistent(true);
+  WiFi.setAutoConnect(true);
+  WiFi.setAutoReconnect(true);
+}
+
+void Node::connectWifi() {
+  Serial.print("[ NODE ] [ WIFI ] connecting");
+  int retryCount = 0;
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    digitalWrite(LED_PIN, HIGH);
+    delay(250);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
+    digitalWrite(LED_PIN, HIGH);
+    delay(250);
+    digitalWrite(LED_PIN, LOW);
+    delay(250);
+    if (retryCount++ > 20) {
+      Serial.println("\n[ NODE ] ERROR: Could not connect to wifi, rebooting...");
+      ESP.restart();
+    }
+  }
+  Serial.println("\n[ WIFI ] connected, IP:" + WiFi.localIP());
+}
+
+void Node::checkWifi() {
+  this->wifiStatus = WiFi.status();
+  Serial.printf("[ NODE ] [ WIFI ] status '%d'\n", this->wifiStatus);
+  if (this->wifiStatus != WL_CONNECTED) {
+    Serial.println("[ NODE ] [ WIFI ] not connected!");
+    this->connectWifi();
+  }
+}
+
 void Node::sleep() {
   Serial.println("[ NODE ] sleeping...");
   esp_sleep_enable_timer_wakeup(LOG_PERIOD);
-  // Make sure we've written everything else
   Serial.flush();
   WiFi.disconnect();
 
   int ret = esp_light_sleep_start();
-  Serial.printf("esp_light_sleep_start: %d\n", ret);
+  Serial.printf("ret: %d\n", ret);
   if (ret != 0) {
     Serial.println("Error entering light sleep");
   }
@@ -43,9 +88,6 @@ void Node::sleep() {
 
 void Node::wake() {
   Serial.println("[ NODE ] waking...");
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("[ WIFI ] not connected!");
-    /* connectWifi(); */
-  }
-  timeClient.update();
+  // this->checkWifi();
+  // timeClient.update();
 }
