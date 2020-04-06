@@ -12,11 +12,6 @@ void Node::identify() {
   String identifyUrl = this->rootUri + "/identify/" + this->nodeId;
   String identifyResponse = getRequest(identifyUrl);
 
-  Serial.print("Got time: ");
-  Serial.println(timeClient.getFormattedTime());
-  Serial.print("Got epoch: ");
-  Serial.println(timeClient.getEpochTime());
-
   this->lastIdentified = timeClient.getEpochTime();
 
   if (!identifyResponse.equals(this->nodeId)) {
@@ -24,4 +19,10 @@ void Node::identify() {
     Serial.println("[ NODE ] ID mismatch");
   }
   Serial.println("[ NODE ] ID Check OK");
+  Serial.printf("Light: %d\n", this->readLight());
+}
+
+int Node::readLight() {
+  int lightRaw = analogRead(LIGHT_SENSOR_PIN);
+  return lightRaw;
 }

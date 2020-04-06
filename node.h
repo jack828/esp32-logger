@@ -15,6 +15,7 @@ class Node {
   public:
     Node();
     virtual void identify();
+    virtual int readLight();
 };
 
 #endif

@@ -15,6 +15,7 @@
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 WiFiMulti wifi;
+Node* node;
 
 void connectWifi() {
   wifi.addAP(WIFI_SSID_1, WIFI_PSK_1);
@@ -66,7 +67,7 @@ void setup() {
   connectWifi();
   initNtp();
 
-  Node *node = new Node();
+  node = new Node();
 
   digitalWrite(LED_PIN, HIGH);
   delay(200);
@@ -84,8 +85,7 @@ void loop() {
   while (!timeClient.update()) {
     timeClient.forceUpdate();
   }
-  int lightRaw = analogRead(LIGHT_SENSOR_PIN);
   Serial.println(timeClient.getFormattedTime());
-  Serial.println(lightRaw);
+  Serial.println(node->readLight());
   delay(10 * 1000);
 }
