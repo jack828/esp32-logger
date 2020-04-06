@@ -1,5 +1,4 @@
-#include "definitions.h"
-#include <HTTPClient.h>
+#include "network.h"
 
 String getRequest(String uri) {
   HTTPClient http;

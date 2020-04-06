@@ -1,64 +1,20 @@
 #include "credentials.h"
 #include "definitions.h"
 
-#include <Wire.h>
+#include <WString.h>
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
 #include <HTTPClient.h>
-#include <EEPROM.h>
 
 #include "memory.h"
 #include "network.h"
-
-/*
- * How this will work:
- * 1. Boot & connect to WiFi
- * 2. Authenticate node using mac address with log server
- * 3. Record sensors with log server
- * 4. Sleep for some duration
- * 5. Wake, record readings with log server
- * 6. Repeat 3-4
- */
-
+#include "node.h"
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 WiFiMulti wifi;
-
-class Node {
-  private:
-    String rootUri;
-    String nodeId;
-    long lastIdentified;
-  public:
-    int identifier;
-    Node(String rootUri) {
-      this->rootUri = rootUri;
-      this->nodeId = WiFi.macAddress();
-      Serial.println("[ NODE ] ID: " + this->nodeId);
-      Serial.println("[ NODE ] rootUri: " + this->rootUri);
-      this->identify();
-    }
-    virtual void identify() {
-      Serial.println("[ NODE ] identify");
-      String identifyUrl = this->rootUri + "/identify/" + this->nodeId;
-      String identifyResponse = getRequest(identifyUrl);
-
-      Serial.print("Got time: ");
-      Serial.println(timeClient.getFormattedTime());
-      Serial.print("Got epoch: ");
-      Serial.println(timeClient.getEpochTime());
-
-      this->lastIdentified = timeClient.getEpochTime();
-      if (!identifyResponse.equals(this->nodeId)) {
-        // TODO now it's an issue :shrug:
-        Serial.println("[ NODE ] ID mismatch");
-      }
-      Serial.println("[ NODE ] ID Check OK");
-    }
-};
 
 void connectWifi() {
   wifi.addAP(WIFI_SSID_1, WIFI_PSK_1);
@@ -104,7 +60,6 @@ String readTemperature() {
 
 void setup() {
   Serial.begin(115200);
-  EEPROM.begin(512);
 
   pinMode(LED_PIN, OUTPUT);
   connectWifi();
