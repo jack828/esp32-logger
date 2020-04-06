@@ -41,5 +41,11 @@ void Node::sleep() {
   }
 }
 
-// TODO
-// void Node::wake() {}
+void Node::wake() {
+  Serial.println("[ NODE ] waking...");
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[ WIFI ] not connected!");
+    /* connectWifi(); */
+  }
+  timeClient.update();
+}

@@ -17,6 +17,7 @@ class Node {
     virtual void identify();
     virtual int readLight();
     virtual void sleep();
+    virtual void wake();
 };
 
 #endif

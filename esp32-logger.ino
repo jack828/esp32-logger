@@ -88,12 +88,11 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("loop start");
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("[ WIFI ] not connected!");
-    /* connectWifi(); */
-  }
-  timeClient.update();
+  node->wake();
+
+
+  // TODO sensors
+  // node->logTemperature();
 
   Serial.println(timeClient.getFormattedTime());
   Serial.println(node->readLight());
