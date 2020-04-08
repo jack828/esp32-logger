@@ -24,6 +24,12 @@ void Node::identify() {
   Serial.printf("Light: %d\n", this->readLight());
 }
 
+void Node::log(String sensorType, double value) {
+  Serial.printf(("[ NODE ] [ LOG ] " + sensorType + ", value: %.2f\n").c_str(), value);
+  String logUri = this->rootUri + "/log/" + sensorType;
+  return;
+}
+
 int Node::readLight() {
   int lightRaw = analogRead(LIGHT_SENSOR_PIN);
   return lightRaw;

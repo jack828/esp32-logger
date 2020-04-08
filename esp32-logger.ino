@@ -48,6 +48,7 @@ void setup() {
 void loop() {
   // TODO sensors
   // node->logTemperature();
+  node->log("temperature", bmp.readTemperature());
   Serial.print("Temperature = ");
   Serial.print(bmp.readTemperature());
   Serial.println(" *C");

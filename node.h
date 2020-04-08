@@ -17,6 +17,7 @@ class Node {
   public:
     Node();
     virtual void identify();
+    virtual void log(String sensorType, double value);
     virtual int readLight();
     virtual void initWifi();
     virtual void connectWifi();
