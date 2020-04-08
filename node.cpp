@@ -32,15 +32,14 @@ int Node::readLight() {
 void Node::initWifi() {
   Serial.println("[ NODE ] [ WIFI ] init SSID: " + WiFi.SSID() + "");
 
-  // WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_STA);
+  WiFi.persistent(true);
+  WiFi.setAutoReconnect(true);
 
   if (WiFi.SSID() != WIFI_SSID) {
     Serial.println("[ NODE ] [ WIFI ] no stored SSID, init WiFi");
     WiFi.begin(WIFI_SSID, WIFI_PSK);
   }
-  WiFi.persistent(true);
-  WiFi.setAutoConnect(true);
-  WiFi.setAutoReconnect(true);
 }
 
 void Node::connectWifi() {
@@ -61,14 +60,22 @@ void Node::connectWifi() {
       ESP.restart();
     }
   }
-  Serial.println("\n[ WIFI ] connected, IP:" + WiFi.localIP());
+  Serial.println(
+    "\n[ WIFI ] connected, SSID: "
+    + WiFi.SSID()
+    + ", IP:"
+    + WiFi.localIP()
+  );
 }
 
 void Node::checkWifi() {
   this->wifiStatus = WiFi.status();
+  Serial.println("[ NODE ] [ WIFI ] check SSID: " + WiFi.SSID() + "");
   Serial.printf("[ NODE ] [ WIFI ] status '%d'\n", this->wifiStatus);
   if (this->wifiStatus != WL_CONNECTED) {
     Serial.println("[ NODE ] [ WIFI ] not connected!");
+    // TODO hasn't saved wifi connection to chip before sleep
+    this->initWifi();
     this->connectWifi();
   }
 }
@@ -88,6 +95,6 @@ void Node::sleep() {
 
 void Node::wake() {
   Serial.println("[ NODE ] waking...");
-  // this->checkWifi();
+  this->checkWifi();
   // timeClient.update();
 }

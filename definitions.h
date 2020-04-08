@@ -11,6 +11,7 @@
 #define ROOT_URI "http://192.168.0.17:3001/node"
 // Time between wake-ups, in microseconds
 // will drift during uptime from starting time
+// if using deep sleep, max 1 hour on ESP8266
 #define LOG_PERIOD 5 * 1000 * 1000
 
 // YAY GLOBALS SORRYNOTSORRY

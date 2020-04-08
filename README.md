@@ -29,3 +29,9 @@ Please see [definitions.h](./definitions.h) for all configurables.
  - Collision detection, no idea if identifying as an existing node
  - flash-and-go setup with an app
  - It would be neato a node could "hunt" for the root, and then pass that information onto new nodes in the network, reducing setup configuration
+
+## Useful links
+
+ - https://lastminuteengineers.com/esp32-deep-sleep-wakeup-sources/
+ - https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/deep-sleep-stub.html
+ - https://desire.giesecke.tk/index.php/2018/01/30/esp32-wiki-entries/
