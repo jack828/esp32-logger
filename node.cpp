@@ -30,12 +30,7 @@ void Node::log(String sensorType, double value) {
 
 
   Response logResponse = getRequest(logUri);
-  Serial.printf("[ NODE ] [ LOG ] response: %d", logResponse.statusCode);
-}
-
-int Node::readLight() {
-  int lightRaw = analogRead(LIGHT_SENSOR_PIN);
-  return lightRaw;
+  Serial.printf("[ NODE ] [ LOG ] response: %d\n", logResponse.statusCode);
 }
 
 void Node::initWifi() {
@@ -74,17 +69,15 @@ void Node::connectWifi() {
       ESP.restart();
     }
   }
-  Serial.println(
-    "\n[ WIFI ] connected, SSID: "
-    + WiFi.SSID()
-    + ", IP:"
-    + WiFi.localIP()
-  );
+  Serial.print("\n[ WIFI ] connected, SSID: ");
+  Serial.print(WiFi.SSID());
+  Serial.print(", IP:");
+  Serial.println(WiFi.localIP());
 }
 
 void Node::checkWifi() {
   this->wifiStatus = WiFi.status();
-  Serial.println("[ NODE ] [ WIFI ] check SSID: " + WiFi.SSID() + "");
+  Serial.println("[ NODE ] [ WIFI ] check SSID: " + WiFi.SSID());
   Serial.printf("[ NODE ] [ WIFI ] status '%d'\n", this->wifiStatus);
   if (this->wifiStatus != WL_CONNECTED) {
     Serial.println("[ NODE ] [ WIFI ] not connected!");

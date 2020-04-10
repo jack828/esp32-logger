@@ -1,10 +1,9 @@
 #include "definitions.h"
 
-#include <WString.h>
 #include <WiFi.h>
+#include <WString.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
-#include <HTTPClient.h>
 #include <Adafruit_BMP280.h>
 
 #include "memory.h"
@@ -56,7 +55,10 @@ void setup() {
 
 void loop() {
   // TODO sensors
+  node->checkWifi();
   node->log("temperature", bmp.readTemperature());
+  node->log("pressure", bmp.readPressure() / 100.0F);
+  node->log("temperature", analogRead(LIGHT_SENSOR_PIN));
   Serial.println(timeClient.getFormattedTime());
 
   Serial.print("temperature: ");
@@ -72,9 +74,9 @@ void loop() {
   Serial.println(" m");
 
   Serial.print("light: ");
-  Serial.println(node->readLight());
+  Serial.println(analogRead(LIGHT_SENSOR_PIN));
 
   /* node->sleep(); */
   /* node->wake(); */
-  delay(5 * 1000);
+  delay(60 * 1000);
 }
