@@ -58,7 +58,7 @@ void loop() {
   node->checkWifi();
   node->log("temperature", bmp.readTemperature());
   node->log("pressure", bmp.readPressure() / 100.0F);
-  node->log("temperature", analogRead(LIGHT_SENSOR_PIN));
+  node->log("light", analogRead(LIGHT_SENSOR_PIN));
   Serial.println(timeClient.getFormattedTime());
 
   Serial.print("temperature: ");
