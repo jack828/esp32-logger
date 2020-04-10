@@ -25,10 +25,12 @@ void Node::identify() {
 
 void Node::log(String sensorType, double value) {
   Serial.printf(("[ NODE ] [ LOG ] " + sensorType + ", value: %.2f\n").c_str(), value);
-  String logUri = this->rootUri + "/log/" + sensorType;
+  String logUri = this->rootUri +
+      "/log/" + this->nodeId + "/" + sensorType + "/" + String(value);
 
 
-  Response logResponse = postRequest(logUri, String(value));
+  Response logResponse = getRequest(logUri);
+  Serial.printf("[ NODE ] [ LOG ] response: %d", logResponse.statusCode);
 }
 
 int Node::readLight() {
