@@ -16,6 +16,15 @@ NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 Node* node;
 Adafruit_BMP280 bmp;
 
+void printMem(String marker) {
+  Serial.print(" [MEM] ");
+  Serial.print(marker);
+  Serial.print(" ");
+  Serial.print(ESP.getFreeHeap());
+  Serial.print(" / ");
+  Serial.println(ESP.getHeapSize());
+}
+
 void initNtp() {
   timeClient.begin();
   while (!timeClient.update()) {
@@ -31,16 +40,16 @@ void setup() {
   Serial.begin(115200);
 
   pinMode(LED_PIN, OUTPUT);
-
   Serial.print("Flash size: ");
   Serial.println(ESP.getFlashChipSize());
-  boolean status = bmp.begin(0x76);
-  if (!status) {
+
+  boolean bmpOk = bmp.begin(0x76);
+  if (!bmpOk) {
     Serial.println("Could not find a valid BMP280 sensor, check wiring!");
   }
+
   node = new Node();
   initNtp();
-
 }
 
 #define SEALEVELPRESSURE_HPA (1024.50)
@@ -48,24 +57,25 @@ void setup() {
 void loop() {
   // TODO sensors
   // node->logTemperature();
-  node->log("temperature", bmp.readTemperature());
-  Serial.print("Temperature = ");
+  /* node->log("temperature", bmp.readTemperature()); */
+  Serial.println(timeClient.getFormattedTime());
+
+  Serial.print("temperature: ");
   Serial.print(bmp.readTemperature());
   Serial.println(" *C");
 
-  Serial.print("Pressure = ");
+  Serial.print("pressure: ");
   Serial.print(bmp.readPressure() / 100.0F);
   Serial.println(" hPa");
 
-  Serial.print("Approx. Altitude = ");
+  Serial.print("altitude: ");
   Serial.print(bmp.readAltitude(SEALEVELPRESSURE_HPA));
   Serial.println(" m");
 
-  Serial.print(timeClient.getFormattedTime());
-  Serial.print("\t");
+  Serial.print("light: ");
   Serial.println(node->readLight());
 
   /* node->sleep(); */
   /* node->wake(); */
-  delay(5 * 1000);
+  delay(1 * 1000);
 }
