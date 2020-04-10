@@ -56,8 +56,7 @@ void setup() {
 
 void loop() {
   // TODO sensors
-  // node->logTemperature();
-  /* node->log("temperature", bmp.readTemperature()); */
+  node->log("temperature", bmp.readTemperature());
   Serial.println(timeClient.getFormattedTime());
 
   Serial.print("temperature: ");
@@ -77,5 +76,5 @@ void loop() {
 
   /* node->sleep(); */
   /* node->wake(); */
-  delay(1 * 1000);
+  delay(5 * 1000);
 }

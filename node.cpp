@@ -12,22 +12,23 @@ Node::Node() {
 void Node::identify() {
   Serial.println("[ NODE ] identify");
   String identifyUrl = this->rootUri + "/identify/" + this->nodeId;
-  String identifyResponse = getRequest(identifyUrl);
+  Response identifyResponse = getRequest(identifyUrl);
 
   this->lastIdentified = timeClient.getEpochTime();
 
-  if (!identifyResponse.equals(this->nodeId)) {
+  if (!identifyResponse.body.equals(this->nodeId)) {
     // TODO now it's an issue :shrug:
     Serial.println("[ NODE ] ID mismatch");
   }
   Serial.println("[ NODE ] ID Check OK");
-  Serial.printf("Light: %d\n", this->readLight());
 }
 
 void Node::log(String sensorType, double value) {
   Serial.printf(("[ NODE ] [ LOG ] " + sensorType + ", value: %.2f\n").c_str(), value);
   String logUri = this->rootUri + "/log/" + sensorType;
-  return;
+
+
+  Response logResponse = postRequest(logUri, String(value));
 }
 
 int Node::readLight() {
@@ -49,6 +50,11 @@ void Node::initWifi() {
 }
 
 void Node::connectWifi() {
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("[ NODE ] [ WIFI ] connected");
+    return;
+  }
+
   Serial.print("[ NODE ] [ WIFI ] connecting");
   int retryCount = 0;
   while (WiFi.status() != WL_CONNECTED) {
