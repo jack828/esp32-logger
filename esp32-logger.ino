@@ -14,6 +14,7 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 Node* node;
 Adafruit_BMP280 bmp;
+boolean hasBmp;
 
 void printMem(String marker) {
   Serial.print(" [MEM] ");
@@ -42,8 +43,8 @@ void setup() {
   Serial.print("Flash size: ");
   Serial.println(ESP.getFlashChipSize());
 
-  boolean bmpOk = bmp.begin(0x76);
-  if (!bmpOk) {
+  hasBmp = bmp.begin(0x76);
+  if (!hasBmp) {
     Serial.println("Could not find a valid BMP280 sensor, check wiring!");
   }
 
@@ -54,13 +55,16 @@ void setup() {
 #define SEALEVELPRESSURE_HPA (1024.50)
 
 void loop() {
-  // TODO sensors
   node->checkWifi();
-  node->log("temperature", bmp.readTemperature());
-  node->log("pressure", bmp.readPressure() / 100.0F);
+
+  if (hasBmp) {
+    node->log("temperature", bmp.readTemperature());
+    node->log("pressure", bmp.readPressure() / 100.0F);
+  }
   node->log("light", analogRead(LIGHT_SENSOR_PIN));
   Serial.println(timeClient.getFormattedTime());
 
+  /*
   Serial.print("temperature: ");
   Serial.print(bmp.readTemperature());
   Serial.println(" *C");
@@ -75,7 +79,7 @@ void loop() {
 
   Serial.print("light: ");
   Serial.println(analogRead(LIGHT_SENSOR_PIN));
-
+  */
   /* node->sleep(); */
   /* node->wake(); */
   delay(60 * 1000);
