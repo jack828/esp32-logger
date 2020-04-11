@@ -5,6 +5,7 @@
 #include <WiFiUdp.h>
 #include <NTPClient.h>
 #include <Adafruit_BMP280.h>
+#include <DHTesp.h>
 
 #include "memory.h"
 #include "network.h"
@@ -14,7 +15,9 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 Node* node;
 Adafruit_BMP280 bmp;
-boolean hasBmp;
+boolean hasBmp = false;
+DHTesp dht;
+boolean hasDht = false;
 
 void printMem(String marker) {
   Serial.print(" [MEM] ");
@@ -44,8 +47,17 @@ void setup() {
   Serial.println(ESP.getFlashChipSize());
 
   hasBmp = bmp.begin(0x76);
-  if (!hasBmp) {
-    Serial.println("Could not find a valid BMP280 sensor, check wiring!");
+  if (hasBmp) {
+    Serial.println("[ BMP ] sensor ok");
+  } else {
+    Serial.println("[ BMP ] sensor NOT ok");
+  }
+
+  dht.setup(DHT11_PIN, DHTesp::DHT11); hasDht = true;
+  if (hasDht) {
+    Serial.println("[ DHT ] sensor ok");
+  } else {
+    Serial.println("[ DHT ] sensor NOT ok");
   }
 
   node = new Node();
@@ -61,8 +73,12 @@ void loop() {
     node->log("temperature", bmp.readTemperature());
     node->log("pressure", bmp.readPressure() / 100.0F);
   }
+  if (hasDht) {
+    TempAndHumidity reading = dht.getTempAndHumidity();
+    node->log("temperature", reading.temperature);
+    node->log("humidity", reading.humidity);
+  }
   node->log("light", analogRead(LIGHT_SENSOR_PIN));
-  Serial.println(timeClient.getFormattedTime());
 
   /*
   Serial.print("temperature: ");
@@ -81,6 +97,6 @@ void loop() {
   Serial.println(analogRead(LIGHT_SENSOR_PIN));
   */
   /* node->sleep(); */
-  /* node->wake(); */
-  delay(60 * 1000);
+  node->wake();
+  delay(10 * 60 * 1000); // 10 minutes
 }

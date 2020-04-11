@@ -5,9 +5,14 @@
 
 // Your connected status LED (not necessary)
 #define LED_PIN 2
+
 // Light sensor
-#define LIGHT_SENSOR_PIN 32 // ESP32 - D32
-// #define LIGHT_SENSOR_PIN 36 // ESP32 OLED - SVP
+// #define LIGHT_SENSOR_PIN 32 // ESP32 - D32
+#define LIGHT_SENSOR_PIN 36 // ESP32 OLED - SVP
+
+// DH11 sensor
+#define DHT11_PIN 25 // ESP OLED
+
 // Root PiHome logger location
 #define ROOT_URI "http://192.168.0.17:3001/node"
 // Time between wake-ups, in microseconds
