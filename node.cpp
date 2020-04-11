@@ -88,7 +88,7 @@ void Node::checkWifi() {
 }
 
 void Node::sleep() {
-  Serial.printf("[ NODE ] snoozin for %d mins\n", DELAY_PERIOD / 3600 / 1000);
+  Serial.printf("[ NODE ] snoozin for %d mins\n", DELAY_PERIOD / 60 / 1000);
   delay(DELAY_PERIOD);
   return;
 
