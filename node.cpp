@@ -88,7 +88,11 @@ void Node::checkWifi() {
 }
 
 void Node::sleep() {
-  Serial.println("[ NODE ] sleeping...");
+  Serial.printf("[ NODE ] snoozin for %d mins\n", DELAY_PERIOD / 3600 / 1000);
+  delay(DELAY_PERIOD);
+  return;
+
+  // TODO sleep for battery saver
   esp_sleep_enable_timer_wakeup(LOG_PERIOD);
   Serial.flush();
   WiFi.disconnect();

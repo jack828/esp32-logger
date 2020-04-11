@@ -19,6 +19,7 @@
 // will drift during uptime from starting time
 // if using deep sleep, max 1 hour on ESP8266
 #define LOG_PERIOD 5 * 1000 * 1000
+#define DELAY_PERIOD 10 * 60 * 60 * 1000 // 10 minutes
 
 // YAY GLOBALS SORRYNOTSORRY
 extern NTPClient timeClient;

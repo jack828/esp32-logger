@@ -96,7 +96,6 @@ void loop() {
   Serial.print("light: ");
   Serial.println(analogRead(LIGHT_SENSOR_PIN));
   */
-  /* node->sleep(); */
+  node->sleep();
   node->wake();
-  delay(10 * 60 * 1000); // 10 minutes
 }
