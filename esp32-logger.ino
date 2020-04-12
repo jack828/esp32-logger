@@ -52,8 +52,9 @@ void setup() {
   } else {
     Serial.println("[ BMP ] sensor NOT ok");
   }
-
+#ifdef ESP_32_OLED
   dht.setup(DHT11_PIN, DHTesp::DHT11); hasDht = true;
+#endif
   if (hasDht) {
     Serial.println("[ DHT ] sensor ok");
   } else {
