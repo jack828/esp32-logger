@@ -14,7 +14,7 @@
 #define DHT11_PIN 25 // ESP OLED
 
 // Root PiHome logger location
-#define ROOT_URI "http://192.168.0.17:3001/node"
+#define ROOT_URI "http://192.168.0.42:3001/node"
 // Time between wake-ups, in microseconds
 // will drift during uptime from starting time
 // if using deep sleep, max 1 hour on ESP8266
