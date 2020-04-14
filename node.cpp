@@ -110,6 +110,8 @@ void Node::sleep() {
 void Node::wake() {
   Serial.println("[ NODE ] waking...");
   this->checkWifi();
+  // TODO move out
+  Serial.println("[ NTP ] updating time");
   timeClient.update();
   Serial.println("[ NODE ] woke " + timeClient.getFormattedTime());
 }

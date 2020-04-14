@@ -4,20 +4,23 @@
 #include <WString.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
-#include <Adafruit_BMP280.h>
-#include <DHTesp.h>
 
 #include "memory.h"
 #include "network.h"
 #include "node.h"
 
+#ifdef BME280_I2C
+#include <Adafruit_BMP280.h>
+Adafruit_BMP280 bmp;
+#endif
+#ifdef DHT11_PIN
+#include <DHTesp.h>
+DHTesp dht;
+#endif
+
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 Node* node;
-Adafruit_BMP280 bmp;
-boolean hasBmp = false;
-DHTesp dht;
-boolean hasDht = false;
 
 void printMem(String marker) {
   Serial.print(" [MEM] ");
@@ -46,57 +49,42 @@ void setup() {
   Serial.print("Flash size: ");
   Serial.println(ESP.getFlashChipSize());
 
-  hasBmp = bmp.begin(0x76);
-  if (hasBmp) {
-    Serial.println("[ BMP ] sensor ok");
-  } else {
+#ifdef BME280_I2C
+  Serial.println("[ BMP ] has sensor");
+  boolean bmpOk = bmp.begin(0x76);
+  Serial.print("[ BMP ] sensor ");
+  Serial.print(bmpOk ? "" : "NOT ");
+  Serial.println("OK");
+#else
     Serial.println("[ BMP ] sensor NOT ok");
-  }
-#ifdef DHT11_PIN
-  dht.setup(DHT11_PIN, DHTesp::DHT11); hasDht = true;
 #endif
-  if (hasDht) {
-    Serial.println("[ DHT ] sensor ok");
-  } else {
-    Serial.println("[ DHT ] sensor NOT ok");
-  }
+
+#ifdef DHT11_PIN
+  dht.setup(DHT11_PIN, DHTesp::DHT11);
+  Serial.println("[ DHT ] sensor ok");
+#else
+  Serial.println("[ DHT ] sensor NOT ok");
+#endif
 
   node = new Node();
   initNtp();
 }
 
-#define SEALEVELPRESSURE_HPA (1024.50)
-
 void loop() {
   node->checkWifi();
 
-  if (hasBmp) {
+#ifdef BME280_I2C
     node->log("temperature", bmp.readTemperature());
     node->log("pressure", bmp.readPressure() / 100.0F);
-  }
-  if (hasDht) {
+#endif
+#ifdef DHT11_PIN
     TempAndHumidity reading = dht.getTempAndHumidity();
     node->log("temperature", reading.temperature);
     node->log("humidity", reading.humidity);
-  }
+#endif
+
   node->log("light", analogRead(LIGHT_SENSOR_PIN));
 
-  /*
-  Serial.print("temperature: ");
-  Serial.print(bmp.readTemperature());
-  Serial.println(" *C");
-
-  Serial.print("pressure: ");
-  Serial.print(bmp.readPressure() / 100.0F);
-  Serial.println(" hPa");
-
-  Serial.print("altitude: ");
-  Serial.print(bmp.readAltitude(SEALEVELPRESSURE_HPA));
-  Serial.println(" m");
-
-  Serial.print("light: ");
-  Serial.println(analogRead(LIGHT_SENSOR_PIN));
-  */
   node->sleep();
   node->wake();
 }
