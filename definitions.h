@@ -2,7 +2,7 @@
 #define Definitions_h
 
 #define ESP_32_OLED_BATT
-#define ESP_32_OLED
+// #define ESP_32_OLED
 // #define ESP_32
 
 #include <NTPClient.h>
@@ -14,7 +14,7 @@
 #ifdef ESP_32_OLED
 #define LED_PIN 16 // TODO Check
 #endif
-#ifdef ESP_32_OLED_BATT
+#ifdef ESP_32
 #define LED_PIN 2
 #endif
 
