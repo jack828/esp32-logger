@@ -73,6 +73,9 @@ void Node::connectWifi() {
   Serial.print(WiFi.SSID());
   Serial.print(", IP:");
   Serial.println(WiFi.localIP());
+#ifdef ESP_32_OLED_BATT
+  digitalWrite(LED_PIN, HIGH);
+#endif // annoying, i know
 }
 
 void Node::checkWifi() {
