@@ -1,20 +1,27 @@
 #ifndef Definitions_h
 #define Definitions_h
 
+#define ESP_32_OLED_BATT
 #define ESP_32_OLED
 // #define ESP_32
 
 #include <NTPClient.h>
 
 // Your connected status LED (not necessary)
-#ifdef ESP_32_OLED
+#ifdef ESP_32_OLED_BATT
 #define LED_PIN 16 // BATT only
 #endif
-#ifdef ESP_32
+#ifdef ESP_32_OLED
+#define LED_PIN 16 // TODO Check
+#endif
+#ifdef ESP_32_OLED_BATT
 #define LED_PIN 2
 #endif
 
 // Light sensor
+#ifdef ESP_32_OLED_BATT
+#define LIGHT_SENSOR_PIN 36 // TODO
+#endif
 #ifdef ESP_32_OLED
 #define LIGHT_SENSOR_PIN 36 // SVP
 #endif
