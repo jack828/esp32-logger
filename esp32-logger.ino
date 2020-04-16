@@ -71,7 +71,7 @@ void setup() {
 }
 
 void loop() {
-  node->checkWifi();
+  node->wake();
 
 #ifdef BME280_I2C
     node->log("temperature", bmp.readTemperature());
@@ -86,5 +86,4 @@ void loop() {
   node->log("light", analogRead(LIGHT_SENSOR_PIN));
 
   node->sleep();
-  node->wake();
 }

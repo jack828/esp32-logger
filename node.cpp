@@ -1,4 +1,6 @@
 #include "node.h"
+#include <esp_sleep.h>
+#include <esp_wifi.h>
 
 Node::Node() {
   this->nodeId = WiFi.macAddress();
@@ -91,20 +93,17 @@ void Node::checkWifi() {
 }
 
 void Node::sleep() {
-  Serial.printf("[ NODE ] snoozin for %d mins\n", DELAY_PERIOD / 60 / 1000);
-  delay(DELAY_PERIOD);
-  return;
-
-  // TODO sleep for battery saver
-  esp_sleep_enable_timer_wakeup(LOG_PERIOD);
+  int ret;
+  Serial.printf("[ NODE ] snoozin for %d seconds\n", LOG_PERIOD / 1000 / 1000);
   Serial.flush();
-  WiFi.disconnect();
+  ret = WiFi.disconnect();
+  Serial.printf("wifidc: %d\n", ret);
+  ret = esp_wifi_stop();
+  Serial.printf("wifistop: %d\n", ret);
+  ret = esp_sleep_enable_timer_wakeup(LOG_PERIOD);
+  Serial.printf("lst: %d\n", ret);
 
-  int ret = esp_light_sleep_start();
-  Serial.printf("ret: %d\n", ret);
-  if (ret != 0) {
-    Serial.println("Error entering light sleep");
-  }
+  esp_deep_sleep_start();
 }
 
 void Node::wake() {
