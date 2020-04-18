@@ -19,11 +19,14 @@ How this will work:
 
 ## Setup
 
-This uses the Espressif IDF, not Arduino IDE. (ESP-IDF Getting Started)[https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html]
+This uses the Espressif IDF, not Arduino IDE. [ESP-IDF Getting Started](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html)
 Make sure you've sourced export.sh
 ```
 $ source ~/esp/esp-idf/export.sh
 ```
+
+You will need [esp-idf-lib](https://github.com/UncleRus/esp-idf-lib) to support readings from any sensors.
+
 Clone the repo, then run `idf.py menuconfig` and pick your board.
 If you need to add it, add the configuration to (TODO)[./definitions.h]
 

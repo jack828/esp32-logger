@@ -5,14 +5,7 @@
 #include <sdkconfig.h>
 #include "../definitions.h"
 
-
 void app_main(void) {
-  /* Configure the IOMUX register for pad BLINK_GPIO (some pads are
-     muxed to GPIO on reset already, but some default to other
-     functions and need to be switched to GPIO. Consult the
-     Technical Reference for a list of pads and their default
-     functions.)
-  */
   printf("LED_PIN %d", LED_PIN);
   gpio_pad_select_gpio(LED_PIN);
   /* Set the GPIO as a push/pull output */
