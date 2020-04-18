@@ -4,9 +4,9 @@
 #include "credentials.h"
 
 // pick a board any board
-#define ESP_32_OLED_BATT
+// #define ESP_32_OLED_BATT
 // #define ESP_32_OLED
-// #define ESP_32
+#define ESP_32
 
 // TODO is NTP actually worth it?
 // #include <NTPClient.h>
