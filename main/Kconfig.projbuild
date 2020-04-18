@@ -1,0 +1,9 @@
+menu "ESP32 Logger"
+
+    config BOARD
+        int "Board Type"
+        range 0 34
+        default 5
+        help
+            TODO
+endmenu

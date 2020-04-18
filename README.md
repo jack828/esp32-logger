@@ -19,7 +19,13 @@ How this will work:
 
 ## Setup
 
-Fork the repo, clone, and configure to match your setup.
+This uses the Espressif IDF, not Arduino IDE. (ESP-IDF Getting Started)[https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html]
+Make sure you've sourced export.sh
+```
+$ source ~/esp/esp-idf/export.sh
+```
+Clone the repo, then run `idf.py menuconfig` and pick your board.
+If you need to add it, add the configuration to (TODO)[./definitions.h]
 
 Please see [credentials.h](./credentials.h) for credential information. Use `.tpl` as a starting point.
 Please see [definitions.h](./definitions.h) for all configurables.
