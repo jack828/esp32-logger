@@ -1,12 +1,16 @@
 #ifndef Definitions_h
 #define Definitions_h
 
+#include "credentials.h"
+
 // pick a board any board
 #define ESP_32_OLED_BATT
 // #define ESP_32_OLED
 // #define ESP_32
 
-#include <NTPClient.h>
+// TODO is NTP actually worth it?
+// #include <NTPClient.h>
+// extern NTPClient timeClient;
 
 // Hardware specific config
 #ifdef ESP_32_OLED_BATT
@@ -34,8 +38,5 @@
 // will drift during uptime from starting time
 // if using deep sleep, max 1 hour on ESP8266
 #define LOG_PERIOD 10 * 60 * 1000 * 1000 // 10 minutes, microseconds
-
-// YAY GLOBALS SORRYNOTSORRY
-extern NTPClient timeClient;
 
 #endif
