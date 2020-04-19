@@ -1,27 +1,11 @@
 #ifndef Node_h
 #define Node_h
 
-#include "definitions.h"
-#include "credentials.h"
-#include "network.h"
-#include <WString.h>
-#include <WiFi.h>
+#include "../definitions.h"
 
-class Node {
-  private:
-    String rootUri = ROOT_URI;
-    String nodeId;
-    long lastIdentified;
-    int wifiStatus = WL_DISCONNECTED;
-  public:
-    Node();
-    virtual void identify();
-    virtual void log(String sensorType, double value);
-    virtual void initWifi();
-    virtual void connectWifi();
-    virtual void checkWifi();
-    virtual void sleep();
-    virtual void wake();
-};
+void node_identify(void);
+void node_log(char* sensorType, double value);
+void node_sleep(void);
+void node_wake(void);
 
 #endif

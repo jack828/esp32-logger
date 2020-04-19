@@ -17,6 +17,7 @@
 #include "../definitions.h"
 #include "wifi.h"
 #include "http.h"
+#include "node.h"
 
 EventGroupHandle_t wifi_event_group;
 
@@ -69,6 +70,9 @@ void app_main(void) {
   xEventGroupWaitBits(wifi_event_group, READY_BIT, false, true, portMAX_DELAY);
   ESP_LOGI(TAG, "Connected WiFi"); // TODO SSID from flash?
   ESP_LOGI(TAG, "IPv4 address: " IPSTR, IP2STR(&ip_addr));
+
+
+  node_identify();
 
   xTaskCreate(&task_measure_loop, "measure_loop", 1024 * 16, NULL, 6, NULL);
 }
