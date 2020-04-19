@@ -61,46 +61,19 @@ static const char *REQUEST_HEADER =
 
 static EventGroupHandle_t wifi_event_group;
 
-/* LECAGY, FOR REFERENCE
-static esp_err_t event_handler(void *ctx, system_event_t *event) {
-  switch (event->event_id) {
-  case WIFI_EVENT_WIFI_READY:
-  //case IP_EVENT_STA_GOT_IP:
-    ESP_LOGI(TAG, "WIFI_EVENT_WIFI_READY / IP_EVENT_STA_GOT_IP");
-    ESP_LOGI(TAG, "Got ip...");
-    xEventGroupSetBits(wifi_event_group, READY_BIT);
-    break;
-  case WIFI_EVENT_STA_START:
-    ESP_LOGI(TAG, "WIFI_EVENT_STA_START, connecting");
-    esp_wifi_connect();
-    break;
-  case WIFI_EVENT_STA_STOP:
-    ESP_LOGI(TAG, "WIFI_EVENT_STA_STOP");
-    break;
-    break;
-  default:
-    ESP_LOGI(TAG, "unknown event %d", event->event_id);
-    break;
-  }
-  return ESP_OK;
-} */
-
 static void all_event_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
 {
     ESP_LOGI(TAG, "%s: all_event_handler, id: %d", base, id);
-    /* ESP_LOGI(TAG, event_data); */
 }
 
 static void on_any_wifi(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
 {
     ESP_LOGI(TAG, "%s: on_any_wifi, id: %d", base, id);
-    /* ESP_LOGI(TAG, "event_id: $d", event_data.event_id); */
 }
 
 static void on_any_ip(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
 {
     ESP_LOGI(TAG, "%s: on_any_ip, id: %d", base, id);
-    /* ESP_LOGI(TAG, event_data); */
 }
 
 static void wifi_connect() {
@@ -144,15 +117,12 @@ static void on_got_ip(void *arg, esp_event_base_t event_base,
 }
 
 static void wifi_init(void) {
-
   ESP_ERROR_CHECK(esp_netif_init());
-  /* tcpip_adapter_init(); */
   netif = esp_netif_create_default_wifi_sta();
   assert(netif);
 
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
 
   esp_wifi_set_default_wifi_sta_handlers();
   // TODO
@@ -184,11 +154,6 @@ static void wifi_init(void) {
     )
   );
 
-    /* } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) { */
-        /* ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data; */
-        /* ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip)); */
-        /* s_retry_num = 0; */
-        /* xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT); */
   ESP_ERROR_CHECK(
     esp_event_handler_register(
       IP_EVENT,
@@ -239,7 +204,6 @@ static void wifi_init(void) {
   ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
   ESP_ERROR_CHECK(esp_wifi_start());
   ESP_LOGI(TAG, "WiFi started");
-
 }
 
 static void communicate(struct esp_tls *tls, char *request_body) {
