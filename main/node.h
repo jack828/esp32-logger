@@ -6,7 +6,6 @@
 #include "network.h"
 #include <WString.h>
 #include <WiFi.h>
-#include <NTPClient.h>
 
 class Node {
   private:
