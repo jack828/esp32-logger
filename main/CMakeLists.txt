@@ -1,6 +1,4 @@
 idf_component_register(
-  SRCS
-  "esp32-logger.c"
-  INCLUDE_DIRS
-  "."
+  SRCS "esp32-logger.c" "wifi.c"
+  INCLUDE_DIRS "."
 )

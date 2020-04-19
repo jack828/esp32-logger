@@ -39,4 +39,14 @@
 // if using deep sleep, max 1 hour on ESP8266
 #define LOG_PERIOD 10 * 60 * 1000 * 1000 // 10 minutes, microseconds
 
+
+#include "freertos/event_groups.h"
+extern EventGroupHandle_t wifi_event_group;
+
+#include "esp_netif.h"
+extern esp_ip4_addr_t ip_addr;
+extern esp_netif_t *netif;
+
+extern const int8_t READY_BIT;
+
 #endif
