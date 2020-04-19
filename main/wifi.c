@@ -145,3 +145,13 @@ void wifi_init(void) {
   ESP_LOGI(TAG, "WiFi started");
 }
 
+void wifi_stop() {
+  esp_err_t err = esp_wifi_stop();
+  if (err == ESP_ERR_WIFI_NOT_INIT) {
+      return;
+  }
+  ESP_ERROR_CHECK(err);
+  ESP_ERROR_CHECK(esp_wifi_deinit());
+  ESP_ERROR_CHECK(esp_wifi_clear_default_wifi_driver_and_handlers(netif));
+  esp_netif_destroy(netif);
+}

@@ -14,5 +14,6 @@ void on_wifi_stop(void* arg, esp_event_base_t base, int32_t id, void* event_data
 void on_got_ip(void* arg, esp_event_base_t base, int32_t id, void* event_data);
 
 void wifi_init(void);
+void wifi_stop(void);
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "nvs_flash.h"
 #include "esp_err.h"
+#include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_http_client.h"
@@ -131,8 +132,7 @@ void app_main(void) {
 
   wifi_init();
 
-  /* #include "esp_system.h" */
-  /* ESP_ERROR_CHECK(esp_register_shutdown_handler(&stop)); */
+  ESP_ERROR_CHECK(esp_register_shutdown_handler(&wifi_stop));
   ESP_LOGI(TAG, "wifi init done, waiting for IP");
   xEventGroupWaitBits(wifi_event_group, READY_BIT, false, true, portMAX_DELAY);
   ESP_LOGI(TAG, "Connected WiFi"); // TODO SSID from flash?
