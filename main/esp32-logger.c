@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "nvs_flash.h"
 #include "esp_err.h"
 #include "esp_event.h"
 #include "esp_log.h"
-#include "esp_system.h"
 #include "esp_wifi.h"
 #include "esp_wifi_default.h"
 #include "esp_netif.h"
@@ -13,14 +13,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "freertos/task.h"
-
-#include "lwip/dns.h"
-#include "lwip/err.h"
-#include "lwip/netdb.h"
-#include "lwip/sockets.h"
-#include "lwip/sys.h"
-
-#include "nvs_flash.h"
 
 #include "driver/gpio.h"
 #include "sdkconfig.h"
@@ -226,7 +218,6 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
 }
 
 static void http_request(void *ignore) {
-  char request_body[256];
   ESP_LOGI(TAG, "http_request waitBits");
   xEventGroupWaitBits(
     wifi_event_group,
@@ -280,6 +271,7 @@ void app_main(void) {
 
   wifi_init();
 
+  /* #include "esp_system.h" */
   /* ESP_ERROR_CHECK(esp_register_shutdown_handler(&stop)); */
   ESP_LOGI(TAG, "wifi init done, waiting for IP");
   xEventGroupWaitBits(wifi_event_group, READY_BIT, false, true, portMAX_DELAY);
