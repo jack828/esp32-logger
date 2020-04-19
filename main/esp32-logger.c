@@ -49,34 +49,30 @@ static const char *TAG = "[NODE]";
 
 static EventGroupHandle_t wifi_event_group;
 
-static void all_event_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
-{
-    ESP_LOGI(TAG, "%s: all_event_handler, id: %d", base, id);
+static void all_event_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data) {
+  ESP_LOGI(TAG, "%s: all_event_handler, id: %d", base, id);
 }
 
-static void on_any_wifi(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
-{
-    ESP_LOGI(TAG, "%s: on_any_wifi, id: %d", base, id);
+static void on_any_wifi(void* handler_args, esp_event_base_t base, int32_t id, void* event_data) {
+  ESP_LOGI(TAG, "%s: on_any_wifi, id: %d", base, id);
 }
 
-static void on_any_ip(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
-{
-    ESP_LOGI(TAG, "%s: on_any_ip, id: %d", base, id);
+static void on_any_ip(void* handler_args, esp_event_base_t base, int32_t id, void* event_data) {
+  ESP_LOGI(TAG, "%s: on_any_ip, id: %d", base, id);
 }
 
 static void wifi_connect() {
   led_blink();
   esp_err_t err = esp_wifi_connect();
   if (err == ESP_ERR_WIFI_NOT_STARTED) {
-      ESP_LOGI(TAG, "WIFI NOT STARTED");
-      return;
+    ESP_LOGI(TAG, "WIFI NOT STARTED");
+    return;
   }
   led_blink();
   ESP_ERROR_CHECK(err);
 }
-static void on_wifi_disconnect(void *arg, esp_event_base_t event_base,
-                               int32_t event_id, void *event_data)
-{
+
+static void on_wifi_disconnect(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
   ESP_LOGI(TAG, "STA_DISCONNECTED Wi-Fi disconnected, trying to reconnect...");
   xEventGroupClearBits(wifi_event_group, READY_BIT);
   wifi_connect();
@@ -89,21 +85,17 @@ static void on_wifi_start(void *arg, esp_event_base_t event_base,
   wifi_connect();
 }
 
-static void on_wifi_stop(void *arg, esp_event_base_t event_base,
-                               int32_t event_id, void *event_data)
-{
+static void on_wifi_stop(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
   ESP_LOGI(TAG, "WIFI_EVENT_STA_STOP ?");
   xEventGroupClearBits(wifi_event_group, READY_BIT);
   wifi_connect();
 }
 
-static void on_got_ip(void *arg, esp_event_base_t event_base,
-                      int32_t event_id, void *event_data)
-{
-    ESP_LOGI(TAG, "Got IP event!");
-    ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-    memcpy(&ip_addr, &event->ip_info.ip, sizeof(ip_addr));
-    xEventGroupSetBits(wifi_event_group, READY_BIT);
+static void on_got_ip(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
+  ESP_LOGI(TAG, "Got IP event!");
+  ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+  memcpy(&ip_addr, &event->ip_info.ip, sizeof(ip_addr));
+  xEventGroupSetBits(wifi_event_group, READY_BIT);
 }
 
 static void wifi_init(void) {
@@ -115,7 +107,7 @@ static void wifi_init(void) {
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
   esp_wifi_set_default_wifi_sta_handlers();
-  // TODO
+
   wifi_event_group = xEventGroupCreate();
   ESP_ERROR_CHECK(
     esp_event_handler_register(
@@ -204,42 +196,36 @@ static void build_request_body(char *buf) {
   sprintf(buf, "{\"esp32\":{\"temperature\":%f}}", measure_chip_temp());
 }
 
-esp_err_t _http_event_handle(esp_http_client_event_t *evt)
-{
-    switch(evt->event_id) {
-        case HTTP_EVENT_ERROR:
-            ESP_LOGI(TAG, "HTTP_EVENT_ERROR");
-            break;
-        case HTTP_EVENT_ON_CONNECTED:
-            ESP_LOGI(TAG, "HTTP_EVENT_ON_CONNECTED");
-            break;
-        case HTTP_EVENT_HEADER_SENT:
-            ESP_LOGI(TAG, "HTTP_EVENT_HEADER_SENT");
-            break;
-        case HTTP_EVENT_ON_HEADER:
-            ESP_LOGI(TAG, "HTTP_EVENT_ON_HEADER");
-            printf("%.*s", evt->data_len, (char*)evt->data);
-            break;
-        case HTTP_EVENT_ON_DATA:
-            ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-                printf("%.*s", evt->data_len, (char*)evt->data);
-            if (!esp_http_client_is_chunked_response(evt->client)) {
-                printf("%.*s", evt->data_len, (char*)evt->data);
-            }
-
-            break;
-        case HTTP_EVENT_ON_FINISH:
-            ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH");
-            break;
-        case HTTP_EVENT_DISCONNECTED:
-            ESP_LOGI(TAG, "HTTP_EVENT_DISCONNECTED");
-            break;
-    }
-    return ESP_OK;
+esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
+  switch(evt->event_id) {
+    case HTTP_EVENT_ERROR:
+      ESP_LOGI(TAG, "HTTP_EVENT_ERROR");
+      break;
+    case HTTP_EVENT_ON_CONNECTED:
+      ESP_LOGI(TAG, "HTTP_EVENT_ON_CONNECTED");
+      break;
+    case HTTP_EVENT_HEADER_SENT:
+      ESP_LOGI(TAG, "HTTP_EVENT_HEADER_SENT");
+      break;
+    case HTTP_EVENT_ON_HEADER:
+      ESP_LOGI(TAG, "HTTP_EVENT_ON_HEADER");
+      printf("%.*s", evt->data_len, (char*)evt->data);
+      break;
+    case HTTP_EVENT_ON_DATA:
+      ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+      printf("%.*sz\n", evt->data_len, (char*)evt->data);
+      break;
+    case HTTP_EVENT_ON_FINISH:
+      ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH");
+      break;
+    case HTTP_EVENT_DISCONNECTED:
+      ESP_LOGI(TAG, "HTTP_EVENT_DISCONNECTED");
+      break;
+  }
+  return ESP_OK;
 }
 
 static void http_request(void *ignore) {
-
   char request_body[256];
   ESP_LOGI(TAG, "http_request waitBits");
   xEventGroupWaitBits(
@@ -290,21 +276,15 @@ void app_main(void) {
   led_blink();
   ESP_ERROR_CHECK(nvs_flash_init());
 
-  /* if (event_handler != NULL) { */
-    /* return ESP_ERR_INVALID_STATE; */
-  /* } */
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-  led_blink();
   wifi_init();
-  led_blink();
+
   /* ESP_ERROR_CHECK(esp_register_shutdown_handler(&stop)); */
   ESP_LOGI(TAG, "wifi init done, waiting for IP");
   xEventGroupWaitBits(wifi_event_group, READY_BIT, false, true, portMAX_DELAY);
-  /* ESP_LOGI(TAG, "Connected to %s", s_connection_name); */
+  ESP_LOGI(TAG, "Connected WiFi"); // TODO SSID from flash?
   ESP_LOGI(TAG, "IPv4 address: " IPSTR, IP2STR(&ip_addr));
-
-  ESP_LOGI(TAG, "\n\ninitialise_wifi done!!!, looping!!!\n\n\n");
 
   xTaskCreate(&task_measure_loop, "measure_loop", 1024 * 16, NULL, 6, NULL);
 }
