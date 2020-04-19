@@ -41,7 +41,7 @@ static const char *TAG = "[NODE]";
 
 static void measure_loop(void *pvParameters) {
   ESP_LOGI(TAG, "measure_loop");
-  get_request(pvParameters);
+  get_request(TEMPERATURE, "esp828");
   led_blink();
   vTaskDelay(30 * 1000 / portTICK_PERIOD_MS);
 }

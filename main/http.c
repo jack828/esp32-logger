@@ -3,6 +3,7 @@
 #include "string.h"
 #include "esp_log.h"
 #include "esp_http_client.h"
+#include "node.h"
 
 static const char *TAG = "[HTTP]";
 
@@ -35,7 +36,7 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt) {
   return ESP_OK;
 }
 
-void get_request(void *ignore) {
+void get_request(node_sensor_t sensor, char* body) {
   ESP_LOGI(TAG, "http_request waitBits");
   xEventGroupWaitBits(
     wifi_event_group,
@@ -45,8 +46,12 @@ void get_request(void *ignore) {
     portMAX_DELAY
   );
   ESP_LOGI(TAG, "Connected to AP");
+
+  char* rooturi=  "http://wirepusher.com/send?id=bdJ5mpnGj";
+  char* request_uri[100];
+  sprintf(request_uri, "%s&title=%s&message=%s", rooturi, sensor_to_string(sensor), body);
   esp_http_client_config_t config = {
-   .url = "http://wirepusher.com/send?id=bdJ5mpnGj&title=test&message=hello_from_esp32",
+   .url = request_uri,
    .event_handler = _http_event_handle,
   };
   esp_http_client_handle_t client = esp_http_client_init(&config);

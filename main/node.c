@@ -10,6 +10,21 @@
   this->identify();
 }*/
 
+char* sensor_to_string(node_sensor_t sensor) {
+  switch(sensor) {
+    case TEMPERATURE:
+      return "temperature";
+    case HUMIDITY:
+      return "humidity";
+    case PRESSURE:
+      return "pressure";
+    case LIGHT:
+      return "light";
+    default:
+      return "unknown";
+  }
+}
+
 static const char *TAG = "[NODE]";
 
 void node_identify() {
