@@ -338,7 +338,7 @@ void app_main(void) {
   led_blink();
   /* ESP_ERROR_CHECK(esp_register_shutdown_handler(&stop)); */
   ESP_LOGI(TAG, "wifi init done, waiting for IP");
-  xEventGroupWaitBits(wifi_event_group, READY_BIT, true, true, portMAX_DELAY);
+  xEventGroupWaitBits(wifi_event_group, READY_BIT, false, true, portMAX_DELAY);
   /* ESP_LOGI(TAG, "Connected to %s", s_connection_name); */
   ESP_LOGI(TAG, "IPv4 address: " IPSTR, IP2STR(&ip_addr));
 
