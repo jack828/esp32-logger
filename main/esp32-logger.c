@@ -5,10 +5,10 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_system.h"
-#include "esp_tls.h"
 #include "esp_wifi.h"
 #include "esp_wifi_default.h"
 #include "esp_netif.h"
+#include "esp_http_client.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
@@ -26,14 +26,6 @@
 #include "sdkconfig.h"
 
 #include "../definitions.h"
-
-#define EXAMPLE_WIFI_SSID WIFI_SSID
-#define EXAMPLE_WIFI_PASS WIFI_PSK
-
-#define WEB_SERVER ""
-#define WEB_PORT "1000"
-#define WEB_URL ""
-#define WEB_AUTH ""
 
 extern uint8_t temprature_sens_read();
 
@@ -54,10 +46,6 @@ esp_netif_t *netif = NULL;
 const int READY_BIT = BIT0;
 
 static const char *TAG = "[NODE]";
-static const char *REQUEST_HEADER =
-    "POST " WEB_URL " HTTP/1.0\r\n"
-    "Host: " WEB_SERVER "\r\n"
-    "User-Agent: esp-idf/1.0 esp32\r\n" ;
 
 static EventGroupHandle_t wifi_event_group;
 
@@ -206,66 +194,6 @@ static void wifi_init(void) {
   ESP_LOGI(TAG, "WiFi started");
 }
 
-static void communicate(struct esp_tls *tls, char *request_body) {
-  char buf[1024];
-  int ret, len;
-  size_t dummy;
-
-  /* sprintf(buf, "%sContent-Length:%d\r\nAuthorization:Basic %s\r\n%s", */
-    /* REQUEST_HEADER, */
-    /* strlen(request_body), */
-    /* base64_encode((const unsigned char*)WEB_AUTH, */
-        /* strlen(WEB_AUTH), &dummy), */
-    /* request_body); */
-
-  // ESP_LOGI(TAG, "request=%s", buf);
-  ESP_LOGI(TAG, "request_body=%s", request_body);
-  /* TLS write */
-  size_t written_bytes = 0;
-  do {
-    ret = esp_tls_conn_write(tls, buf + written_bytes,
-                             strlen(buf) - written_bytes);
-    if (ret >= 0) {
-      ESP_LOGI(TAG, "%d bytes written", ret);
-      written_bytes += ret;
-    } else if (ret != MBEDTLS_ERR_SSL_WANT_READ &&
-               ret != MBEDTLS_ERR_SSL_WANT_WRITE) {
-      ESP_LOGE(TAG, "esp_tls_conn_write  returned 0x%x", ret);
-      return;
-    }
-  } while (written_bytes < strlen(buf));
-
-  /* TLS read */
-  ESP_LOGI(TAG, "Reading HTTP response...");
-
-  do {
-    len = sizeof(buf) - 1;
-    bzero(buf, sizeof(buf));
-    ret = esp_tls_conn_read(tls, (char *)buf, len);
-
-    if (ret == MBEDTLS_ERR_SSL_WANT_WRITE || ret == MBEDTLS_ERR_SSL_WANT_READ) {
-      continue;
-    }
-
-    if (ret < 0) {
-      ESP_LOGE(TAG, "esp_tls_conn_read  returned -0x%x", -ret);
-      break;
-    }
-
-    if (ret == 0) {
-      ESP_LOGI(TAG, "connection closed");
-      break;
-    }
-
-    len = ret;
-    ESP_LOGD(TAG, "%d bytes read", len);
-
-    for (int i = 0; i < len; i++) {
-      putchar(buf[i]);
-    }
-  } while (1);
-}
-
 static double measure_chip_temp() {
   return ((double)temprature_sens_read() - 32.0) / 1.8;
 }
@@ -274,14 +202,44 @@ static void build_request_body(char *buf) {
   sprintf(buf, "{\"esp32\":{\"temperature\":%f}}", measure_chip_temp());
 }
 
-static void https_request(void *ignore) {
+esp_err_t _http_event_handle(esp_http_client_event_t *evt)
+{
+    switch(evt->event_id) {
+        case HTTP_EVENT_ERROR:
+            ESP_LOGI(TAG, "HTTP_EVENT_ERROR");
+            break;
+        case HTTP_EVENT_ON_CONNECTED:
+            ESP_LOGI(TAG, "HTTP_EVENT_ON_CONNECTED");
+            break;
+        case HTTP_EVENT_HEADER_SENT:
+            ESP_LOGI(TAG, "HTTP_EVENT_HEADER_SENT");
+            break;
+        case HTTP_EVENT_ON_HEADER:
+            ESP_LOGI(TAG, "HTTP_EVENT_ON_HEADER");
+            printf("%.*s", evt->data_len, (char*)evt->data);
+            break;
+        case HTTP_EVENT_ON_DATA:
+            ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+                printf("%.*s", evt->data_len, (char*)evt->data);
+            if (!esp_http_client_is_chunked_response(evt->client)) {
+                printf("%.*s", evt->data_len, (char*)evt->data);
+            }
+
+            break;
+        case HTTP_EVENT_ON_FINISH:
+            ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH");
+            break;
+        case HTTP_EVENT_DISCONNECTED:
+            ESP_LOGI(TAG, "HTTP_EVENT_DISCONNECTED");
+            break;
+    }
+    return ESP_OK;
+}
+
+static void http_request(void *ignore) {
 
   char request_body[256];
-
-  /* Wait for the callback to set the READY_BIT in the
-     event group.
-   */
-  ESP_LOGI(TAG, "https_request waitBits");
+  ESP_LOGI(TAG, "http_request waitBits");
   xEventGroupWaitBits(
     wifi_event_group,
     READY_BIT,
@@ -290,28 +248,28 @@ static void https_request(void *ignore) {
     portMAX_DELAY
   );
   ESP_LOGI(TAG, "Connected to AP");
+  esp_http_client_config_t config = {
+   .url = "http://wirepusher.com/send?id=SNIPPED&title=test&message=hello_from_esp32",
+   .event_handler = _http_event_handle,
+  };
+  esp_http_client_handle_t client = esp_http_client_init(&config);
+  esp_err_t err = esp_http_client_perform(client);
 
-  /* TLS connection */
-  return;
-    /*
-  struct esp_tls *tls = esp_tls_conn_http_new(WEB_URL, &cfg);
-
-  if (tls != NULL) {
-    ESP_LOGI(TAG, "Connection established...");
-    build_request_body(request_body);
-    communicate(tls, request_body);
-  } else {
-    ESP_LOGE(TAG, "Connection failed...");
+  if (err == ESP_OK) {
+   ESP_LOGI(TAG, "Status = %d, content_length = %d",
+     esp_http_client_get_status_code(client),
+     esp_http_client_get_content_length(client)
+   );
   }
-  esp_tls_conn_delete(tls);
-  */
+  esp_http_client_cleanup(client);
 }
 
 static void measure_loop(void *pvParameters) {
   ESP_LOGI(TAG, "measure_loop");
-  https_request(pvParameters);
+  ESP_LOGI(TAG, "temp %f", measure_chip_temp());
+  /* http_request(pvParameters); */
   led_blink();
-  vTaskDelay(60000 / portTICK_PERIOD_MS);
+  vTaskDelay(30 * 1000 / portTICK_PERIOD_MS);
 }
 
 static void task_measure_loop(void *pvParameters) {
