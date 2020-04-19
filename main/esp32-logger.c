@@ -8,6 +8,7 @@
 #include "esp_tls.h"
 #include "esp_wifi.h"
 #include "esp_wifi_default.h"
+#include "esp_netif.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
@@ -47,7 +48,8 @@ static void led_pin_init() {
   gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
 }
 
-static esp_ip4_addr_t s_ip_addr;
+static esp_ip4_addr_t ip_addr;
+esp_netif_t *netif = NULL;
 
 const int READY_BIT = BIT0;
 
@@ -101,30 +103,35 @@ static void on_any_ip(void* handler_args, esp_event_base_t base, int32_t id, voi
     /* ESP_LOGI(TAG, event_data); */
 }
 
+static void wifi_connect() {
+  esp_err_t err = esp_wifi_connect();
+  if (err == ESP_ERR_WIFI_NOT_STARTED) {
+      ESP_LOGI(TAG, "WIFI NOT STARTED");
+      return;
+  }
+  ESP_ERROR_CHECK(err);
+}
 static void on_wifi_disconnect(void *arg, esp_event_base_t event_base,
                                int32_t event_id, void *event_data)
 {
-    ESP_LOGI(TAG, "STA_DISCONNECTED Wi-Fi disconnected, trying to reconnect...");
-    xEventGroupClearBits(wifi_event_group, READY_BIT);
-    esp_err_t err = esp_wifi_connect();
-    ESP_ERROR_CHECK(err);
-    if (err == ESP_ERR_WIFI_NOT_STARTED) {
-        ESP_LOGI(TAG, "WIFI NOT STARTED");
-        return;
-    }
+  ESP_LOGI(TAG, "STA_DISCONNECTED Wi-Fi disconnected, trying to reconnect...");
+  xEventGroupClearBits(wifi_event_group, READY_BIT);
+  wifi_connect();
+}
+
+static void on_wifi_start(void *arg, esp_event_base_t event_base,
+                               int32_t event_id, void *event_data)
+{
+  ESP_LOGI(TAG, "WIFI_EVENT_STA_START");
+  wifi_connect();
 }
 
 static void on_wifi_stop(void *arg, esp_event_base_t event_base,
                                int32_t event_id, void *event_data)
 {
-    ESP_LOGI(TAG, "WIFI_EVENT_STA_STOP ?");
-    xEventGroupClearBits(wifi_event_group, READY_BIT);
-    esp_err_t err = esp_wifi_connect();
-    ESP_ERROR_CHECK(err);
-    if (err == ESP_ERR_WIFI_NOT_STARTED) {
-        ESP_LOGI(TAG, "WIFI NOT STARTED");
-        return;
-    }
+  ESP_LOGI(TAG, "WIFI_EVENT_STA_STOP ?");
+  xEventGroupClearBits(wifi_event_group, READY_BIT);
+  wifi_connect();
 }
 
 static void on_got_ip(void *arg, esp_event_base_t event_base,
@@ -132,17 +139,42 @@ static void on_got_ip(void *arg, esp_event_base_t event_base,
 {
     ESP_LOGI(TAG, "Got IP event!");
     ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-    memcpy(&s_ip_addr, &event->ip_info.ip, sizeof(s_ip_addr));
+    memcpy(&ip_addr, &event->ip_info.ip, sizeof(ip_addr));
     xEventGroupSetBits(wifi_event_group, READY_BIT);
 }
 
 static void wifi_init(void) {
+
+  ESP_ERROR_CHECK(esp_netif_init());
+  /* tcpip_adapter_init(); */
+  netif = esp_netif_create_default_wifi_sta();
+  assert(netif);
+
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
 
   esp_wifi_set_default_wifi_sta_handlers();
   // TODO
   wifi_event_group = xEventGroupCreate();
+  ESP_ERROR_CHECK(
+    esp_event_handler_register(
+      WIFI_EVENT,
+      WIFI_EVENT_STA_START,
+      &on_wifi_start,
+      NULL
+    )
+  );
+
+  ESP_ERROR_CHECK(
+    esp_event_handler_register(
+      WIFI_EVENT,
+      WIFI_EVENT_STA_CONNECTED,
+      &on_wifi_start,
+      NULL
+    )
+  );
+
   ESP_ERROR_CHECK(
     esp_event_handler_register(
       WIFI_EVENT,
@@ -151,10 +183,16 @@ static void wifi_init(void) {
       NULL
     )
   );
+
+    /* } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) { */
+        /* ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data; */
+        /* ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip)); */
+        /* s_retry_num = 0; */
+        /* xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT); */
   ESP_ERROR_CHECK(
     esp_event_handler_register(
-      WIFI_EVENT,
-      WIFI_EVENT_WIFI_READY,
+      IP_EVENT,
+      IP_EVENT_STA_GOT_IP,
       &on_got_ip,
       NULL
     )
@@ -200,7 +238,8 @@ static void wifi_init(void) {
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
   ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
   ESP_ERROR_CHECK(esp_wifi_start());
-  /* ESP_ERROR_CHECK(esp_wifi_connect()); */
+  ESP_LOGI(TAG, "WiFi started");
+
 }
 
 static void communicate(struct esp_tls *tls, char *request_body) {
@@ -337,7 +376,7 @@ void app_main(void) {
   ESP_LOGI(TAG, "wifi init done, waiting for IP");
   xEventGroupWaitBits(wifi_event_group, READY_BIT, true, true, portMAX_DELAY);
   /* ESP_LOGI(TAG, "Connected to %s", s_connection_name); */
-  ESP_LOGI(TAG, "IPv4 address: " IPSTR, IP2STR(&s_ip_addr));
+  ESP_LOGI(TAG, "IPv4 address: " IPSTR, IP2STR(&ip_addr));
 
   ESP_LOGI(TAG, "\n\ninitialise_wifi done!!!, looping!!!\n\n\n");
 
