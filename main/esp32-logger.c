@@ -65,11 +65,13 @@ static void on_any_ip(void* handler_args, esp_event_base_t base, int32_t id, voi
 }
 
 static void wifi_connect() {
+  led_blink();
   esp_err_t err = esp_wifi_connect();
   if (err == ESP_ERR_WIFI_NOT_STARTED) {
       ESP_LOGI(TAG, "WIFI NOT STARTED");
       return;
   }
+  led_blink();
   ESP_ERROR_CHECK(err);
 }
 static void on_wifi_disconnect(void *arg, esp_event_base_t event_base,
@@ -177,7 +179,7 @@ static void wifi_init(void) {
     )
   );
   ESP_ERROR_CHECK(
-    esp_wifi_set_storage(WIFI_STORAGE_RAM)
+    esp_wifi_set_storage(WIFI_STORAGE_FLASH)
   );
 
   wifi_config_t wifi_config = {
