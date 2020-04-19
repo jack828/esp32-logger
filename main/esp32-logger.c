@@ -260,6 +260,8 @@ static void http_request(void *ignore) {
      esp_http_client_get_status_code(client),
      esp_http_client_get_content_length(client)
    );
+  } else {
+    ESP_LOGI(TAG, "Request NOT ok %d", err);
   }
   esp_http_client_cleanup(client);
 }
