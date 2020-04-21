@@ -13,6 +13,11 @@
 #include <Adafruit_BMP280.h>
 Adafruit_BMP280 bmp;
 #endif
+#ifdef BH1750_I2C
+#include <Wire.h>
+#include <BH1750.h>
+BH1750 lightMeter(0x23);
+#endif
 #ifdef DHT11_PIN
 #include <DHTesp.h>
 DHTesp dht;
@@ -46,8 +51,8 @@ void setup() {
   Serial.begin(115200);
 
   pinMode(LED_PIN, OUTPUT);
-  Serial.print("Flash size: ");
-  Serial.println(ESP.getFlashChipSize());
+  /* Serial.print("Flash size: "); */
+  /* Serial.println(ESP.getFlashChipSize()); */
 
 #ifdef BME280_I2C
   Serial.println("[ BMP ] has sensor");
@@ -56,26 +61,47 @@ void setup() {
   Serial.print(bmpOk ? "" : "NOT ");
   Serial.println("OK");
 #else
-    Serial.println("[ BMP ] sensor NOT ok");
+    /* Serial.println("[ BMP ] sensor NOT ok"); */
+#endif
+
+#ifdef BH1750_I2C
+  Wire.begin();// ONE_TIME_HIGH_RES_MODE
+  if (lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE)) {
+    /* Serial.println("[ LUX ] sensor ok"); */
+  } else {
+    Serial.println("[ LUX ] sensor NOT ok");
+  }
+#else
+  Serial.println("[ LUX ] sensor NOT ok");
 #endif
 
 #ifdef DHT11_PIN
   dht.setup(DHT11_PIN, DHTesp::DHT11);
   Serial.println("[ DHT ] sensor ok");
 #else
-  Serial.println("[ DHT ] sensor NOT ok");
+  /* Serial.println("[ DHT ] sensor NOT ok"); */
 #endif
 
-  node = new Node();
-  initNtp();
+  /* node = new Node(); */
+  /* initNtp(); */
 }
 
 void loop() {
-  node->wake();
+  /* node->wake(); */
 
 #ifdef BME280_I2C
     node->log("temperature", bmp.readTemperature());
     node->log("pressure", bmp.readPressure() / 100.0F);
+#endif
+#ifdef BH1750_I2C
+  while(1){
+    float lux = lightMeter.readLightLevel(true);
+    Serial.printf("%.2f\n", lux);
+    delay(1000);
+  }
+#endif
+#ifdef LIGHT_SENSOR_PIN
+    log("light", analogRead(LIGHT_SENSOR_PIN));
 #endif
 #ifdef DHT11_PIN
     TempAndHumidity reading = dht.getTempAndHumidity();
@@ -83,7 +109,6 @@ void loop() {
     node->log("humidity", reading.humidity);
 #endif
 
-  node->log("light", analogRead(LIGHT_SENSOR_PIN));
 
-  node->sleep();
+  /* node->sleep(); */
 }

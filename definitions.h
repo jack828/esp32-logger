@@ -2,9 +2,9 @@
 #define Definitions_h
 
 // pick a board any board
-#define ESP_32_OLED_BATT
+// #define ESP_32_OLED_BATT
 // #define ESP_32_OLED
-// #define ESP_32
+#define ESP_32
 
 #include <NTPClient.h>
 
@@ -22,10 +22,9 @@
 #endif
 #ifdef ESP_32
 #define LED_PIN 2
-#define LIGHT_SENSOR_PIN 32 // D32
-#define BME280_I2C // D22 & D21
+#define BH1750_I2C // D22 SCL & D21 SDA
 #endif
-
+// #define BME280_I2C // D22 SCL & D21 SDA
 
 // Root PiHome logger location
 #define ROOT_URI "http://192.168.0.42:3001/node"
