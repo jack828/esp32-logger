@@ -1,4 +1,5 @@
 #include "node.h"
+#include "../definitions.h"
 #include <esp_log.h>
 #include <esp_sleep.h>
 #include <esp_wifi.h>
@@ -28,7 +29,12 @@ char* sensor_to_string(node_sensor_t sensor) {
 static const char *TAG = "[NODE]";
 
 void node_identify() {
-  ESP_LOGI(TAG, "identify");
+  ESP_LOGI(TAG, "identify %s", ROOT_URI);
+  char identify_url[128];
+  sprintf(identify_url, "%s", ROOT_URI);
+  ESP_LOGI(TAG, "identify_url: \"%s\"", identify_url);
+  /* sprintf(identify_url, "%s/identify/ad:bc:eddddddd:ee", rootUri); */
+  /* ESP_LOGI(TAG, identify_url); */
   return;
   /*
   String identifyUrl = ROOT_URI + "/identify/" + this->nodeId;
@@ -57,8 +63,8 @@ void node_log(char* sensorType, double value) {
 }
 
 void node_sleep() {
-  int ret;
   /*
+  int ret;
   Serial.printf("[ NODE ] snoozin for %d seconds\n", LOG_PERIOD / 1000 / 1000);
   Serial.flush();
   ret = WiFi.disconnect();
