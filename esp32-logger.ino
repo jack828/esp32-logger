@@ -28,6 +28,7 @@ TempAndHumidity reading;
 #endif
 #ifdef OLED
 #include "oled.h"
+long lastLog = 0l;
 #endif
 #ifdef LIGHT_SENSOR_PIN
 int lightLevel;
@@ -127,11 +128,18 @@ void loop() {
   node->wake();
 
   logSensors();
+  lastLog = millis();
 
 #ifdef OLED
-  // this function is infinite
-  // hard-wired power ONLY
-  updateOled();
+  while(1) {
+    updateOled(); // this will delay for the update period
+    if (lastLog - millis() < LOG_PERIOD) {
+      lastLog = millis();
+      /* logSensors(); */
+      Serial.println("logging sensors");
+    }
+
+  }
 #endif
   node->sleep();
 }

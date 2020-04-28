@@ -25,12 +25,13 @@ void titleOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
 }
 
 void drawFrame1(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  state->userData = (void *) "Device";
+  state->userData = (void *) "Sensors";
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Monospaced_plain_10);
-  // display->drawString(0 + x, 10 + y, "Model:   " + model);
-  // display->drawString(0 + x, 20 + y, "Firmware: " + firmwareVersion);
-  // display->drawString(0 + x, 30 + y, "Uptime:   " + uptime);
+  display->drawString(0 + x, 10 + y, "Temp:      xx.xx °c ");
+  display->drawString(0 + x, 20 + y, "Humidity:     xx %rH");
+  display->drawString(0 + x, 30 + y, "Pressure:   xxxx hPa");
+  display->drawString(0 + x, 40 + y, "Light:    45xxxx lux");
 }
 
 LoadingStage loadingStages[] = {
@@ -85,18 +86,8 @@ void initOled () {
 }
 
 void updateOled() {
-  while(true) {
-    int remainingTimeBudget = ui.update();
-
-    if (remainingTimeBudget > 0) {
-      if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("WiFi not connected!");
-      }
-      // You can do some work here
-      // Don't do stuff if you are below your
-      // time budget.
-      Serial.println("nothin in the loop");
-      delay(remainingTimeBudget);
-    }
+  int remainingTimeBudget = ui.update();
+  if (remainingTimeBudget > 0) {
+    delay(remainingTimeBudget);
   }
 }
