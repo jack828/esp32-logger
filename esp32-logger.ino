@@ -12,15 +12,22 @@
 #ifdef BME280_I2C
 #include <Adafruit_BMP280.h>
 Adafruit_BMP280 bmp;
+double temperature;
+double pressure;
 #endif
 #ifdef BH1750_I2C
 #include <Wire.h>
 #include <BH1750.h>
 BH1750 lightMeter(0x23);
+double lux;
 #endif
 #ifdef DHT11_PIN
 #include <DHTesp.h>
 DHTesp dht;
+TempAndHumidity reading;
+#endif
+#ifdef LIGHT_SENSOR_PIN
+int lightLevel;
 #endif
 
 WiFiUDP ntpUDP;
@@ -86,24 +93,32 @@ void setup() {
   initNtp();
 }
 
-void loop() {
-  node->wake();
-
+void logSensors() {
 #ifdef BME280_I2C
-  node->log("temperature", bmp.readTemperature());
-  node->log("pressure", bmp.readPressure() / 100.0F);
+  temperature = bmp.readTemperature();
+  pressure = bmp.readPressure() / 100.0F;
+  node->log("temperature", temperature);
+  node->log("pressure", pressure);
 #endif
 #ifdef BH1750_I2C
-  node->log("light", lightMeter.readLightLevel(true));
+  lux = lightMeter.readLightLevel(true);
+  node->log("light", lux);
 #endif
 #ifdef LIGHT_SENSOR_PIN
-  node->log("light", analogRead(LIGHT_SENSOR_PIN));
+  lightLevel = analogRead(LIGHT_SENSOR_PIN);
+  node->log("light", lightLevel);
 #endif
 #ifdef DHT11_PIN
-  TempAndHumidity reading = dht.getTempAndHumidity();
+  reading = dht.getTempAndHumidity();
   node->log("temperature", reading.temperature);
   node->log("humidity", reading.humidity);
 #endif
+}
+
+void loop() {
+  node->wake();
+
+  logSensors();
 
   node->sleep();
 }
