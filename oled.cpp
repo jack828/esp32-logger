@@ -33,49 +33,11 @@ void drawFrame1(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
   // display->drawString(0 + x, 30 + y, "Uptime:   " + uptime);
 }
 
-void drawFrame2(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
-  state->userData = (void *) "TEMP????";
-  display->setTextAlignment(TEXT_ALIGN_LEFT);
-  display->setFont(Monospaced_plain_10);
-  // display->drawString(0 + x, 10 + y, "Capacity: " + capacity);
-  // display->drawString(0 + x, 20 + y, "Free:     " + available);
-  // display->drawString(0 + x, 30 + y, "Used:     " + used);
-  // display->drawString(0 + x, 40 + y, "% Free:   " + percentFree);
-}
-
 LoadingStage loadingStages[] = {
   {
     .process = "Connecting to WiFi",
     .callback = []() {
-      Serial.println("[ OLED ] wifi step");
-      delay(500);
-    }
-  },
-  {
-    .process = "Initialising NTP",
-    .callback = []() {
-      Serial.println("[ OLED ] ntp step");
-      delay(500);
-    }
-  },
-  {
-    .process = "Obtaining CSRF Token",
-    .callback = []() {
-      Serial.println("[ OLED ] csrf step");
-      delay(500);
-    }
-  },
-  {
-    .process = "Retrieving device info",
-    .callback = []() {
-      Serial.println("[ OLED ] device step");
-      delay(500);
-    }
-  },
-  {
-    .process = "Retrieving storage info",
-    .callback = []() {
-      Serial.println("[ OLED ] storage step");
+      Serial.println("[ OLED ] wifi wait");
       delay(500);
     }
   }
@@ -85,7 +47,7 @@ int LOADING_STAGES_COUNT = sizeof(loadingStages) / sizeof(LoadingStage);
 
 // This array keeps function pointers to all frames
 // frames are the single views that slide in
-FrameCallback frames[] = { drawFrame1, drawFrame2 };
+FrameCallback frames[] = { drawFrame1 };
 
 // how many frames are there?
 int FRAME_COUNT = sizeof(frames) / sizeof(FrameCallback);
@@ -116,10 +78,10 @@ void initOled () {
 
   ui.init();
 
-  ui.runLoadingProcess(loadingStages, LOADING_STAGES_COUNT);
-
   // If needed
   display.flipScreenVertically();
+
+  ui.runLoadingProcess(loadingStages, LOADING_STAGES_COUNT);
 }
 
 void updateOled() {
