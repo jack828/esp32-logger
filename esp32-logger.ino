@@ -129,14 +129,13 @@ void loop() {
 
 #ifdef OLED
   while(1) {
-    updateOled(); // this will delay for the update period
-    Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD);
+    /* Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD); */
     if (millis() - lastLog > LOG_PERIOD / 1000) {
       lastLog = millis();
       logSensors();
       Serial.println("logging sensors");
     }
-
+    updateOled(); // this will delay for the update period
   }
 #else
   logSensors();
