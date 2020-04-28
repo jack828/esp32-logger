@@ -133,7 +133,7 @@ void loop() {
     Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD);
     if (millis() - lastLog > LOG_PERIOD / 1000) {
       lastLog = millis();
-      /* logSensors(); */
+      logSensors();
       Serial.println("logging sensors");
     }
 
