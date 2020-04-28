@@ -3,8 +3,8 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-// #define ESP_32_OLED
-#define ESP_32
+#define ESP_32_OLED
+// #define ESP_32
 
 #include <NTPClient.h>
 
@@ -17,8 +17,8 @@
 #ifdef ESP_32_OLED
 // this doesn't have one but :shrug:
 #define LED_PIN 16
-#define LIGHT_SENSOR_PIN 36 // SVP
-#define DHT11_PIN 25
+// #define LIGHT_SENSOR_PIN 36 // SVP
+// #define DHT11_PIN 25
 #endif
 #ifdef ESP_32
 #define LED_PIN 2
