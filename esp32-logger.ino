@@ -129,6 +129,8 @@ void loop() {
   logSensors();
 
 #ifdef OLED
+  // this function is infinite
+  // hard-wired power ONLY
   updateOled();
 #endif
   node->sleep();
