@@ -26,6 +26,9 @@ double lux;
 DHTesp dht;
 TempAndHumidity reading;
 #endif
+#ifdef OLED
+#include "oled.h"
+#endif
 #ifdef LIGHT_SENSOR_PIN
 int lightLevel;
 #endif
@@ -89,6 +92,11 @@ void setup() {
   Serial.println("[ DHT ] sensor NOT ok");
 #endif
 
+#ifdef OLED
+  initOled();
+#else
+  Serial.println("[ OLED ] not present");
+#endif
   node = new Node();
   initNtp();
 }
@@ -120,5 +128,8 @@ void loop() {
 
   logSensors();
 
+#ifdef OLED
+  updateOled();
+#endif
   node->sleep();
 }

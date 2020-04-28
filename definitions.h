@@ -17,6 +17,7 @@
 #ifdef ESP_32_OLED
 // this doesn't have one but :shrug:
 #define LED_PIN 16
+#define OLED
 // #define LIGHT_SENSOR_PIN 36 // SVP
 // #define DHT11_PIN 25
 #endif
