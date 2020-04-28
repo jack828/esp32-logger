@@ -1,6 +1,7 @@
 #include "oled.h"
 #include <WiFi.h>
 #include <Wire.h>
+#include <WString.h>
 #include "SSD1306Wire.h"
 #include "OLEDDisplayUi.h"
 #include "definitions.h"
@@ -28,10 +29,16 @@ void drawFrame1(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
   state->userData = (void *) "Sensors";
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Monospaced_plain_10);
-  display->drawString(0 + x, 10 + y, "Temp:      xx.xx °c ");
-  display->drawString(0 + x, 20 + y, "Humidity:     xx %rH");
-  display->drawString(0 + x, 30 + y, "Pressure:   xxxx hPa");
-  display->drawString(0 + x, 40 + y, "Light:    45xxxx lux");
+  // char * tempStr[6];
+  // sprintf(tempStr, "%2.2f", temperature);
+  int line = y;
+#ifdef DHT11_PIN
+  extern TempAndHumidity reading;
+  display->drawString(0 + x, line += 10, "Temp:      " +  String(reading.temperature, 2) + " °c ");
+#endif
+  display->drawString(0 + x, line += 10, "Humidity:     xx %rH");
+  display->drawString(0 + x, line += 10, "Pressure:   xxxx hPa");
+  display->drawString(0 + x, line += 10, "Light:    45xxxx lux");
 }
 
 LoadingStage loadingStages[] = {

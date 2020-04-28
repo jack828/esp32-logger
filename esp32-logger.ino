@@ -12,26 +12,26 @@
 #ifdef BME280_I2C
 #include <Adafruit_BMP280.h>
 Adafruit_BMP280 bmp;
-double temperature;
-double pressure;
+extern double temperature;
+extern double pressure;
 #endif
 #ifdef BH1750_I2C
 #include <Wire.h>
 #include <BH1750.h>
 BH1750 lightMeter(0x23);
-double lux;
+extern double lux;
 #endif
 #ifdef DHT11_PIN
 #include <DHTesp.h>
 DHTesp dht;
 TempAndHumidity reading;
 #endif
+#ifdef LIGHT_SENSOR_PIN
+extern int lightLevel;
+#endif
 #ifdef OLED
 #include "oled.h"
 long lastLog = 0l;
-#endif
-#ifdef LIGHT_SENSOR_PIN
-int lightLevel;
 #endif
 
 WiFiUDP ntpUDP;
@@ -127,19 +127,21 @@ void logSensors() {
 void loop() {
   node->wake();
 
-  logSensors();
-  lastLog = millis();
-
 #ifdef OLED
   while(1) {
     updateOled(); // this will delay for the update period
-    if (lastLog - millis() < LOG_PERIOD) {
+    Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD);
+    if (millis() - lastLog > LOG_PERIOD / 1000) {
       lastLog = millis();
       /* logSensors(); */
       Serial.println("logging sensors");
     }
 
   }
+#else
+  logSensors();
+  lastLog = millis();
 #endif
+
   node->sleep();
 }

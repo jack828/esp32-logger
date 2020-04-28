@@ -19,7 +19,7 @@
 #define LED_PIN 16
 #define OLED
 // #define LIGHT_SENSOR_PIN 36 // SVP
-// #define DHT11_PIN 25
+#define DHT11_PIN 25
 #endif
 #ifdef ESP_32
 #define LED_PIN 2
@@ -37,5 +37,20 @@
 
 // YAY GLOBALS SORRYNOTSORRY
 extern NTPClient timeClient;
+
+#ifdef BME280_I2C
+extern double temperature = 0.0;
+extern double pressure = 0.0;
+#endif
+#ifdef BH1750_I2C
+extern double lux = 0.0;
+#endif
+#ifdef DHT11_PIN
+#include <DHTesp.h>
+extern TempAndHumidity reading;
+#endif
+#ifdef LIGHT_SENSOR_PIN
+int lightLevel;
+#endif
 
 #endif
