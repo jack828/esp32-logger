@@ -22,8 +22,8 @@
 #endif
 #ifdef ESP_32
 #define LED_PIN 2
-#define BH1750_I2C // D22 SCL & D21 SDA
 #endif
+// #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
 
 // Root PiHome logger location

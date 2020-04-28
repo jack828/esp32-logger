@@ -90,23 +90,19 @@ void loop() {
   node->wake();
 
 #ifdef BME280_I2C
-    node->log("temperature", bmp.readTemperature());
-    node->log("pressure", bmp.readPressure() / 100.0F);
+  node->log("temperature", bmp.readTemperature());
+  node->log("pressure", bmp.readPressure() / 100.0F);
 #endif
 #ifdef BH1750_I2C
-  while(1){
-    float lux = lightMeter.readLightLevel(true);
-    Serial.printf("%.2f\n", lux);
-    delay(1000);
-  }
+  node->log("light", lightMeter.readLightLevel(true));
 #endif
 #ifdef LIGHT_SENSOR_PIN
-    log("light", analogRead(LIGHT_SENSOR_PIN));
+  node->log("light", analogRead(LIGHT_SENSOR_PIN));
 #endif
 #ifdef DHT11_PIN
-    TempAndHumidity reading = dht.getTempAndHumidity();
-    node->log("temperature", reading.temperature);
-    node->log("humidity", reading.humidity);
+  TempAndHumidity reading = dht.getTempAndHumidity();
+  node->log("temperature", reading.temperature);
+  node->log("humidity", reading.humidity);
 #endif
 
   node->sleep();
