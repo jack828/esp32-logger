@@ -32,13 +32,12 @@ void drawFrame1(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
   // char * tempStr[6];
   // sprintf(tempStr, "%2.2f", temperature);
   int line = y;
-#ifdef DHT11_PIN
-  extern TempAndHumidity reading;
-  display->drawString(0 + x, line += 10, "Temp:      " +  String(reading.temperature, 2) + " °c ");
+#ifdef BME280_I2C
+  display->drawString(0 + x, line += 10, "Temp:      " + String(temperature, 2) + " °c ");
+  display->drawString(0 + x, line += 10, "Humidity:  " + String(humidity, 2)    + " %rH");
+  display->drawString(0 + x, line += 10, "Pressure:  " + String(pressure, 0)    + " hPa");
 #endif
-  display->drawString(0 + x, line += 10, "Humidity:     xx %rH");
-  display->drawString(0 + x, line += 10, "Pressure:   xxxx hPa");
-  display->drawString(0 + x, line += 10, "Light:    45xxxx lux");
+  // display->drawString(0 + x, line += 10, "Light:    45xxxx lux");
 }
 
 LoadingStage loadingStages[] = {
