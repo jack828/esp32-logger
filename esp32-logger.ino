@@ -10,6 +10,10 @@
 #include "node.h"
 
 #ifdef BME280_I2C
+#include <Adafruit_BME280.h>
+Adafruit_BME280 bme;
+#endif
+#ifdef BMP280_I2C
 #include <Adafruit_BMP280.h>
 Adafruit_BMP280 bmp;
 extern double temperature;
@@ -66,13 +70,19 @@ void setup() {
   Serial.println(ESP.getFlashChipSize());
 
 #ifdef BME280_I2C
+  Serial.println("[ BME ] has sensor");
+  boolean bmeOk = bme.begin(0x76);
+  Serial.print("[ BME ] sensor ");
+  Serial.print(bmeOk ? "" : "NOT ");
+  Serial.println("OK");
+#endif
+
+#ifdef BMP280_I2C
   Serial.println("[ BMP ] has sensor");
   boolean bmpOk = bmp.begin(0x76);
   Serial.print("[ BMP ] sensor ");
   Serial.print(bmpOk ? "" : "NOT ");
   Serial.println("OK");
-#else
-    Serial.println("[ BMP ] sensor NOT ok");
 #endif
 
 #ifdef BH1750_I2C
@@ -82,15 +92,11 @@ void setup() {
   } else {
     Serial.println("[ LUX ] sensor NOT ok");
   }
-#else
-  Serial.println("[ LUX ] sensor NOT ok");
 #endif
 
 #ifdef DHT11_PIN
   dht.setup(DHT11_PIN, DHTesp::DHT11);
   Serial.println("[ DHT ] sensor ok");
-#else
-  Serial.println("[ DHT ] sensor NOT ok");
 #endif
 
 #ifdef OLED
@@ -104,6 +110,14 @@ void setup() {
 
 void logSensors() {
 #ifdef BME280_I2C
+  temperature = bme.readTemperature();
+  pressure = bme.readPressure() / 100.0F;
+  humidity = bme.readHumidity();
+  node->log("temperature", temperature);
+  node->log("pressure", pressure);
+  node->log("humidity", humidity);
+#endif
+#ifdef BMP280_I2C
   temperature = bmp.readTemperature();
   pressure = bmp.readPressure() / 100.0F;
   node->log("temperature", temperature);
@@ -139,7 +153,6 @@ void loop() {
   }
 #else
   logSensors();
-  lastLog = millis();
 #endif
 
   node->sleep();

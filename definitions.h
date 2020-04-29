@@ -2,17 +2,34 @@
 #define Definitions_h
 
 // pick a board any board
-// #define ESP_32_OLED_BATT
-#define ESP_32_OLED
+#define ESP_32_OLED_BATT
+// #define ESP_32_OLED
 // #define ESP_32
 
 #include <NTPClient.h>
 
+/*
+ * You can define any of these to enable sensors
+ * and additional functionality, depending on your setup:
+ *
+ * LED_PIN - status LED, flashes when connecting to WiFi.
+ * LIGHT_SENSOR_PIN - enable analogRead of a light sensor
+ * BMP280_I2C - Temp & Pressure sensor
+ * BME280_I2C - Temp, Humidity, and Pressure sensor
+ * BH1750_I2C - Light sensor
+ * DHT11_PIN - Temp & Humidity sensor
+ * OLED - Show a HUD of current sensors. Node will still log readings
+ *
+ * ROOT_URI - pi-home node.js server endpoint
+ * LOG_PERIOD - Time between logs, deep-sleep between wake-ups
+ */
+
 // Hardware specific config
+// so m a n y
 #ifdef ESP_32_OLED_BATT
 #define LED_PIN 16
-#define LIGHT_SENSOR_PIN 36 // TODO
-#define BME280_I2C
+// #define LIGHT_SENSOR_PIN 36
+// #define BME280_I2C
 #endif
 #ifdef ESP_32_OLED
 // this doesn't have one but :shrug:
@@ -39,6 +56,11 @@
 extern NTPClient timeClient;
 
 #ifdef BME280_I2C
+extern double temperature = 0.0;
+extern double pressure = 0.0;
+// extern double humidity = 0.0;
+#endif
+#ifdef BMP280_I2C
 extern double temperature = 0.0;
 extern double pressure = 0.0;
 #endif

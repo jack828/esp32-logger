@@ -3,7 +3,8 @@
 ## Libraries
 
 You need:
- - Adafruit DHT
+ - DHTest
+ - Adafruit BME/BMP 280 & BME680
  - Adafruit Unified Sensor
 
 
