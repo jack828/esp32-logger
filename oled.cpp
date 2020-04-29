@@ -69,15 +69,19 @@ void initOled () {
   // but that won't give you much time for anything else
   // run it in 160Mhz mode or just set it to 30 fps
   ui.setTargetFPS(60);
+  if (FRAME_COUNT == 1) {
+    ui.disableAutoTransition();
+    ui.disableAllIndicators();
+  } else {
+    ui.setActiveSymbol(activeSymbol);
+    ui.setInactiveSymbol(inactiveSymbol);
 
-  ui.setActiveSymbol(activeSymbol);
-  ui.setInactiveSymbol(inactiveSymbol);
+    ui.setIndicatorPosition(BOTTOM);
 
-  ui.setIndicatorPosition(BOTTOM);
+    ui.setIndicatorDirection(LEFT_RIGHT);
 
-  ui.setIndicatorDirection(LEFT_RIGHT);
-
-  ui.setFrameAnimation(SLIDE_LEFT);
+    ui.setFrameAnimation(SLIDE_LEFT);
+  }
 
   ui.setFrames(frames, FRAME_COUNT);
 
