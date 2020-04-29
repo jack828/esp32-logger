@@ -3,8 +3,8 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-#define ESP_32_OLED
-// #define ESP_32
+// #define ESP_32_OLED
+#define ESP_32
 
 #include <NTPClient.h>
 
@@ -50,6 +50,7 @@
 #define SDA_PIN 21
 #define SCL_PIN 22
 #define LED_PIN 2
+#define BME280_I2C
 #endif
 // #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
