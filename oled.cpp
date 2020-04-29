@@ -86,8 +86,9 @@ void initOled () {
 
   ui.init();
 
-  // If needed
+#ifdef OLED_FLIP_V
   display.flipScreenVertically();
+#endif
 
   ui.runLoadingProcess(loadingStages, LOADING_STAGES_COUNT);
 }

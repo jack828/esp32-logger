@@ -19,6 +19,7 @@
  * BH1750_I2C - Light sensor
  * DHT11_PIN - Temp & Humidity sensor
  * OLED - Show a HUD of current sensors. Node will still log readings
+ * OLED_FLIP_V - if you need it
  *
  * ROOT_URI - pi-home node.js server endpoint
  * LOG_PERIOD - Time between logs, deep-sleep between wake-ups
@@ -30,11 +31,13 @@
 #define LED_PIN 16
 // #define LIGHT_SENSOR_PIN 36
 #define BME280_I2C
+#define OLED
 #endif
 #ifdef ESP_32_OLED
 // this doesn't have one but :shrug:
 #define LED_PIN 16
 #define OLED
+#define OLED_FLIP_V
 // #define LIGHT_SENSOR_PIN 36 // SVP
 #define DHT11_PIN 25
 #endif
