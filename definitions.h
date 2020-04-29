@@ -33,7 +33,7 @@
 #define LED_PIN 16
 // #define LIGHT_SENSOR_PIN 36
 #define BME280_I2C
-#define OLED
+// #define OLED
 #endif
 #ifdef ESP_32_OLED
 #define SDA_PIN 5
