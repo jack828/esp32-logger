@@ -12,12 +12,15 @@
 #ifdef BME280_I2C
 #include <Adafruit_BME280.h>
 Adafruit_BME280 bme;
+double temperature = 0.0;
+double pressure = 0.0;
+double humidity = 0.0;
 #endif
 #ifdef BMP280_I2C
 #include <Adafruit_BMP280.h>
 Adafruit_BMP280 bmp;
-extern double temperature;
-extern double pressure;
+double temperature = 0.0;
+double pressure = 0.0;
 #endif
 #ifdef BH1750_I2C
 #include <Wire.h>
@@ -31,7 +34,7 @@ DHTesp dht;
 TempAndHumidity reading;
 #endif
 #ifdef LIGHT_SENSOR_PIN
-extern int lightLevel;
+extern int lightLevel = 0;
 #endif
 #ifdef OLED
 #include "oled.h"

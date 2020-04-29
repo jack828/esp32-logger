@@ -29,7 +29,7 @@
 #ifdef ESP_32_OLED_BATT
 #define LED_PIN 16
 // #define LIGHT_SENSOR_PIN 36
-// #define BME280_I2C
+#define BME280_I2C
 #endif
 #ifdef ESP_32_OLED
 // this doesn't have one but :shrug:
@@ -56,16 +56,16 @@
 extern NTPClient timeClient;
 
 #ifdef BME280_I2C
-extern double temperature = 0.0;
-extern double pressure = 0.0;
-// extern double humidity = 0.0;
+extern double temperature;
+extern double pressure;
+extern double humidity;
 #endif
 #ifdef BMP280_I2C
-extern double temperature = 0.0;
-extern double pressure = 0.0;
+extern double temperature;
+extern double pressure;
 #endif
 #ifdef BH1750_I2C
-extern double lux = 0.0;
+extern double lux;
 #endif
 #ifdef DHT11_PIN
 #include <DHTesp.h>
