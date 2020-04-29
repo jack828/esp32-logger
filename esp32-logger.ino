@@ -79,6 +79,15 @@ void setup() {
   Serial.print("[ BME ] sensor ");
   Serial.print(bmeOk ? "" : "NOT ");
   Serial.println("OK");
+
+  bme.setSampling(
+    Adafruit_BME280::MODE_FORCED,
+    Adafruit_BME280::SAMPLING_X4, // temperature
+    Adafruit_BME280::SAMPLING_X4, // pressure
+    Adafruit_BME280::SAMPLING_X4, // humidity
+    Adafruit_BME280::FILTER_X4,
+    Adafruit_BME280::STANDBY_MS_0_5
+  );
 #endif
 
 #ifdef BMP280_I2C
