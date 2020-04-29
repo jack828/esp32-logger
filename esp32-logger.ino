@@ -145,15 +145,17 @@ void loop() {
   node->wake();
 
 #ifdef OLED
-  while(1) {
-    /* Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD); */
+  logSensors();
+  do {
+    Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD);
     if (millis() - lastLog > LOG_PERIOD / 1000) {
       lastLog = millis();
       logSensors();
       Serial.println("logging sensors");
     }
-    updateOled(); // this will delay for the update period
-  }
+    updateOled(); // this will also delay for the update period
+    delay(100);
+  } while(1);
 #else
   logSensors();
 #endif
