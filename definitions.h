@@ -40,7 +40,7 @@
 #define SCL_PIN 4
 // this doesn't have one but :shrug:
 #define LED_PIN 16
-// #define OLED
+#define OLED
 #define OLED_FLIP_V
 // #define LIGHT_SENSOR_PIN 36 // SVP
 // #define DHT11_PIN 25
