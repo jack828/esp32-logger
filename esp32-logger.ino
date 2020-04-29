@@ -1,5 +1,6 @@
 #include "definitions.h"
 
+#include <Wire.h>
 #include <WiFi.h>
 #include <WString.h>
 #include <WiFiUdp.h>
@@ -23,7 +24,6 @@ double temperature = 0.0;
 double pressure = 0.0;
 #endif
 #ifdef BH1750_I2C
-#include <Wire.h>
 #include <BH1750.h>
 BH1750 lightMeter(0x23);
 extern double lux;
@@ -68,13 +68,14 @@ void initNtp() {
 void setup() {
   Serial.begin(115200);
 
+  Wire.begin(SDA_PIN, SCL_PIN);
   pinMode(LED_PIN, OUTPUT);
   Serial.print("Flash size: ");
   Serial.println(ESP.getFlashChipSize());
 
 #ifdef BME280_I2C
   Serial.println("[ BME ] has sensor");
-  boolean bmeOk = bme.begin(0x76);
+  boolean bmeOk = bme.begin(0x76, &Wire);
   Serial.print("[ BME ] sensor ");
   Serial.print(bmeOk ? "" : "NOT ");
   Serial.println("OK");
@@ -89,7 +90,6 @@ void setup() {
 #endif
 
 #ifdef BH1750_I2C
-  Wire.begin();// ONE_TIME_HIGH_RES_MODE
   if (lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE)) {
     Serial.println("[ LUX ] sensor ok");
   } else {
@@ -112,7 +112,9 @@ void setup() {
 }
 
 void logSensors() {
+  Serial.println("[ LOG ] beginning");
 #ifdef BME280_I2C
+  bme.takeForcedMeasurement();
   temperature = bme.readTemperature();
   pressure = bme.readPressure() / 100.0F;
   humidity = bme.readHumidity();
@@ -139,6 +141,7 @@ void logSensors() {
   node->log("temperature", reading.temperature);
   node->log("humidity", reading.humidity);
 #endif
+  Serial.println("[ LOG ] finished");
 }
 
 void loop() {
@@ -147,7 +150,7 @@ void loop() {
 #ifdef OLED
   logSensors();
   do {
-    Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD);
+    /* Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD); */
     if (millis() - lastLog > LOG_PERIOD / 1000) {
       lastLog = millis();
       logSensors();

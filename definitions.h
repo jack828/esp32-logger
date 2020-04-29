@@ -2,8 +2,8 @@
 #define Definitions_h
 
 // pick a board any board
-#define ESP_32_OLED_BATT
-// #define ESP_32_OLED
+// #define ESP_32_OLED_BATT
+#define ESP_32_OLED
 // #define ESP_32
 
 #include <NTPClient.h>
@@ -28,20 +28,27 @@
 // Hardware specific config
 // so m a n y
 #ifdef ESP_32_OLED_BATT
+#define SDA_PIN 21
+#define SCL_PIN 22
 #define LED_PIN 16
 // #define LIGHT_SENSOR_PIN 36
 #define BME280_I2C
 #define OLED
 #endif
 #ifdef ESP_32_OLED
+#define SDA_PIN 5
+#define SCL_PIN 4
 // this doesn't have one but :shrug:
 #define LED_PIN 16
-#define OLED
+// #define OLED
 #define OLED_FLIP_V
 // #define LIGHT_SENSOR_PIN 36 // SVP
-#define DHT11_PIN 25
+// #define DHT11_PIN 25
+#define BME280_I2C
 #endif
 #ifdef ESP_32
+#define SDA_PIN 21
+#define SCL_PIN 22
 #define LED_PIN 2
 #endif
 // #define BH1750_I2C // D22 SCL & D21 SDA
