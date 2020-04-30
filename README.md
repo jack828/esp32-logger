@@ -47,3 +47,9 @@ This is a all-in-one kit from AliExpress.
  - LED on GPIO16 (was `(int8_t) 16` for me with  ESP32 Dev Module board)
  - Power switch
  - AMS1117 voltage regulator (has a high quiescent current!)
+
+# Licenses
+
+Code in G6EJD/BME680 was imported and adapted ever so slightly for use in this project.
+Thanks David Bird!
+https://github.com/G6EJD/BME680-Example/blob/master/ESP32_bme680_CC_demo_02.ino
