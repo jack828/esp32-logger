@@ -10,16 +10,24 @@
 #include "network.h"
 #include "node.h"
 
+#ifdef BME680_I2C
+#include <Adafruit_BME680.h>
+Adafruit_BME680 bme680;
+double temperature = 0.0;
+double pressure = 0.0;
+double humidity = 0.0;
+double airQuality = 0.0;
+#endif
 #ifdef BME280_I2C
 #include <Adafruit_BME280.h>
-Adafruit_BME280 bme;
+Adafruit_BME280 bme280;
 double temperature = 0.0;
 double pressure = 0.0;
 double humidity = 0.0;
 #endif
 #ifdef BMP280_I2C
 #include <Adafruit_BMP280.h>
-Adafruit_BMP280 bmp;
+Adafruit_BMP280 bmp280;
 double temperature = 0.0;
 double pressure = 0.0;
 #endif
@@ -73,14 +81,34 @@ void setup() {
   Serial.print("Flash size: ");
   Serial.println(ESP.getFlashChipSize());
 
-#ifdef BME280_I2C
-  Serial.println("[ BME ] has sensor");
-  boolean bmeOk = bme.begin(0x76, &Wire);
-  Serial.print("[ BME ] sensor ");
-  Serial.print(bmeOk ? "" : "NOT ");
+#ifdef BME680_I2C
+  Serial.println("[ BME680 ] has sensor");
+  boolean bme680Ok = bme680.begin(0x77);
+  Serial.print("[ BME680 ] sensor ");
+  Serial.print(bme680Ok ? "" : "NOT ");
   Serial.println("OK");
 
-  bme.setSampling(
+  boolean ret;
+  ret = bme680.setTemperatureOversampling(BME680_OS_8X);
+  if (!ret) { Serial.print("Temp set fail"); };
+  bme680.setHumidityOversampling(BME680_OS_2X);
+  if (!ret) { Serial.print("Humidity set fail"); };
+  bme680.setPressureOversampling(BME680_OS_4X);
+  if (!ret) { Serial.print("Pressure set fail"); };
+  bme680.setIIRFilterSize(BME680_FILTER_SIZE_3);
+  if (!ret) { Serial.print("IIR set fail"); };
+  bme680.setGasHeater(320, 150); // 320*C for 150 ms
+  if (!ret) { Serial.print("Gas set fail"); };
+#endif
+
+#ifdef BME280_I2C
+  Serial.println("[ BME280 ] has sensor");
+  boolean bme280Ok = bme280.begin(0x76, &Wire);
+  Serial.print("[ BME280 ] sensor ");
+  Serial.print(bme280Ok ? "" : "NOT ");
+  Serial.println("OK");
+
+  bme280.setSampling(
     Adafruit_BME280::MODE_FORCED,
     Adafruit_BME280::SAMPLING_X4, // temperature
     Adafruit_BME280::SAMPLING_X4, // pressure
@@ -91,10 +119,10 @@ void setup() {
 #endif
 
 #ifdef BMP280_I2C
-  Serial.println("[ BMP ] has sensor");
-  boolean bmpOk = bmp.begin(0x76);
-  Serial.print("[ BMP ] sensor ");
-  Serial.print(bmpOk ? "" : "NOT ");
+  Serial.println("[ BMP280 ] has sensor");
+  boolean bmp280Ok = bmp280.begin(0x76);
+  Serial.print("[ BMP280 ] sensor ");
+  Serial.print(bmp280Ok ? "" : "NOT ");
   Serial.println("OK");
 #endif
 
@@ -122,18 +150,76 @@ void setup() {
 
 void logSensors() {
   Serial.println("[ LOG ] beginning");
+#ifdef BME680_I2C
+  int start = millis();
+  unsigned long endTime = bme680.beginReading();
+  if (endTime == 0) {
+    Serial.println(F("Failed to begin reading :("));
+    return;
+  }
+  Serial.print(F("Reading started at "));
+  Serial.print(start);
+  Serial.print(F(" and will finish at "));
+  Serial.print(endTime);
+  Serial.print(F(" total work time ms "));
+  Serial.println(endTime - start);
+
+  Serial.println(F("You can do other work during BME680 measurement."));
+  /* delay(50); // This represents parallel work. */
+  // There's no need to delay() until millis() >= endTime: bme680.endReading()
+  // takes care of that. It's okay for parallel work to take longer than
+  // BME680's measurement time.
+
+  // Obtain measurement results from BME680. Note that this operation isn't
+  // instantaneous even if milli() >= endTime due to I2C/SPI latency.
+  if (!bme680.endReading()) {
+    Serial.println(F("Failed to complete reading :("));
+    return;
+  }
+  Serial.print(F("Reading completed at "));
+  Serial.println(millis());
+
+  Serial.print(F("Temperature = "));
+  Serial.print(bme680.temperature);
+  Serial.println(F(" *C"));
+  temperature = bme680.temperature;
+
+  Serial.print(F("Pressure = "));
+  Serial.print(bme680.pressure / 100.0);
+  Serial.println(F(" hPa"));
+  pressure = bme680.pressure;
+
+  Serial.print(F("Humidity = "));
+  Serial.print(bme680.humidity);
+  Serial.println(F(" %"));
+  humidity = bme680.humidity;
+
+  double gasSum = 0.0;
+  int maxReadings = 30;
+  for (int i = 0; i < maxReadings; i++) {
+    gasSum += bme680.readGas();
+  }
+  double avgGas = gasSum / 30;
+  airQuality = avgGas / 1000.0;
+  Serial.printf("avgGas = %2.2f Ω\n", avgGas);
+  Serial.printf("avgGas = %2.2f KΩ\n", avgGas / 1000);
+  /* node->log("temperature", temperature); */
+  /* node->log("pressure", pressure); */
+  /* node->log("humidity", humidity); */
+  /* node->log("airQuality", airQuality); */
+#endif
 #ifdef BME280_I2C
-  bme.takeForcedMeasurement();
-  temperature = bme.readTemperature();
-  pressure = bme.readPressure() / 100.0F;
-  humidity = bme.readHumidity();
+  bme680.takeForcedMeasurement();
+  temperature = bme280.readTemperature();
+  pressure = bme280.readPressure() / 100.0F;
+  humidity = bme280.readHumidity();
   node->log("temperature", temperature);
   node->log("pressure", pressure);
   node->log("humidity", humidity);
 #endif
 #ifdef BMP280_I2C
-  temperature = bmp.readTemperature();
-  pressure = bmp.readPressure() / 100.0F;
+  temperature = bmp280.readTemperature();
+  pressure = bmp280.readPressure() / 100.0F;
   node->log("temperature", temperature);
   node->log("pressure", pressure);
 #endif

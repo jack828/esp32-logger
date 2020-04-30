@@ -32,6 +32,12 @@ void drawFrame1(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
   // char * tempStr[6];
   // sprintf(tempStr, "%2.2f", temperature);
   int line = y;
+#ifdef BME680_I2C
+  display->drawString(0 + x, line += 10, "Temp:      " + String(temperature, 2) + " °c ");
+  display->drawString(0 + x, line += 10, "Humidity:  " + String(humidity, 2)    + " %rH");
+  display->drawString(0 + x, line += 10, "Pressure:  " + String(pressure, 0)    + " hPa");
+  display->drawString(0 + x, line += 10, "Air Q:  " + String(airQuality, 2)  + " kR ");
+#endif
 #ifdef BME280_I2C
   display->drawString(0 + x, line += 10, "Temp:      " + String(temperature, 2) + " °c ");
   display->drawString(0 + x, line += 10, "Humidity:  " + String(humidity, 2)    + " %rH");

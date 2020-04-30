@@ -3,8 +3,8 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-// #define ESP_32_OLED
-#define ESP_32
+#define ESP_32_OLED
+// #define ESP_32
 
 #include <NTPClient.h>
 
@@ -40,11 +40,11 @@
 #define SCL_PIN 4
 // this doesn't have one but :shrug:
 #define LED_PIN 16
-// #define OLED
+#define OLED
 #define OLED_FLIP_V
 // #define LIGHT_SENSOR_PIN 36 // SVP
 // #define DHT11_PIN 25
-#define BME280_I2C
+#define BME680_I2C
 #endif
 #ifdef ESP_32
 #define SDA_PIN 21
@@ -66,6 +66,12 @@
 // YAY GLOBALS SORRYNOTSORRY
 extern NTPClient timeClient;
 
+#ifdef BME680_I2C
+extern double temperature;
+extern double pressure;
+extern double humidity;
+extern double airQuality;
+#endif
 #ifdef BME280_I2C
 extern double temperature;
 extern double pressure;
