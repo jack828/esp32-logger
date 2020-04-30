@@ -157,6 +157,13 @@ void loop() {
   node->wake();
 
 #ifdef OLED
+  /* TODO change this mode
+   * should:
+   *  - Log readings
+   *  - Show display for LOG_PERIOD
+   *  - Log readings
+   *  - Snooze
+   */
   logSensors();
   do {
     /* Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD); */
