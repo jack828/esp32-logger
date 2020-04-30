@@ -206,10 +206,10 @@ void logSensors() {
   /* Serial.printf("avgGas = %2.2f Ω\n", avgGas); */
   /* Serial.printf("avgGas = %2.2f KΩ\n", avgGas / 1000); */
 
-  /* node->log("temperature", temperature); */
-  /* node->log("pressure", pressure); */
-  /* node->log("humidity", humidity); */
-  /* node->log("airQuality", airQuality); */
+  node->log("temperature", temperature);
+  node->log("pressure", pressure);
+  node->log("humidity", humidity);
+  node->log("airQuality", airQuality);
 #endif
 #ifdef BME280_I2C
   bme680.takeForcedMeasurement();
