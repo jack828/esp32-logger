@@ -189,7 +189,7 @@ void logSensors() {
   Serial.print(F("Pressure = "));
   Serial.print(bme680.pressure / 100.0);
   Serial.println(F(" hPa"));
-  pressure = bme680.pressure;
+  pressure = bme680.pressure / 100.0;
 
   Serial.print(F("Humidity = "));
   Serial.print(bme680.humidity);
