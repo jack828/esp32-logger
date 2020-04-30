@@ -12,6 +12,7 @@
 
 #ifdef BME680_I2C
 #include <Adafruit_BME680.h>
+#include "G6EJD_BME680.h"
 Adafruit_BME680 bme680;
 double temperature = 0.0;
 double pressure = 0.0;
@@ -52,72 +53,6 @@ long lastLog = 0l;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 Node* node;
-
-float hum_weighting = 0.25; // so hum effect is 25% of the total air quality score
-float gas_weighting = 0.75; // so gas effect is 75% of the total air quality score
-
-float hum_score, gas_score;
-float gas_reference = 250000;
-float hum_reference = 40;
-int   getgasreference_count = 0;
-
-void bme680_getGasReference() {
-   // Now run the sensor for a burn-in period, then use combination of relative humidity and gas resistance to estimate indoor air quality as a percentage.
-  Serial.println("Getting a new gas reference value");
-  int readings = 20;
-  for (int i = 1; i <= readings; i++){ // read gas for 20 x 0.150mS = 3.0secs
-    gas_reference += bme680.readGas();
-  }
-  gas_reference = gas_reference / readings;
-}
-
-
-void bme680_getSensorThing() {
- //Calculate humidity contribution to IAQ index
-  float current_humidity = bme680.readHumidity();
-  if (current_humidity >= 38 && current_humidity <= 42)
-    hum_score = 0.25*100; // Humidity +/-5% around optimum
-  else
-  { //sub-optimal
-    if (current_humidity < 38)
-      hum_score = 0.25/hum_reference*current_humidity*100;
-    else
-    {
-      hum_score = ((-0.25/(100-hum_reference)*current_humidity)+0.416666)*100;
-    }
-  }
-
-  //Calculate gas contribution to IAQ index
-  float gas_lower_limit = 5000;   // Bad air quality limit
-  float gas_upper_limit = 50000;  // Good air quality limit
-  if (gas_reference > gas_upper_limit) gas_reference = gas_upper_limit;
-  if (gas_reference < gas_lower_limit) gas_reference = gas_lower_limit;
-  gas_score = (0.75/(gas_upper_limit-gas_lower_limit)*gas_reference -(gas_lower_limit*(0.75/(gas_upper_limit-gas_lower_limit))))*100;
-
-  //Combine results for the final IAQ index value (0-100% where 100% is good quality air)
-  float air_quality_score = hum_score + gas_score;
-
-  /* Serial.println("Air Quality = "+String(air_quality_score,1)+"% derived from 25% of Humidity reading and 75% of Gas reading - 100% is good quality air"); */
-  /* Serial.println("Humidity element was : "+String(hum_score/100)+" of 0.25"); */
-  /* Serial.println("     Gas element was : "+String(gas_score/100)+" of 0.75"); */
-  if (bme680.readGas() < 120000) Serial.println("***** Poor air quality *****");
-  if ((getgasreference_count++)%10==0) bme680_getGasReference();
-  Serial.printf(CalculateIAQStr(air_quality_score).c_str(), air_quality_score);
-  /* Serial.println("------------------------------------------------"); */
-  delay(2000);
-}
-String CalculateIAQStr(float score){
-  String IAQ_text = "Air quality is %2.2f%% ";
-  score = (100-score)*5;
-  if      (score >= 301)                  IAQ_text += "Hazardous";
-  else if (score >= 201 && score <= 300 ) IAQ_text += "Very Unhealthy";
-  else if (score >= 176 && score <= 200 ) IAQ_text += "Unhealthy";
-  else if (score >= 151 && score <= 175 ) IAQ_text += "Unhealthy for Sensitive Groups";
-  else if (score >=  51 && score <= 150 ) IAQ_text += "Moderate";
-  else if (score >=  00 && score <=  50 ) IAQ_text += "Good";
-  IAQ_text += "\n";
-  return IAQ_text;
-}
 
 void printMem(String marker) {
   Serial.print(" [MEM] ");
@@ -165,7 +100,7 @@ void setup() {
   if (!ret) { Serial.print("IIR set fail"); };
   bme680.setGasHeater(320, 150); // 320*C for 150 ms
   if (!ret) { Serial.print("Gas set fail"); };
-  bme680_getGasReference();
+  bme680_getGasReference(bme680);
 #endif
 
 #ifdef BME280_I2C
@@ -261,9 +196,12 @@ void logSensors() {
   Serial.println(F(" %"));
   humidity = bme680.humidity;
 
-  while(1){
-  bme680_getSensorThing();
+  airQuality = 0.0;
+  for (int i = 10; i; i--) {
+    airQuality += bme680_getAirQuality(bme680);
   }
+  airQuality /= 10;
+  Serial.printf("Air Quality: %2.2f\n", airQuality);
   /* airQuality = avgGas / 1000.0; */
   /* Serial.printf("avgGas = %2.2f Ω\n", avgGas); */
   /* Serial.printf("avgGas = %2.2f KΩ\n", avgGas / 1000); */
