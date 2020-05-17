@@ -12,12 +12,14 @@
 
 #ifdef BME680_I2C
 #include <Adafruit_BME680.h>
+#include <math.h>
 #include "G6EJD_BME680.h"
 Adafruit_BME680 bme680;
 double temperature = 0.0;
 double pressure = 0.0;
 double humidity = 0.0;
 double airQuality = 0.0;
+double vpd = 0.0;
 #endif
 #ifdef BME280_I2C
 #include <Adafruit_BME280.h>
@@ -197,10 +199,11 @@ void logSensors() {
   humidity = bme680.humidity;
 
   airQuality = 0.0;
-  for (int i = 10; i; i--) {
+  char count = 10;
+  for (int i = count; i; i--) {
     airQuality += bme680_getAirQuality(bme680);
   }
-  airQuality /= 10;
+  airQuality /= count;
   Serial.printf("Air Quality: %2.2f\n", airQuality);
   /* airQuality = avgGas / 1000.0; */
   /* Serial.printf("avgGas = %2.2f Ω\n", avgGas); */
@@ -210,6 +213,14 @@ void logSensors() {
   node->log("pressure", pressure);
   node->log("humidity", humidity);
   node->log("airQuality", airQuality);
+  double e = 2.71828;
+  /* in pascals */
+  double SVP = 610.78 * pow(e, (temperature / (temperature + 238.3) * 17.2694));
+  vpd = (SVP / 1000) * (1 - humidity / 100); // kPa
+
+  Serial.printf("SVP: %2.2f\n", SVP);
+  Serial.printf("VPD: %2.2f\n", vpd);
+
 #endif
 #ifdef BME280_I2C
   bme280.takeForcedMeasurement();

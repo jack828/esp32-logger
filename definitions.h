@@ -71,6 +71,7 @@ extern double temperature;
 extern double pressure;
 extern double humidity;
 extern double airQuality;
+extern double vpd;
 #endif
 #ifdef BME280_I2C
 extern double temperature;
