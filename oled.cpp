@@ -10,6 +10,13 @@
 // #include "utils.h"
 // #include "network.h"
 
+volatile unsigned long touchRTimer;
+volatile int touchR;
+volatile unsigned long touchLTimer;
+volatile int touchL;
+volatile unsigned int touchDelayTime = 100;
+int touchThreshold = 50;
+
 SSD1306Wire display(0x3c, 5, 4);
 OLEDDisplayUi ui(&display);
 
@@ -43,8 +50,17 @@ void drawFrame1(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int1
   display->drawString(0 + x, line += 10, "Temp:      " + String(temperature, 2) + " °c ");
   display->drawString(0 + x, line += 10, "Humidity:  " + String(humidity, 2)    + " %rH");
   display->drawString(0 + x, line += 10, "Pressure:  " + String(pressure, 0)    + " hPa");
+  display->drawString(0 + x, line += 10, "VPD:       " + String(vpd, 2)         + " kPa");
 #endif
   // display->drawString(0 + x, line += 10, "Light:    45xxxx lux");
+}
+
+void drawFrame2(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+  state->userData = (void *) "Something";
+  display->setTextAlignment(TEXT_ALIGN_LEFT);
+  display->setFont(Monospaced_plain_10);
+  int line = y;
+  display->drawString(0 + x, line += 10, "hello, world °c ");
 }
 
 LoadingStage loadingStages[] = {
@@ -70,6 +86,34 @@ int FRAME_COUNT = sizeof(frames) / sizeof(FrameCallback);
 OverlayCallback overlays[] = { timeOverlay, titleOverlay };
 int OVERLAY_COUNT = sizeof(overlays) / sizeof(OverlayCallback);
 
+void IRAM_ATTR handleTouchR(){
+  cli();
+  int reading = touchRead(TOUCH_R_PIN);
+
+  if (reading > touchThreshold) return;
+
+  if (touchR += (millis() - touchRTimer) >= (touchDelayTime)) {
+    touchRTimer = millis();
+    Serial.println("counting touch?");
+  }
+  sei();
+}
+
+void IRAM_ATTR handleTouchL(){
+  int reading = touchRead(TOUCH_L_PIN);
+
+  if (reading > touchThreshold) return;
+
+  if (touchL += (millis() - touchLTimer) >= (touchDelayTime)) {
+    touchLTimer = millis();
+    Serial.println("L");
+  }
+}
+
+void IRAM_ATTR attachTouchInterrupts() {
+  touchAttachInterrupt(TOUCH_R_PIN, handleTouchR, touchThreshold);
+  touchAttachInterrupt(TOUCH_L_PIN, handleTouchL, touchThreshold);
+}
 
 void initOled () {
   // The ESP is capable of rendering 60fps in 80Mhz mode
@@ -88,6 +132,9 @@ void initOled () {
     ui.setIndicatorDirection(LEFT_RIGHT);
 
     ui.setFrameAnimation(SLIDE_LEFT);
+    ui.disableAutoTransition();
+
+    attachTouchInterrupts();
   }
 
   ui.setFrames(frames, FRAME_COUNT);
@@ -106,6 +153,20 @@ void initOled () {
 void updateOled() {
   int remainingTimeBudget = ui.update();
   if (remainingTimeBudget > 0) {
+    // doscreentick
+
+    if (touchR > 0) {
+      Serial.println("\nTouched R\n");
+      touchR = 0;
+      ui.nextFrame();
+    }
+
+    if (touchL > 0) {
+      Serial.println("\nTouched L\n");
+      touchL = 0;
+      ui.previousFrame();
+    }
+
     delay(remainingTimeBudget);
   }
 }

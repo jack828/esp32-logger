@@ -27,6 +27,7 @@ Adafruit_BME280 bme280;
 double temperature = 0.0;
 double pressure = 0.0;
 double humidity = 0.0;
+double vpd = 0.0;
 #endif
 #ifdef BMP280_I2C
 #include <Adafruit_BMP280.h>
@@ -158,6 +159,7 @@ void logSensors() {
   int start = millis();
   unsigned long endTime = bme680.beginReading();
   if (endTime == 0) {
+    // TODO re-init sensor?
     Serial.println(F("Failed to begin reading :("));
     return;
   }
@@ -213,6 +215,13 @@ void logSensors() {
   node->log("pressure", pressure);
   node->log("humidity", humidity);
   node->log("airQuality", airQuality);
+#endif
+#ifdef BME280_I2C
+  bme280.takeForcedMeasurement();
+  temperature = bme280.readTemperature();
+  pressure = bme280.readPressure() / 100.0F;
+  humidity = bme280.readHumidity();
+
   double e = 2.71828;
   /* in pascals */
   double SVP = 610.78 * pow(e, (temperature / (temperature + 238.3) * 17.2694));
@@ -221,12 +230,6 @@ void logSensors() {
   Serial.printf("SVP: %2.2f\n", SVP);
   Serial.printf("VPD: %2.2f\n", vpd);
 
-#endif
-#ifdef BME280_I2C
-  bme280.takeForcedMeasurement();
-  temperature = bme280.readTemperature();
-  pressure = bme280.readPressure() / 100.0F;
-  humidity = bme280.readHumidity();
   node->log("temperature", temperature);
   node->log("pressure", pressure);
   node->log("humidity", humidity);
@@ -273,7 +276,6 @@ void loop() {
       Serial.println("logging sensors");
     }
     updateOled(); // this will also delay for the update period
-    delay(100);
   } while(1);
 #else
   logSensors();

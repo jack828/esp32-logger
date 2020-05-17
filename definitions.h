@@ -33,7 +33,7 @@
 #define LED_PIN 16
 // #define LIGHT_SENSOR_PIN 36
 #define BME280_I2C
-// #define OLED
+#define OLED
 #endif
 #ifdef ESP_32_OLED
 #define SDA_PIN 5
@@ -42,9 +42,11 @@
 #define LED_PIN 16
 #define OLED
 #define OLED_FLIP_V
+#define TOUCH_L_PIN 13
+#define TOUCH_R_PIN 15
 // #define LIGHT_SENSOR_PIN 36 // SVP
 // #define DHT11_PIN 25
-#define BME680_I2C
+#define BME280_I2C
 #endif
 #ifdef ESP_32
 #define SDA_PIN 21
@@ -77,6 +79,7 @@ extern double vpd;
 extern double temperature;
 extern double pressure;
 extern double humidity;
+extern double vpd;
 #endif
 #ifdef BMP280_I2C
 extern double temperature;
