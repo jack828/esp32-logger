@@ -46,7 +46,10 @@ DHTesp dht;
 TempAndHumidity reading;
 #endif
 #ifdef LIGHT_SENSOR_PIN
-extern int lightLevel = 0;
+int lightLevel = 0;
+#endif
+#ifdef SOIL_MOISTURE_PIN
+int soilMoisture = 0;
 #endif
 #ifdef OLED
 #include "oled.h"
@@ -144,17 +147,24 @@ void setup() {
   Serial.println("[ DHT ] sensor ok");
 #endif
 
+#ifdef SOIL_MOISTURE_PIN
+  analogReadResolution(11);
+  analogSetAttenuation(ADC_6db);
+#endif
+
 #ifdef OLED
   initOled();
 #else
   Serial.println("[ OLED ] not present");
 #endif
+
   node = new Node();
   initNtp();
 }
 
 void logSensors() {
   Serial.println("[ LOG ] beginning");
+
 #ifdef BME680_I2C
   int start = millis();
   unsigned long endTime = bme680.beginReading();
@@ -247,6 +257,16 @@ void logSensors() {
 #ifdef LIGHT_SENSOR_PIN
   lightLevel = analogRead(LIGHT_SENSOR_PIN);
   node->log("light", lightLevel);
+#endif
+#ifdef SOIL_MOISTURE_PIN
+
+  soilMoisture = 0;
+  char count = 10;
+  for (int i = count; i; i--) {
+    soilMoisture += analogRead(SOIL_MOISTURE_PIN);
+  }
+  soilMoisture /= count;
+  node->log("soilMoisture", soilMoisture);
 #endif
 #ifdef DHT11_PIN
   reading = dht.getTempAndHumidity();

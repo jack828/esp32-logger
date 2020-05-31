@@ -3,8 +3,8 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-#define ESP_32_OLED
-// #define ESP_32
+// #define ESP_32_OLED
+#define ESP_32
 
 #include <NTPClient.h>
 
@@ -14,6 +14,7 @@
  *
  * LED_PIN - status LED, flashes when connecting to WiFi.
  * LIGHT_SENSOR_PIN - enable analogRead of a light sensor
+ * SOIL_MOISTURE_PIN - enable analogRead of a soil moisture sensor
  * BMP280_I2C - Temp & Pressure sensor
  * BME280_I2C - Temp, Humidity, and Pressure sensor
  * BH1750_I2C - Light sensor
@@ -53,6 +54,7 @@
 #define SCL_PIN 22
 #define LED_PIN 2
 #define BME280_I2C
+#define SOIL_MOISTURE_PIN 33
 #endif
 // #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
@@ -93,7 +95,10 @@ extern double lux;
 extern TempAndHumidity reading;
 #endif
 #ifdef LIGHT_SENSOR_PIN
-int lightLevel;
+extern int lightLevel;
+#endif
+#ifdef SOIL_MOISTURE_PIN
+extern int soilMoisture;
 #endif
 
 #endif
