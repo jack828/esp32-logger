@@ -267,13 +267,18 @@ void loop() {
    *  - Log readings
    *  - Snooze
    */
-  logSensors();
+  int logCount = 0;
+  logSensors(); logCount++;
   do {
     /* Serial.printf("%d, %ul\n", millis() - lastLog, LOG_PERIOD); */
-    if (millis() - lastLog > LOG_PERIOD / 1000) {
+    if (millis() - lastLog > LOG_PERIOD / 1000 / 10) {
       lastLog = millis();
-      logSensors();
+      logSensors(); logCount++;
       Serial.println("logging sensors");
+      if (logCount > 1) {
+        clearOled();
+        break;
+      }
     }
     updateOled(); // this will also delay for the update period
   } while(1);

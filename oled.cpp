@@ -170,3 +170,7 @@ void updateOled() {
     delay(remainingTimeBudget);
   }
 }
+
+void clearOled() {
+  display.displayOff();
+}
