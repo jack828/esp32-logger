@@ -10,12 +10,14 @@
 // #include "utils.h"
 // #include "network.h"
 
+#ifdef TOUCH_R_PIN
 volatile unsigned long touchRTimer;
 volatile int touchR;
 volatile unsigned long touchLTimer;
 volatile int touchL;
 volatile unsigned int touchDelayTime = 100;
 int touchThreshold = 50;
+#endif
 
 SSD1306Wire display(0x3c, 5, 4);
 OLEDDisplayUi ui(&display);
@@ -86,6 +88,7 @@ int FRAME_COUNT = sizeof(frames) / sizeof(FrameCallback);
 OverlayCallback overlays[] = { timeOverlay, titleOverlay };
 int OVERLAY_COUNT = sizeof(overlays) / sizeof(OverlayCallback);
 
+#ifdef TOUCH_R_PIN
 void IRAM_ATTR handleTouchR(){
   cli();
   int reading = touchRead(TOUCH_R_PIN);
@@ -114,6 +117,7 @@ void IRAM_ATTR attachTouchInterrupts() {
   touchAttachInterrupt(TOUCH_R_PIN, handleTouchR, touchThreshold);
   touchAttachInterrupt(TOUCH_L_PIN, handleTouchL, touchThreshold);
 }
+#endif
 
 void initOled () {
   // The ESP is capable of rendering 60fps in 80Mhz mode
@@ -134,7 +138,9 @@ void initOled () {
     ui.setFrameAnimation(SLIDE_LEFT);
     ui.disableAutoTransition();
 
+#ifdef TOUCH_R_PIN
     attachTouchInterrupts();
+#endif
   }
 
   ui.setFrames(frames, FRAME_COUNT);
@@ -155,6 +161,7 @@ void updateOled() {
   if (remainingTimeBudget > 0) {
     // doscreentick
 
+#ifdef TOUCH_R_PIN
     if (touchR > 0) {
       Serial.println("\nTouched R\n");
       touchR = 0;
@@ -166,6 +173,7 @@ void updateOled() {
       touchL = 0;
       ui.previousFrame();
     }
+#endif
 
     delay(remainingTimeBudget);
   }
