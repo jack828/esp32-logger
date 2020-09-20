@@ -2,11 +2,9 @@
 
 #include <Wire.h>
 #include <WiFi.h>
-#include <WString.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
 
-#include "memory.h"
 #include "network.h"
 #include "node.h"
 
@@ -59,15 +57,6 @@ long lastLog = 0l;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 Node* node;
-
-void printMem(String marker) {
-  Serial.print(" [MEM] ");
-  Serial.print(marker);
-  Serial.print(" ");
-  Serial.print(ESP.getFreeHeap());
-  Serial.print(" / ");
-  Serial.println(ESP.getHeapSize());
-}
 
 void initNtp() {
   timeClient.begin();
@@ -226,6 +215,7 @@ void logSensors() {
   node->log("humidity", humidity);
   node->log("airQuality", airQuality);
 #endif
+
 #ifdef BME280_I2C
   bme280.takeForcedMeasurement();
   temperature = bme280.readTemperature();
@@ -244,22 +234,25 @@ void logSensors() {
   node->log("pressure", pressure);
   node->log("humidity", humidity);
 #endif
+
 #ifdef BMP280_I2C
   temperature = bmp280.readTemperature();
   pressure = bmp280.readPressure() / 100.0F;
   node->log("temperature", temperature);
   node->log("pressure", pressure);
 #endif
+
 #ifdef BH1750_I2C
   lux = lightMeter.readLightLevel(true);
   node->log("light", lux);
 #endif
+
 #ifdef LIGHT_SENSOR_PIN
   lightLevel = analogRead(LIGHT_SENSOR_PIN);
   node->log("light", lightLevel);
 #endif
-#ifdef SOIL_MOISTURE_PIN
 
+#ifdef SOIL_MOISTURE_PIN
   soilMoisture = 0;
   char count = 10;
   for (int i = count; i; i--) {
@@ -268,6 +261,7 @@ void logSensors() {
   soilMoisture /= count;
   node->log("soilMoisture", soilMoisture);
 #endif
+
 #ifdef DHT11_PIN
   reading = dht.getTempAndHumidity();
   node->log("temperature", reading.temperature);
