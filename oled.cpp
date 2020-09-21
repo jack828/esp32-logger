@@ -22,12 +22,6 @@ int touchThreshold = 50;
 SSD1306Wire display(0x3c, 5, 4);
 OLEDDisplayUi ui(&display);
 
-void timeOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
-  display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  display->setFont(Monospaced_plain_10);
-  display->drawString(128, 0, timeClient.getFormattedTime());
-}
-
 void titleOverlay(OLEDDisplay *display, OLEDDisplayUiState* state) {
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->setFont(Monospaced_plain_10);
@@ -85,7 +79,7 @@ FrameCallback frames[] = { drawFrame1 };
 int FRAME_COUNT = sizeof(frames) / sizeof(FrameCallback);
 
 // Overlays are statically drawn on top of a frame eg. a clock
-OverlayCallback overlays[] = { timeOverlay, titleOverlay };
+OverlayCallback overlays[] = { titleOverlay };
 int OVERLAY_COUNT = sizeof(overlays) / sizeof(OverlayCallback);
 
 #ifdef TOUCH_R_PIN

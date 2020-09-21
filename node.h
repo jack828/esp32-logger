@@ -6,13 +6,11 @@
 #include "network.h"
 #include <WString.h>
 #include <WiFi.h>
-#include <NTPClient.h>
 
 class Node {
   private:
     String rootUri = ROOT_URI;
     String nodeId;
-    long lastIdentified;
     int wifiStatus = WL_DISCONNECTED;
   public:
     Node();

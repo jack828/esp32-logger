@@ -2,8 +2,6 @@
 
 #include <Wire.h>
 #include <WiFi.h>
-#include <WiFiUdp.h>
-#include <NTPClient.h>
 
 #include "network.h"
 #include "node.h"
@@ -54,20 +52,7 @@ int soilMoisture = 0;
 long lastLog = 0l;
 #endif
 
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "uk.pool.ntp.org", 0, 1000);
 Node* node;
-
-void initNtp() {
-  timeClient.begin();
-  while (!timeClient.update()) {
-    timeClient.forceUpdate();
-  }
-  Serial.print("[ NTP ] time: ");
-  Serial.println(timeClient.getFormattedTime());
-  Serial.print("[ NTP ] epoch: ");
-  Serial.println(timeClient.getEpochTime());
-}
 
 void setup() {
   Serial.begin(115200);
@@ -148,7 +133,6 @@ void setup() {
 #endif
 
   node = new Node();
-  initNtp();
 }
 
 void logSensors() {

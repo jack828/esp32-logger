@@ -6,8 +6,6 @@
 // #define ESP_32_OLED
 #define ESP_32
 
-#include <NTPClient.h>
-
 /*
  * You can define any of these to enable sensors
  * and additional functionality, depending on your setup:
@@ -68,7 +66,6 @@
 #define LOG_PERIOD 10 * 60 * 1000 * 1000 // 10 minutes, microseconds
 
 // YAY GLOBALS SORRYNOTSORRY
-extern NTPClient timeClient;
 
 #ifdef BME680_I2C
 extern double temperature;

@@ -16,8 +16,6 @@ void Node::identify() {
   String identifyUrl = this->rootUri + "/identify/" + this->nodeId;
   Response identifyResponse = getRequest(identifyUrl);
 
-  this->lastIdentified = timeClient.getEpochTime();
-
   if (!identifyResponse.body.equals(this->nodeId)) {
     // TODO now it's an issue :shrug:
     Serial.println("[ NODE ] ID mismatch");
@@ -109,8 +107,5 @@ void Node::sleep() {
 void Node::wake() {
   Serial.println("[ NODE ] waking...");
   this->checkWifi();
-  // TODO move out
-  Serial.println("[ NTP ] updating time");
-  timeClient.update();
-  Serial.println("[ NODE ] woke " + timeClient.getFormattedTime());
+  Serial.println("[ NODE ] woke");
 }
