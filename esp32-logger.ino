@@ -14,7 +14,7 @@ ESP8266WiFiMulti wifiMulti;
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 
-Point sensor("wifi_status");
+Point sensor("wifi");
 
 void setup() {
   Serial.begin(115200);
@@ -60,23 +60,20 @@ void setup() {
 }
 
 void loop() {
-  // Store measured value into point
   sensor.clearFields();
-  // Report RSSI of currently connected network
   sensor.addField("rssi", WiFi.RSSI());
-  // Print what are we exactly writing
+
   Serial.print("Writing: ");
   Serial.println(client.pointToLineProtocol(sensor));
-  // If no Wifi signal, try to reconnect it
-  if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED))
-    Serial.println("Wifi connection lost");
-  // Write point
+  if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED)) {
+    Serial.println("Wifi connection lost :( ");
+    ESP.restart();
+  }
   if (!client.writePoint(sensor)) {
     Serial.print("InfluxDB write failed: ");
     Serial.println(client.getLastErrorMessage());
   }
 
-  //Wait 10s
   Serial.println("Wait 10s");
   delay(10000);
 }
