@@ -1,16 +1,10 @@
-#if defined(ESP32)
+#include "credentials.h"
+#include "definitions.h"
+
+#include <InfluxDbClient.h>
 #include <WiFiMulti.h>
 WiFiMulti wifiMulti;
-#define DEVICE "ESP32"
-#elif defined(ESP8266)
-#include <ESP8266WiFiMulti.h>
-ESP8266WiFiMulti wifiMulti;
-#define DEVICE "ESP8266"
-#endif
 
-#define LED_PIN 2
-#include <InfluxDbClient.h>
-#include "credentials.h"
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 

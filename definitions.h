@@ -19,9 +19,6 @@
  * DHT11_PIN - Temp & Humidity sensor
  * OLED - Show a HUD of current sensors. Node will still log readings
  * OLED_FLIP_V - if you need it
- *
- * ROOT_URI - pi-home node.js server endpoint
- * LOG_PERIOD - Time between logs, deep-sleep between wake-ups
  */
 
 // Hardware specific config
@@ -54,17 +51,9 @@
 #define BME280_I2C
 // #define SOIL_MOISTURE_PIN 33
 #endif
+#define LED_PIN 2
 // #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
-
-// Root PiHome logger location
-#define ROOT_URI "http://192.168.0.42:3001/node"
-// #define ROOT_URI "http://192.168.0.17:3001/node" // Laptop
-// Time between wake-ups, in microseconds
-// will drift during uptime from starting time
-// if using deep sleep, max 1 hour on ESP8266
-#define LOG_PERIOD 10 * 60 * 1000 * 1000 // 10 minutes, microseconds
-// #define LOG_PERIOD 10 * 1000 * 1000 // 30 seconds, microseconds
 
 // YAY GLOBALS SORRYNOTSORRY
 
