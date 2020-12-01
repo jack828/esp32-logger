@@ -4,7 +4,7 @@
 // pick a board any board
 // #define ESP_32_OLED_BATT
 // #define ESP_32_OLED
-#define ESP_32
+// #define ESP_32
 
 /*
  * You can define any of these to enable sensors
@@ -52,7 +52,7 @@
 #define SCL_PIN 22
 #define LED_PIN 2
 #define BME280_I2C
-#define SOIL_MOISTURE_PIN 33
+// #define SOIL_MOISTURE_PIN 33
 #endif
 // #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
@@ -64,6 +64,7 @@
 // will drift during uptime from starting time
 // if using deep sleep, max 1 hour on ESP8266
 #define LOG_PERIOD 10 * 60 * 1000 * 1000 // 10 minutes, microseconds
+// #define LOG_PERIOD 10 * 1000 * 1000 // 30 seconds, microseconds
 
 // YAY GLOBALS SORRYNOTSORRY
 
