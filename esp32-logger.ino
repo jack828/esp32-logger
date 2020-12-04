@@ -5,13 +5,14 @@
 #include <WiFiMulti.h>
 WiFiMulti wifiMulti;
 
-
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 
-Point sensor("wifi");
+Point node("node");
+int setupMillis;
 
 void setup() {
   Serial.begin(115200);
+  setupMillis = millis();
 
   WiFi.mode(WIFI_STA);
   wifiMulti.addAP(WIFI_SSID, WIFI_PSK);
@@ -40,8 +41,8 @@ void setup() {
   Serial.println();
 
   // Add constant tags - only once
-  sensor.addTag("MAC", WiFi.macAddress());
-  sensor.addTag("SSID", WiFi.SSID());
+  node.addTag("MAC", WiFi.macAddress());
+  node.addTag("SSID", WiFi.SSID());
 
   // Check server connection
   if (client.validateConnection()) {
@@ -54,21 +55,33 @@ void setup() {
   }
 }
 
+int failedCount = 0;
+
 void loop() {
-  sensor.clearFields();
-  sensor.addField("rssi", WiFi.RSSI());
+  int delayTime = 60 * 1000;
+  node.clearFields();
+  node.addField("rssi", WiFi.RSSI());
+  node.addField("uptime", millis() - setupMillis);
 
   Serial.print("[ INFLUX ] Writing: ");
-  Serial.println(client.pointToLineProtocol(sensor));
+  Serial.println(client.pointToLineProtocol(node));
+
   if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED)) {
     Serial.println("[ WIFI ] connection lost :( ");
     ESP.restart();
   }
-  if (!client.writePoint(sensor)) {
+  if (!client.writePoint(node)) {
     Serial.print("[ INFLUX ] Write failed: ");
     Serial.println(client.getLastErrorMessage());
+    failedCount++;
+    if (failedCount > 5) {
+      Serial.println("[ NODE ] Failed too often, restarting");
+      ESP.restart();
+    } else {
+      delayTime = 10 * 1000;
+    }
   }
 
   Serial.println("[ NODE ] Waiting...");
-  delay(10000);
+  delay(delayTime);
 }
