@@ -8,6 +8,7 @@ WiFiMulti wifiMulti;
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 
 Point node("node");
+Point sensors("sensors");
 int setupMillis;
 
 void setup() {
@@ -56,21 +57,12 @@ void setup() {
 }
 
 int failedCount = 0;
+int delayTime;
 
-void loop() {
-  int delayTime = 60 * 1000;
-  node.clearFields();
-  node.addField("rssi", WiFi.RSSI());
-  node.addField("uptime", millis() - setupMillis);
-
+void log (Point& point) {
   Serial.print("[ INFLUX ] Writing: ");
-  Serial.println(client.pointToLineProtocol(node));
-
-  if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED)) {
-    Serial.println("[ WIFI ] connection lost :( ");
-    ESP.restart();
-  }
-  if (!client.writePoint(node)) {
+  Serial.println(client.pointToLineProtocol(point));
+  if (!client.writePoint(point)) {
     Serial.print("[ INFLUX ] Write failed: ");
     Serial.println(client.getLastErrorMessage());
     failedCount++;
@@ -78,9 +70,24 @@ void loop() {
       Serial.println("[ NODE ] Failed too often, restarting");
       ESP.restart();
     } else {
+      // wait a shorter time before trying again
       delayTime = 10 * 1000;
     }
   }
+}
+
+void loop() {
+  delayTime = 60 * 1000;
+  node.clearFields();
+  node.addField("rssi", WiFi.RSSI());
+  node.addField("uptime", millis() - setupMillis);
+
+  if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED)) {
+    Serial.println("[ WIFI ] connection lost :( ");
+    ESP.restart();
+  }
+
+  log(node);
 
   Serial.println("[ NODE ] Waiting...");
   delay(delayTime);
