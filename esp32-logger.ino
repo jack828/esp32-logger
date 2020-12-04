@@ -16,7 +16,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
   wifiMulti.addAP(WIFI_SSID, WIFI_PSK);
 
-  Serial.print("[ WIFI ] connecting");
+  Serial.print("[ WIFI ] Connecting");
   int retryCount = 0;
   while (wifiMulti.run() != WL_CONNECTED) {
     Serial.print(".");
@@ -45,11 +45,12 @@ void setup() {
 
   // Check server connection
   if (client.validateConnection()) {
-    Serial.print("Connected to InfluxDB: ");
+    Serial.print("[ INFLUX ] Connected to: ");
     Serial.println(client.getServerUrl());
   } else {
-    Serial.print("InfluxDB connection failed: ");
+    Serial.print("[ INFLUX ] Connection failed: ");
     Serial.println(client.getLastErrorMessage());
+    ESP.restart();
   }
 }
 
@@ -57,17 +58,17 @@ void loop() {
   sensor.clearFields();
   sensor.addField("rssi", WiFi.RSSI());
 
-  Serial.print("Writing: ");
+  Serial.print("[ INFLUX ] Writing: ");
   Serial.println(client.pointToLineProtocol(sensor));
   if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED)) {
-    Serial.println("Wifi connection lost :( ");
+    Serial.println("[ WIFI ] connection lost :( ");
     ESP.restart();
   }
   if (!client.writePoint(sensor)) {
-    Serial.print("InfluxDB write failed: ");
+    Serial.print("[ INFLUX ] Write failed: ");
     Serial.println(client.getLastErrorMessage());
   }
 
-  Serial.println("Wait 10s");
+  Serial.println("[ NODE ] Waiting...");
   delay(10000);
 }
