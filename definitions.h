@@ -4,7 +4,7 @@
 // pick a board any board
 // #define ESP_32_OLED_BATT
 // #define ESP_32_OLED
-// #define ESP_32
+#define ESP_32
 
 /*
  * You can define any of these to enable sensors
