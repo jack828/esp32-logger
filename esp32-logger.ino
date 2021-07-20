@@ -21,6 +21,8 @@ Point node("node");
 Point sensors("sensors");
 int setupMillis;
 
+// TODO add http server to set nickname which is then put into EEPROM for logging with a nicer name
+// TODO log wifi ip
 void setup() {
   Serial.begin(115200);
   setupMillis = millis();
