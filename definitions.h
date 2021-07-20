@@ -3,8 +3,8 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-// #define ESP_32_OLED
-#define ESP_32
+#define ESP_32_OLED
+// #define ESP_32
 
 /*
  * You can define any of these to enable sensors
@@ -36,10 +36,10 @@
 #define SCL_PIN 4
 // this doesn't have one but :shrug:
 #define LED_PIN 16
-#define OLED
-#define OLED_FLIP_V
-#define TOUCH_L_PIN 13
-#define TOUCH_R_PIN 15
+// #define OLED
+// #define OLED_FLIP_V
+// #define TOUCH_L_PIN 13
+// #define TOUCH_R_PIN 15
 // #define LIGHT_SENSOR_PIN 36 // SVP
 // #define DHT11_PIN 25
 #define BME280_I2C
@@ -51,7 +51,6 @@
 #define BME280_I2C
 // #define SOIL_MOISTURE_PIN 33
 #endif
-#define LED_PIN 2
 // #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
 
