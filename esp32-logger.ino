@@ -1,9 +1,9 @@
 #include "credentials.h"
 #include "definitions.h"
 
-#include <Wire.h>
 #include <InfluxDbClient.h>
 #include <WiFiMulti.h>
+#include <Wire.h>
 #ifdef BME280_I2C
 #include <Adafruit_BME280.h>
 Adafruit_BME280 bme280;
@@ -21,7 +21,8 @@ Point node("node");
 Point sensors("sensors");
 int setupMillis;
 
-// TODO add http server to set nickname which is then put into EEPROM for logging with a nicer name
+// TODO add http server to set nickname which is then put into EEPROM for
+// logging with a nicer name
 // TODO log wifi ip
 void setup() {
   Serial.begin(115200);
@@ -43,7 +44,8 @@ void setup() {
     digitalWrite(LED_PIN, LOW);
     delay(250);
     if (retryCount++ > 20) {
-      Serial.println(F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
+      Serial.println(
+          F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
       ESP.restart();
     }
   }
@@ -76,18 +78,16 @@ void setup() {
   Serial.print(bme280Ok ? F("") : F("NOT "));
   Serial.println(F("OK"));
 
-  bme280.setSampling(
-    Adafruit_BME280::MODE_FORCED,
-    Adafruit_BME280::SAMPLING_X4, // temperature
-    Adafruit_BME280::SAMPLING_X4, // pressure
-    Adafruit_BME280::SAMPLING_X4, // humidity
-    Adafruit_BME280::FILTER_X4,
-    Adafruit_BME280::STANDBY_MS_0_5
-  );
+  bme280.setSampling(Adafruit_BME280::MODE_FORCED,
+                     Adafruit_BME280::SAMPLING_X4, // temperature
+                     Adafruit_BME280::SAMPLING_X4, // pressure
+                     Adafruit_BME280::SAMPLING_X4, // humidity
+                     Adafruit_BME280::FILTER_X4,
+                     Adafruit_BME280::STANDBY_MS_0_5);
 #endif
 }
 
-void captureSensorsFields () {
+void captureSensorsFields() {
   sensors.clearFields();
 #ifdef BME280_I2C
   bme280.takeForcedMeasurement();
@@ -107,7 +107,7 @@ void captureSensorsFields () {
 #endif
 }
 
-void captureNodeFields () {
+void captureNodeFields() {
   node.clearFields();
   node.addField(F("rssi"), WiFi.RSSI());
   node.addField(F("uptime"), millis() - setupMillis);
@@ -117,7 +117,7 @@ void captureNodeFields () {
 int failedCount = 0;
 int delayTime;
 
-void log (Point& point) {
+void log(Point &point) {
   Serial.print(F("[ INFLUX ] Writing: "));
   Serial.println(client.pointToLineProtocol(point));
   if (!client.writePoint(point)) {
