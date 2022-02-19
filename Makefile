@@ -7,7 +7,7 @@ upload:
 	arduino-cli upload -p /dev/ttyUSB0 --fqbn esp32:esp32:esp32 --log-level=debug --input-dir=$(PWD)/build
 
 serialmonitor:
-	cat /dev/ttyUSB0
+	tail -f /dev/ttyUSB0
 
 clean:
 	rm -rf ./build
