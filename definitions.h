@@ -7,6 +7,9 @@
 // #define ESP_32
 // #define ESP_8266 // Use this one if it might blow up
 
+// Configuration
+#define LOG_PERIOD 60 * 1000 // Environment sensors
+// #define LOG_PERIOD 1000 // Power monitor
 /*
  * You can define any of these to enable sensors
  * and additional functionality, depending on your setup:

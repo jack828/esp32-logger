@@ -152,13 +152,13 @@ void log(Point &point) {
       ESP.restart();
     } else {
       // wait a shorter time before trying again
-      delayTime = 10 * 1000;
+      delayTime = LOG_PERIOD / 10;
     }
   }
 }
 
 void loop() {
-  delayTime = 60 * 1000;
+  delayTime = LOG_PERIOD;
   if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED)) {
     Serial.println(F("[ WIFI ] connection lost :( "));
     ESP.restart();
