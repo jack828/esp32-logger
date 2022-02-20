@@ -1,2 +1,0 @@
-CompileFlags:
-  Add: [-ferror-limit=30, -fpermissive, -log=verbose]
