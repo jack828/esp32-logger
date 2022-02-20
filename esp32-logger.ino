@@ -125,7 +125,9 @@ void wifiKeepAlive(void *parameter) {
   int failCount = 0;
   for (;;) {
     Serial.print(F("[ WIFI ] Keep alive "));
-    if ((WiFi.RSSI() == 0) && WiFi.status() == WL_CONNECTED) {
+    bool wifiConnected = (WiFi.RSSI() == 0) || WiFi.status() == WL_CONNECTED;
+    Serial.println(wifiConnected ? F("OK") : F("NOT OK"));
+    if (wifiConnected) {
       vTaskDelay(10000 / portTICK_PERIOD_MS);
       continue;
     }
@@ -148,7 +150,7 @@ void wifiKeepAlive(void *parameter) {
     // sleep for a while and then retry.
     if (WiFi.status() != WL_CONNECTED) {
       Serial.print(F("[ WIFI ] Failed"));
-      Serial.print(failCount);
+      Serial.println(failCount);
       if (failCount++ > 5) {
         Serial.println(
           F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
