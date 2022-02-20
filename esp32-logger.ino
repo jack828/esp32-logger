@@ -19,13 +19,7 @@ double vpd = 0.0;
 EnergyMonitor emon;
 #endif
 
-#ifdef ESP_8266
-#include <WiFiMulti_Generic.h>
-WiFiMulti_Generic wifi;
-#else
-#include <WiFiMulti.h>
-WiFiMulti wifi;
-#endif
+#include <WiFi.h>
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 
@@ -39,13 +33,12 @@ int setupMillis;
 void setup() {
   Serial.begin(115200);
   setupMillis = millis();
-
-  WiFi.mode(WIFI_STA);
-  wifi.addAP(WIFI_SSID, WIFI_PSK);
-
   pinMode(LED_PIN, OUTPUT);
 
   Serial.print(F("[ WIFI ] Connecting"));
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PSK);
+
   int retryCount = 0;
   do {
     Serial.print(F("."));
@@ -59,10 +52,10 @@ void setup() {
     delay(250);
     if (retryCount++ > 20) {
       Serial.println(
-          F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
+        F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
       ESP.restart();
     }
-  } while (wifi.run() != WL_CONNECTED);
+  } while (WiFi.status() != WL_CONNECTED);
 
   Serial.print(F("\n[ WIFI ] connected, SSID: "));
   Serial.print(WiFi.SSID());
@@ -106,7 +99,69 @@ void setup() {
 #ifdef SCT_013_PIN
   emon.current(SCT_013_PIN, 111.1);
 #endif
+
+
+  // Only create the task after all setup is done, and we're ready
+  xTaskCreate(
+    wifiKeepAlive,
+    "wifiKeepAlive",  // Task name
+    2048,             // Stack size (bytes)
+    NULL,             // Parameter
+    1,                // Task priority
+    NULL              // Task handle
+  );
 } /* SETUP */
+
+/**
+ * Task: monitor the WiFi connection and keep it alive
+ *
+ * When a WiFi connection is established, this task will check it every 10 seconds
+ * to make sure it's still alive.
+ *
+ * If not, a reconnect is attempted. If this fails to finish within the timeout,
+ * the ESP32 will wait for it to recover and try again.
+ */
+void wifiKeepAlive(void *parameter) {
+  int failCount = 0;
+  for (;;) {
+    Serial.print(F("[ WIFI ] Keep alive "));
+    if ((WiFi.RSSI() == 0) && WiFi.status() == WL_CONNECTED) {
+      vTaskDelay(10000 / portTICK_PERIOD_MS);
+      continue;
+    }
+
+    Serial.println(F("[ WIFI ] Connecting"));
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(WIFI_SSID, WIFI_PSK);
+
+    unsigned long startAttemptTime = millis();
+
+    // Keep looping while we're not connected and haven't reached the timeout
+    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < WIFI_TIMEOUT_MS) {
+      digitalWrite(LED_PIN, HIGH);
+      delay(250);
+      digitalWrite(LED_PIN, LOW);
+      delay(250);
+    }
+
+    // When we couldn't make a WiFi connection (or the timeout expired)
+    // sleep for a while and then retry.
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.print(F("[ WIFI ] Failed"));
+      Serial.print(failCount);
+      if (failCount++ > 5) {
+        Serial.println(
+          F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
+        ESP.restart();
+      }
+      vTaskDelay(WIFI_RECOVER_TIME_MS / portTICK_PERIOD_MS);
+      continue;
+    }
+
+    Serial.print(F("\n[ WIFI ] Connected: "));
+    Serial.println(WiFi.localIP());
+  }
+}
 
 void captureSensorFields() {
   sensors.clearFields();
@@ -162,7 +217,7 @@ void log(Point &point) {
 
 void loop() {
   delayTime = LOG_PERIOD;
-  if ((WiFi.RSSI() == 0) && (wifi.run() != WL_CONNECTED)) {
+  if ((WiFi.RSSI() == 0) && (WiFi.status() != WL_CONNECTED)) {
     Serial.println(F("[ WIFI ] connection lost :( "));
     ESP.restart();
   }

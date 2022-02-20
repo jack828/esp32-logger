@@ -10,6 +10,10 @@
 // Configuration
 #define LOG_PERIOD 60 * 1000 // Environment sensors
 // #define LOG_PERIOD 1000 // Power monitor
+#define WIFI_CHECK_PERIOD_MS 30000 // 10s keep alive period
+#define WIFI_TIMEOUT_MS 10000      // 10s WiFi connection timeout
+#define WIFI_RECOVER_TIME_MS 10000 // 10s after a failed connection attempt
+
 /*
  * You can define any of these to enable sensors
  * and additional functionality, depending on your setup:
