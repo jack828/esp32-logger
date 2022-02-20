@@ -43,6 +43,8 @@ void setup() {
   WiFi.mode(WIFI_STA);
   wifiMulti.addAP(WIFI_SSID, WIFI_PSK);
 
+  pinMode(LED_PIN, OUTPUT);
+
   Serial.print(F("[ WIFI ] Connecting"));
   int retryCount = 0;
   while (wifiMulti.run() != WL_CONNECTED) {
