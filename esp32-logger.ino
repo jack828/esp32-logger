@@ -2,8 +2,10 @@
 #include "definitions.h"
 
 #include <InfluxDbClient.h>
-#include <WiFiMulti.h>
+#if defined(SDA_PIN) && defined(SCL_PIN)
+#define HAS_I2C
 #include <Wire.h>
+#endif
 #ifdef BME280_I2C
 #include <Adafruit_BME280.h>
 Adafruit_BME280 bme280;
@@ -70,7 +72,9 @@ void setup() {
     ESP.restart();
   }
 
+#ifdef HAS_I2C
   Wire.begin(SDA_PIN, SCL_PIN);
+#endif
 #ifdef BME280_I2C
   Serial.println(F("[ BME280 ] has sensor"));
   boolean bme280Ok = bme280.begin(0x76, &Wire);
