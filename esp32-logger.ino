@@ -165,9 +165,9 @@ void loop() {
   }
 
   captureNodeFields();
-  captureSensorsFields();
   log(node);
   log(sensors);
+  captureSensorFields();
 
   Serial.println(F("[ NODE ] Waiting..."));
   delay(delayTime);
