@@ -56,6 +56,7 @@
 
 // YAY GLOBALS SORRYNOTSORRY
 
+// why, past me, did you do it like this?
 #ifdef BME680_I2C
 extern double temperature;
 extern double pressure;
