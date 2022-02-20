@@ -14,6 +14,10 @@ double pressure = 0.0;
 double humidity = 0.0;
 double vpd = 0.0;
 #endif
+#ifdef SCT_013_PIN
+#include "EmonLib.h"
+EnergyMonitor emon;
+#endif
 
 #ifdef ESP_8266
 #include <WiFiMulti_Generic.h>
@@ -95,9 +99,13 @@ void setup() {
                      Adafruit_BME280::FILTER_X4,
                      Adafruit_BME280::STANDBY_MS_0_5);
 #endif
-}
 
-void captureSensorsFields() {
+#ifdef SCT_013_PIN
+  emon.current(SCT_013_PIN, 111.1);
+#endif
+} /* SETUP */
+
+void captureSensorFields() {
   sensors.clearFields();
 #ifdef BME280_I2C
   bme280.takeForcedMeasurement();
@@ -115,7 +123,12 @@ void captureSensorsFields() {
   sensors.addField(F("humidity"), humidity);
   sensors.addField(F("vpd"), vpd);
 #endif
-}
+
+#ifdef SCT_013_PIN
+  double irms = emon.calcIrms(1480);
+  Serial.printf("%f, %f\n", irms, irms * VOLTAGE);
+#endif
+} /* CAPTURE SENSOR FIELDS */
 
 void captureNodeFields() {
   node.clearFields();
