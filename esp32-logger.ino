@@ -15,7 +15,13 @@ double humidity = 0.0;
 double vpd = 0.0;
 #endif
 
+#ifdef ESP_8266
+#include <WiFiMulti_Generic.h>
+WiFiMulti_Generic wifiMulti;
+#else
+#include <WiFiMulti.h>
 WiFiMulti wifiMulti;
+#endif
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 

@@ -5,6 +5,7 @@
 // #define ESP_32_OLED_BATT
 #define ESP_32_OLED
 // #define ESP_32
+// #define ESP_8266 // Use this one if it might blow up
 
 /*
  * You can define any of these to enable sensors
@@ -53,6 +54,11 @@
 #endif
 // #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
+#ifdef ESP_8266
+#define LED_PIN LED_BUILTIN
+#define SCT_013_PIN A0
+#define VOLTAGE 256.0 // Pretty high where I live
+#endif
 
 // YAY GLOBALS SORRYNOTSORRY
 
