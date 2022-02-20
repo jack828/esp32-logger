@@ -21,10 +21,10 @@ EnergyMonitor emon;
 
 #ifdef ESP_8266
 #include <WiFiMulti_Generic.h>
-WiFiMulti_Generic wifiMulti;
+WiFiMulti_Generic wifi;
 #else
 #include <WiFiMulti.h>
-WiFiMulti wifiMulti;
+WiFiMulti wifi;
 #endif
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
@@ -41,7 +41,7 @@ void setup() {
   setupMillis = millis();
 
   WiFi.mode(WIFI_STA);
-  wifiMulti.addAP(WIFI_SSID, WIFI_PSK);
+  wifi.addAP(WIFI_SSID, WIFI_PSK);
 
   pinMode(LED_PIN, OUTPUT);
 
@@ -62,7 +62,7 @@ void setup() {
           F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
       ESP.restart();
     }
-  } while (wifiMulti.run() != WL_CONNECTED);
+  } while (wifi.run() != WL_CONNECTED);
 
   Serial.print(F("\n[ WIFI ] connected, SSID: "));
   Serial.print(WiFi.SSID());
@@ -96,9 +96,9 @@ void setup() {
   Serial.println(F("OK"));
 
   bme280.setSampling(Adafruit_BME280::MODE_FORCED,
-                     Adafruit_BME280::SAMPLING_X4, // temperature
-                     Adafruit_BME280::SAMPLING_X4, // pressure
-                     Adafruit_BME280::SAMPLING_X4, // humidity
+                     Adafruit_BME280::SAMPLING_X4,  // temperature
+                     Adafruit_BME280::SAMPLING_X4,  // pressure
+                     Adafruit_BME280::SAMPLING_X4,  // humidity
                      Adafruit_BME280::FILTER_X4,
                      Adafruit_BME280::STANDBY_MS_0_5);
 #endif
@@ -119,7 +119,7 @@ void captureSensorFields() {
   double e = 2.71828;
   /* in pascals */
   double SVP = 610.78 * pow(e, (temperature / (temperature + 238.3) * 17.2694));
-  vpd = (SVP / 1000) * (1 - humidity / 100); // kPa
+  vpd = (SVP / 1000) * (1 - humidity / 100);  // kPa
 
   sensors.addField(F("temperature"), temperature);
   sensors.addField(F("pressure"), pressure);
@@ -162,7 +162,7 @@ void log(Point &point) {
 
 void loop() {
   delayTime = LOG_PERIOD;
-  if ((WiFi.RSSI() == 0) && (wifiMulti.run() != WL_CONNECTED)) {
+  if ((WiFi.RSSI() == 0) && (wifi.run() != WL_CONNECTED)) {
     Serial.println(F("[ WIFI ] connection lost :( "));
     ESP.restart();
   }
