@@ -47,7 +47,7 @@ void setup() {
 
   Serial.print(F("[ WIFI ] Connecting"));
   int retryCount = 0;
-  while (wifiMulti.run() != WL_CONNECTED) {
+  do {
     Serial.print(F("."));
     digitalWrite(LED_PIN, HIGH);
     delay(250);
@@ -62,7 +62,8 @@ void setup() {
           F("\n[ WIFI ] ERROR: Could not connect to wifi, rebooting..."));
       ESP.restart();
     }
-  }
+  } while (wifiMulti.run() != WL_CONNECTED);
+
   Serial.print(F("\n[ WIFI ] connected, SSID: "));
   Serial.print(WiFi.SSID());
   Serial.print(F(", IP:"));
