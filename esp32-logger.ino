@@ -24,7 +24,12 @@ String processor(const String &var) {
   if (var == "MAC") {
     return WiFi.macAddress();
   } else if (var == "FIRMWARE_VERSION") {
-    return F("4.2.0-69");
+    // This is defined using compile time flags, but clangd doesn't like it
+    // And if it isn't defined when compiling with the Arduino IDE, this won't break anything
+#ifndef FIRMWARE_VERSION
+#define FIRMWARE_VERSION "NOT_SET"
+#endif
+    return FIRMWARE_VERSION;
   } else if (var == "NAME") {
     return config.getString("name");
   } else if (var == "LOCATION") {
