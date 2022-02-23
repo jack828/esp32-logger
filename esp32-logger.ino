@@ -11,34 +11,54 @@
 
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
-#include <EEPROM.h>
+#include <Preferences.h>
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 AsyncWebServer server(80);
+Preferences config;
 
 Point node("node");
-int setupMillis;
+uint64_t setupMillis;
 
 String processor(const String &var) {
-  if (var == "NODE_MAC") {
+  if (var == "MAC") {
     return WiFi.macAddress();
   } else if (var == "FIRMWARE_VERSION") {
     return F("4.2.0-69");
-  } else if (var == "NODE_NAME") {
-    return F("Saint Bobbington III");
-  } else if (var == "NODE_LOCATION") {
-    return F("next to me");
+  } else if (var == "NAME") {
+    return config.getString("name");
+  } else if (var == "LOCATION") {
+    return config.getString("location");
+  } else if (var == "UPTIME") {
+    uint64_t uptime = millis() - setupMillis;
+    unsigned long seconds = uptime / 1000;
+    int days = seconds / 86400;
+    seconds %= 86400;
+    byte hours = seconds / 3600;
+    seconds %= 3600;
+    byte minutes = seconds / 60;
+    seconds %= 60;
+
+    char output[14];
+    snprintf(output, sizeof(output), "%02dd%02dh%02dm%02ds", days, hours, minutes, seconds);
+    return output;
   }
   return "";
 }
 
-// TODO add http server to set nickname which is then put into EEPROM for
-// logging with a nicer name
-// TODO log wifi ip
 void setup() {
   Serial.begin(115200);
   setupMillis = millis();
   pinMode(LED_PIN, OUTPUT);
+
+  // Init config and set defaults on first run
+  config.begin("config", false);
+  if (config.getString("name") == "") {
+    config.putString("name", "NAME_NOT_SET");
+  }
+  if (config.getString("location") == "") {
+    config.putString("location", "LOCATION_NOT_SET");
+  }
 
   Serial.print(F("[ WIFI ] Connecting"));
   WiFi.mode(WIFI_STA);
