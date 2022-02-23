@@ -9,10 +9,6 @@ You need one of:
 General libraries:
  - [InfluxDB Arduino Client](https://github.com/tobiasschuerg/InfluxDB-Client-for-Arduino)
 
-Board specific:
- - ESP8266
-   - [WifiMulti](https://github.com/khoih-prog/WiFiMulti_Generic)
-
 ### EmonLib Patches
 
 To use the EmonLib library with the 12-bit ADC aboard the ESP32, you'll need to patch it.
@@ -31,12 +27,7 @@ Please see [definitions.h](./definitions.h) for all configurables.
 ## TODO
 
  - flash-and-go setup with an app
- - BASIC webserver for updating the node name + "location"
  - OTA updates
-
-More tags:
- - Node name
- - firmware version
 
 ## Useful links
 
