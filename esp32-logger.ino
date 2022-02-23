@@ -1,33 +1,22 @@
 #include "credentials.h"
 #include "definitions.h"
 #include "data.h"
+#include "sensors.h"
 
 #include <InfluxDbClient.h>
 #if defined(SDA_PIN) && defined(SCL_PIN)
 #define HAS_I2C
 #include <Wire.h>
 #endif
-#ifdef BME280_I2C
-#include <Adafruit_BME280.h>
-Adafruit_BME280 bme280;
-double temperature = 0.0;
-double pressure = 0.0;
-double humidity = 0.0;
-double vpd = 0.0;
-#endif
-#ifdef SCT_013_PIN
-#include "EmonLib.h"
-EnergyMonitor emon;
-#endif
 
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
+#include <EEPROM.h>
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 AsyncWebServer server(80);
 
 Point node("node");
-Point sensors("sensors");
 int setupMillis;
 
 String processor(const String &var) {
@@ -79,11 +68,6 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.println();
 
-  // Add constant tags - only once
-  node.addTag(F("MAC"), WiFi.macAddress());
-  node.addTag(F("SSID"), WiFi.SSID());
-  sensors.addTag(F("MAC"), WiFi.macAddress());
-
   // Check server connection
   if (client.validateConnection()) {
     Serial.print(F("[ INFLUX ] Connected to: "));
@@ -94,26 +78,14 @@ void setup() {
     ESP.restart();
   }
 
+  // TODO maybe
+  // void addTags (Point &point) {
+  // Add constant tags - only once
+  node.addTag(F("MAC"), WiFi.macAddress());
+  node.addTag(F("SSID"), WiFi.SSID());
+
 #ifdef HAS_I2C
   Wire.begin(SDA_PIN, SCL_PIN);
-#endif
-#ifdef BME280_I2C
-  Serial.println(F("[ BME280 ] has sensor"));
-  boolean bme280Ok = bme280.begin(0x76, &Wire);
-  Serial.print(F("[ BME280 ] sensor "));
-  Serial.print(bme280Ok ? F("") : F("NOT "));
-  Serial.println(F("OK"));
-
-  bme280.setSampling(Adafruit_BME280::MODE_FORCED,
-                     Adafruit_BME280::SAMPLING_X4,  // temperature
-                     Adafruit_BME280::SAMPLING_X4,  // pressure
-                     Adafruit_BME280::SAMPLING_X4,  // humidity
-                     Adafruit_BME280::FILTER_X4,
-                     Adafruit_BME280::STANDBY_MS_0_5);
-#endif
-
-#ifdef SCT_013_PIN
-  emon.current(SCT_013_PIN, 111.1);
 #endif
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -136,7 +108,6 @@ void setup() {
     request->send(404);
   });
 
-  // Start server
   server.begin();
 
   // Only create the task after all setup is done, and we're ready
@@ -203,31 +174,6 @@ void wifiKeepAlive(void *parameter) {
   }
 }
 
-void captureSensorFields() {
-  sensors.clearFields();
-#ifdef BME280_I2C
-  bme280.takeForcedMeasurement();
-  temperature = bme280.readTemperature();
-  pressure = bme280.readPressure() / 100.0F;
-  humidity = bme280.readHumidity();
-
-  double e = 2.71828;
-  /* in pascals */
-  double SVP = 610.78 * pow(e, (temperature / (temperature + 238.3) * 17.2694));
-  vpd = (SVP / 1000) * (1 - humidity / 100);  // kPa
-
-  sensors.addField(F("temperature"), temperature);
-  sensors.addField(F("pressure"), pressure);
-  sensors.addField(F("humidity"), humidity);
-  sensors.addField(F("vpd"), vpd);
-#endif
-
-#ifdef SCT_013_PIN
-  double irms = emon.calcIrms(1480);
-  Serial.printf("%f, %f\n", irms, irms * VOLTAGE);
-#endif
-} /* CAPTURE SENSOR FIELDS */
-
 void captureNodeFields() {
   node.clearFields();
   node.addField(F("rssi"), WiFi.RSSI());
@@ -250,6 +196,7 @@ void log(Point &point) {
       ESP.restart();
     } else {
       // wait a shorter time before trying again
+      // TODO this just gets reset in loop...
       delayTime = LOG_PERIOD / 10;
     }
   }
@@ -264,8 +211,8 @@ void loop() {
 
   captureNodeFields();
   log(node);
-  log(sensors);
   captureSensorFields();
+  log(sensors);
 
   Serial.println(F("[ NODE ] Waiting..."));
   delay(delayTime);
