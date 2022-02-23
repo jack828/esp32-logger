@@ -117,10 +117,15 @@ void setup() {
   });
 
   server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
-    AsyncWebParameter *nodeNameParam = request->getParam("nodeName", true);
-    Serial.printf("POST [%s]: %s\n", nodeNameParam->name().c_str(), nodeNameParam->value().c_str());
-    AsyncWebParameter *nodeLocationParam = request->getParam("nodeLocation", true);
-    Serial.printf("POST [%s]: %s\n", nodeLocationParam->name().c_str(), nodeLocationParam->value().c_str());
+    AsyncWebParameter *nameParam = request->getParam("name", true);
+    config.putString("name", nameParam->value().c_str());
+    Serial.print(F("[ NODE ] Set config.name: "));
+    Serial.println(config.getString("name"));
+
+    AsyncWebParameter *locationParam = request->getParam("location", true);
+    config.putString("location", locationParam->value().c_str());
+    Serial.print(F("[ NODE ] Set config.location: "));
+    Serial.println(config.getString("location"));
     request->redirect("/");
   });
 
