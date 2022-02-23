@@ -1,34 +1,34 @@
 #include "credentials.h"
 #include "definitions.h"
 #include "data.h"
+#include "node.h"
 #include "sensors.h"
 
+#include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <Preferences.h>
 #include <InfluxDbClient.h>
 #if defined(SDA_PIN) && defined(SCL_PIN)
 #define HAS_I2C
 #include <Wire.h>
 #endif
 
-#include <WiFi.h>
-#include <ESPAsyncWebServer.h>
-#include <Preferences.h>
+// This is defined using compile time flags, but clangd doesn't like it
+// And if it isn't defined when compiling with the Arduino IDE, this won't break anything
+#ifndef FIRMWARE_VERSION
+#define FIRMWARE_VERSION "NOT_SET"
+#endif
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 AsyncWebServer server(80);
 Preferences config;
 
-Point node("node");
 uint64_t setupMillis;
 
 String processor(const String &var) {
   if (var == "MAC") {
     return WiFi.macAddress();
   } else if (var == "FIRMWARE_VERSION") {
-    // This is defined using compile time flags, but clangd doesn't like it
-    // And if it isn't defined when compiling with the Arduino IDE, this won't break anything
-#ifndef FIRMWARE_VERSION
-#define FIRMWARE_VERSION "NOT_SET"
-#endif
     return FIRMWARE_VERSION;
   } else if (var == "NAME") {
     return config.getString("name");
@@ -103,11 +103,7 @@ void setup() {
     ESP.restart();
   }
 
-  // TODO maybe
-  // void addTags (Point &point) {
-  // Add constant tags - only once
-  node.addTag(F("MAC"), WiFi.macAddress());
-  node.addTag(F("SSID"), WiFi.SSID());
+  setupNode();
 
 #ifdef HAS_I2C
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -202,13 +198,6 @@ void wifiKeepAlive(void *parameter) {
     Serial.print(F("\n[ WIFI ] Connected: "));
     Serial.println(WiFi.localIP());
   }
-}
-
-void captureNodeFields() {
-  node.clearFields();
-  node.addField(F("rssi"), WiFi.RSSI());
-  node.addField(F("uptime"), millis() - setupMillis);
-  node.addField(F("freeHeap"), ESP.getFreeHeap());
 }
 
 int failedCount = 0;
