@@ -1,5 +1,6 @@
 #include "credentials.h"
 #include "definitions.h"
+#include "data.h"
 
 #include <InfluxDbClient.h>
 #if defined(SDA_PIN) && defined(SCL_PIN)
@@ -20,12 +21,27 @@ EnergyMonitor emon;
 #endif
 
 #include <WiFi.h>
+#include <ESPAsyncWebServer.h>
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
+AsyncWebServer server(80);
 
 Point node("node");
 Point sensors("sensors");
 int setupMillis;
+
+String processor(const String &var) {
+  if (var == "NODE_MAC") {
+    return WiFi.macAddress();
+  } else if (var == "FIRMWARE_VERSION") {
+    return F("4.2.0-69");
+  } else if (var == "NODE_NAME") {
+    return F("Saint Bobbington III");
+  } else if (var == "NODE_LOCATION") {
+    return F("next to me");
+  }
+  return "";
+}
 
 // TODO add http server to set nickname which is then put into EEPROM for
 // logging with a nicer name
@@ -59,7 +75,7 @@ void setup() {
 
   Serial.print(F("\n[ WIFI ] connected, SSID: "));
   Serial.print(WiFi.SSID());
-  Serial.print(F(", IP:"));
+  Serial.print(F(", IP: "));
   Serial.println(WiFi.localIP());
   Serial.println();
 
@@ -100,6 +116,28 @@ void setup() {
   emon.current(SCT_013_PIN, 111.1);
 #endif
 
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", index_html, processor);
+    /* TODO
+       response->addHeader("Content-Encoding", "gzip");
+     */
+    request->send(response);
+  });
+
+  server.on("/", HTTP_POST, [](AsyncWebServerRequest *request) {
+    AsyncWebParameter *nodeNameParam = request->getParam("nodeName", true);
+    Serial.printf("POST [%s]: %s\n", nodeNameParam->name().c_str(), nodeNameParam->value().c_str());
+    AsyncWebParameter *nodeLocationParam = request->getParam("nodeLocation", true);
+    Serial.printf("POST [%s]: %s\n", nodeLocationParam->name().c_str(), nodeLocationParam->value().c_str());
+    request->redirect("/");
+  });
+
+  server.onNotFound([](AsyncWebServerRequest *request) {
+    request->send(404);
+  });
+
+  // Start server
+  server.begin();
 
   // Only create the task after all setup is done, and we're ready
   xTaskCreate(

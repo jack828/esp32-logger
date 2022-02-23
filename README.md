@@ -31,6 +31,12 @@ Please see [definitions.h](./definitions.h) for all configurables.
 ## TODO
 
  - flash-and-go setup with an app
+ - BASIC webserver for updating the node name + "location"
+ - OTA updates
+
+More tags:
+ - Node name
+ - firmware version
 
 ## Useful links
 
