@@ -223,10 +223,6 @@ void log(Point &point) {
 
 void loop() {
   delayTime = LOG_PERIOD;
-  if ((WiFi.RSSI() == 0) && (WiFi.status() != WL_CONNECTED)) {
-    Serial.println(F("[ WIFI ] connection lost :( "));
-    ESP.restart();
-  }
 
   captureNodeFields();
   log(node);
