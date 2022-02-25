@@ -3,6 +3,7 @@
 Point node("node");
 
 void setupNode() {
+  node.clearTags();
   node.addTag(F("MAC"), WiFi.macAddress());
   node.addTag(F("SSID"), WiFi.SSID());
   node.addTag(F("name"), config.getString("name"));
