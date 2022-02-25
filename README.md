@@ -28,7 +28,6 @@ Please see [definitions.h](./definitions.h) for all configurables.
 ## TODO
 
  - flash-and-go setup with an app
- - OTA updates
 
 ## Useful links
 
