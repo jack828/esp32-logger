@@ -127,6 +127,9 @@ void setup() {
     config.putString("location", locationParam->value().c_str());
     Serial.print(F("[ NODE ] Set config.location: "));
     Serial.println(config.getString("location"));
+
+    setupNode();
+
     request->redirect("/");
   });
 
