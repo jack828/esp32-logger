@@ -17,14 +17,10 @@ const char index_html[] PROGMEM = "<!DOCTYPE html><html>"
     "<button type=\"submit\">Save</button>"
   "</form>"
 
-  "<form method=\"post\" action=\"/ota\">"
+  "<div>"
     "<h2>Firmware</h2>"
-    "<div>"
-      "<label for=\"otaFile\">Node Name: </label>"
-      "<input name=\"otaFile\" />"
-    "</div>"
-    "<button type=\"submit\">Update</button>"
-  "</form>"
+    "<a href=\"/update\">Please use the ElegantOTA solution -></a>"
+  "</div>"
 "</body>"
 "</html>";
 

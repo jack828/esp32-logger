@@ -5,6 +5,7 @@
 #include "sensors.h"
 
 #include <WiFi.h>
+#include <AsyncElegantOTA.h>
 #include <ESPAsyncWebServer.h>
 #include <Preferences.h>
 #include <InfluxDbClient.h>
@@ -138,6 +139,7 @@ void setup() {
   });
 
   server.begin();
+  AsyncElegantOTA.begin(&server);
 
   // Only create the task after all setup is done, and we're ready
   xTaskCreate(

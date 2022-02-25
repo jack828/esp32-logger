@@ -8,6 +8,7 @@ You need one of:
 
 General libraries:
  - [InfluxDB Arduino Client](https://github.com/tobiasschuerg/InfluxDB-Client-for-Arduino)
+ - [ElegantOTA](https://github.com/ayushsharma82/AsyncElegantOTA)
 
 ### EmonLib Patches
 
