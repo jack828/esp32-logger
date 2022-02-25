@@ -25,6 +25,14 @@ Fork the repo, clone, and configure to match your setup.
 Please see [credentials.h](./credentials.h) for credential information. Use `.tpl` as a starting point.
 Please see [definitions.h](./definitions.h) for all configurables.
 
+## Usage
+
+After the initial flash to the device, you can use the ElegantOTA solution to keep the node firmware updated.
+
+Config is available via `http://<node-ip>/`
+
+OTA updates available via `http://<node-ip>/update`
+
 ## TODO
 
  - flash-and-go setup with an app
