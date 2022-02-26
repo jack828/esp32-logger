@@ -1,5 +1,14 @@
 # esp32-logger
 
+## Features
+
+ - mDNS discovery
+ - InfluxDB support
+ - Auto WiFi keep-alive task
+ - FLASHING LED
+ - AsyncElegantOTA updates
+ - Sexy & sleek custom dashboard for updating config options + InfluxDB tags
+
 ## Libraries
 
 You need one of:
@@ -8,7 +17,7 @@ You need one of:
 
 General libraries:
  - [InfluxDB Arduino Client](https://github.com/tobiasschuerg/InfluxDB-Client-for-Arduino)
- - [ElegantOTA](https://github.com/ayushsharma82/AsyncElegantOTA)
+ - [AsyncElegantOTA](https://github.com/ayushsharma82/AsyncElegantOTA)
 
 ### EmonLib Patches
 
@@ -27,7 +36,7 @@ Please see [definitions.h](./definitions.h) for all configurables.
 
 ## Usage
 
-After the initial flash to the device, you can use the ElegantOTA solution to keep the node firmware updated.
+After the initial flash to the device, you can use the AsyncElegantOTA solution to keep the node firmware updated.
 
 Using an mDNS browser you can discover nodes without having the IP address. They respond on `http://ESP<node efuse ID>.local/`.
 
@@ -38,8 +47,6 @@ OTA updates available via `http://<node-ip>/update`
 ## TODO
 
  - flash-and-go setup with an app
- - mDNS discovery and access:
-   - add node name + location to mDNS service txt
  - optimise flash storage usage, remove strings etc
  - Maybe add a discovery version with the LCD that can be like a status page?
 
