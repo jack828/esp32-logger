@@ -15,4 +15,6 @@ void captureNodeFields() {
   node.addField(F("rssi"), WiFi.RSSI());
   node.addField(F("uptime"), millis() - setupMillis);
   node.addField(F("freeHeap"), ESP.getFreeHeap());
+  node.addField(F("heapFragmentation"),
+                100 - ESP.getMaxAllocHeap() * 100.0 / ESP.getFreeHeap());
 }
