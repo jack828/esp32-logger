@@ -45,6 +45,10 @@ Please see [definitions.h](./definitions.h) for all configurables.
 
 ## Usage
 
+This project has been designed to use the [Arduino CLI](https://arduino.github.io/arduino-cli/latest/) by usage of a [Makefile](./Makefile).
+
+Please check the file for the appropriate commands - you may need to adjust which port you use.
+
 After the initial flash to the device, you can use the AsyncElegantOTA solution to keep the node firmware updated.
 
 Using an mDNS browser you can discover nodes without having the IP address. They respond on `http://ESP<node efuse ID>.local/`.
