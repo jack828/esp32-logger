@@ -156,11 +156,11 @@ void setup() {
     config.putString("location", locationParam->value().c_str());
     Serial.print(F("[ NODE ] Set config.location: "));
     Serial.println(config.getString("location"));
-
     MDNS.addServiceTxt("_http", "_tcp", "location", config.getString("location"));
+
     setupNode();
 
-    request->send(302, "text/html", update_html);
+    request->send(200, "text/html", update_html);
   });
 
   server.onNotFound([](AsyncWebServerRequest *request) {
