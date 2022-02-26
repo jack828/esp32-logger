@@ -9,6 +9,15 @@
  - AsyncElegantOTA updates
  - Sexy & sleek custom dashboard for updating config options + InfluxDB tags
 
+### Logging
+
+Logging is the primary function of this project. Use this chunk of silicon to collect data, and send it to a bigger chunk of silicon to process and store the data on bits of magnetic metal. Then, at a later date, use another chunk of silicon to view the data in really pretty graphs.
+
+As this README is likely to fall out of date as to what exactly is being tracked, check out these two files for info:
+
+ - [Node (the ESP board itself) data in node.cpp](./node.cpp)
+ - [Sensors (attached modules' data in sensors.cpp](./sensors.cpp)
+
 ## Libraries
 
 You need one of:
