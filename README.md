@@ -29,6 +29,8 @@ Please see [definitions.h](./definitions.h) for all configurables.
 
 After the initial flash to the device, you can use the ElegantOTA solution to keep the node firmware updated.
 
+Using an mDNS browser you can discover nodes without having the IP address. They respond on `http://ESP<node efuse ID>.local/`.
+
 Config is available via `http://<node-ip>/`
 
 OTA updates available via `http://<node-ip>/update`
@@ -36,8 +38,8 @@ OTA updates available via `http://<node-ip>/update`
 ## TODO
 
  - flash-and-go setup with an app
- - MDNS discovery and access:
-   - add node name + location to MDNS service txt
+ - mDNS discovery and access:
+   - add node name + location to mDNS service txt
  - optimise flash storage usage, remove strings etc
  - Maybe add a discovery version with the LCD that can be like a status page?
 
