@@ -33,8 +33,27 @@ General libraries:
 To use the EmonLib library with the 12-bit ADC aboard the ESP32, you'll need to patch it.
  - Add the library using the board manager
  - Open the library in the editor of your choice (Neovim) and manually patch it
- - Or apply the patch in the project
 The location can be found depending on your setup using the [instructions here](https://support.arduino.cc/hc/en-us/articles/4411202655634-Find-Arduino-IDE-files-and-folders#:~:text=macOS%3A%20Arduino%20%3E%20Preferences-,Libraries,-Libraries%20installed%20with)
+
+1. in `EmonLib.h`
+Amend the block at lines 36-40.
+
+```diff
+-#if defined(__arm__)
+#define ADC_BITS    12
+-#else
+-#define ADC_BITS    10
+-#endif
+```
+
+2. in `EmonLib.cpp`
+Replace the 3 occurrences of `1024` with `ADC_COUNTS` in lines 117, 119, 201.
+
+```diff
+-    offsetV = offsetV + ((sampleV - offsetV) / ADC_COUNTS);
++    offsetV = offsetV + ((sampleV - offsetV) / 1024);
+```
+
 
 ## Setup
 
