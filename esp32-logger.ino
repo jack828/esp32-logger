@@ -70,7 +70,7 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PSK);
 
-  int retryCount = 0;
+  uint8_t retryCount = 0;
   do {
     Serial.print(F("."));
     digitalWrite(LED_PIN, HIGH);
@@ -162,7 +162,7 @@ void setup() {
  * the ESP32 will wait for it to recover and try again.
  */
 void wifiKeepAlive(void *parameter) {
-  int failCount = 0;
+  uint8_t failCount = 0;
   for (;;) {
     Serial.print(F("[ WIFI ] Keep alive "));
     bool wifiConnected = (WiFi.RSSI() == 0) || WiFi.status() == WL_CONNECTED;
@@ -176,7 +176,7 @@ void wifiKeepAlive(void *parameter) {
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PSK);
 
-    unsigned long startAttemptTime = millis();
+    uint64_t startAttemptTime = millis();
 
     // Keep looping while we're not connected and haven't reached the timeout
     while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < WIFI_TIMEOUT_MS) {
@@ -205,8 +205,8 @@ void wifiKeepAlive(void *parameter) {
   }
 }
 
-int failedCount = 0;
-int delayTime;
+uint8_t failedCount = 0;
+uint32_t delayTime;
 
 void log(Point &point) {
   Serial.print(F("[ INFLUX ] Writing: "));
