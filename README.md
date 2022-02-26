@@ -15,8 +15,8 @@ Logging is the primary function of this project. Use this chunk of silicon to co
 
 As this README is likely to fall out of date as to what exactly is being tracked, check out these two files for info:
 
- - [Node (the ESP board itself) data in node.cpp](./node.cpp)
- - [Sensors (attached modules' data in sensors.cpp](./sensors.cpp)
+ - [node.cpp (the ESP board itself)](./node.cpp)
+ - [sensors.cpp (attached modules' data)](./sensors.cpp)
 
 ## Libraries
 
