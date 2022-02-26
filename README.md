@@ -36,6 +36,10 @@ OTA updates available via `http://<node-ip>/update`
 ## TODO
 
  - flash-and-go setup with an app
+ - MDNS discovery and access:
+   - add node name + location to MDNS service txt
+ - optimise flash storage usage, remove strings etc
+ - Maybe add a discovery version with the LCD that can be like a status page?
 
 ## Useful links
 

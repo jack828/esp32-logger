@@ -7,6 +7,7 @@
 #include <WiFi.h>
 #include <AsyncElegantOTA.h>
 #include <ESPAsyncWebServer.h>
+#include <ESPmDNS.h>
 #include <Preferences.h>
 #include <InfluxDbClient.h>
 #if defined(SDA_PIN) && defined(SCL_PIN)
@@ -110,9 +111,22 @@ void setup() {
   Wire.begin(SDA_PIN, SCL_PIN);
 #endif
 
+#ifdef ESP8266
+  char host[12];
+  snprintf(host, 12, "ESP%08X", ESP.getChipId());
+#else
+  char host[16];
+  snprintf(host, 16, "ESP%012llX", ESP.getEfuseMac());
+#endif
+
+  MDNS.begin(host);
+  Serial.printf("[ NODE ] MDNS listening http://%s.local\n", host);
+  MDNS.addService("_http", "_tcp", 80);
+  MDNS.addServiceTxt("_http", "_tcp", "board", "ESP32-LOGGER");
+
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", index_html, processor);
-    /* TODO
+    /* TODO ElegantOTA has a nice node script to compress html and output it
        response->addHeader("Content-Encoding", "gzip");
      */
     request->send(response);
