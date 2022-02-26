@@ -1,6 +1,8 @@
 const char index_html[] PROGMEM = "<!DOCTYPE html><html>"
 "<body>"
   "<h1>ESP32 Logger</h1>"
+  "<p>mDNS URL: <a href=\"http://%MDNS_HOSTNAME%.local\">%MDNS_HOSTNAME%.local</a></p>"
+  "<p>IP: %IP%</p>"
   "<p>MAC: %MAC%</p>"
   "<p>Firmware: %FIRMWARE_VERSION%</p>"
   "<p>Uptime: %UPTIME%</p>"

@@ -28,7 +28,18 @@ Preferences config;
 uint64_t setupMillis;
 
 String processor(const String &var) {
-  if (var == "MAC") {
+  if (var == "MDNS_HOSTNAME") {
+#ifdef ESP8266
+  char host[12];
+  snprintf(host, 12, "ESP%08X", ESP.getChipId());
+#else
+  char host[16];
+  snprintf(host, 16, "ESP%012llX", ESP.getEfuseMac());
+#endif
+    return host;
+  } else if (var == "IP") {
+    return WiFi.localIP().toString();
+  } else if (var == "MAC") {
     return WiFi.macAddress();
   } else if (var == "FIRMWARE_VERSION") {
     return FIRMWARE_VERSION;
