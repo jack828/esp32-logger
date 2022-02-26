@@ -134,6 +134,8 @@ void setup() {
   Serial.printf("[ NODE ] MDNS listening http://%s.local\n", host);
   MDNS.addService("_http", "_tcp", 80);
   MDNS.addServiceTxt("_http", "_tcp", "board", "ESP32-LOGGER");
+  MDNS.addServiceTxt("_http", "_tcp", "name", config.getString("name"));
+  MDNS.addServiceTxt("_http", "_tcp", "location", config.getString("location"));
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", index_html, processor);
@@ -148,12 +150,14 @@ void setup() {
     config.putString("name", nameParam->value().c_str());
     Serial.print(F("[ NODE ] Set config.name: "));
     Serial.println(config.getString("name"));
+    MDNS.addServiceTxt("_http", "_tcp", "name", config.getString("name"));
 
     AsyncWebParameter *locationParam = request->getParam("location", true);
     config.putString("location", locationParam->value().c_str());
     Serial.print(F("[ NODE ] Set config.location: "));
     Serial.println(config.getString("location"));
 
+    MDNS.addServiceTxt("_http", "_tcp", "location", config.getString("location"));
     setupNode();
 
     request->redirect("/");
