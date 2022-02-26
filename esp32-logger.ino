@@ -30,11 +30,11 @@ uint64_t setupMillis;
 String processor(const String &var) {
   if (var == "MDNS_HOSTNAME") {
 #ifdef ESP8266
-  char host[12];
-  snprintf(host, 12, "ESP%08X", ESP.getChipId());
+    char host[12];
+    snprintf(host, 12, "ESP%08X", ESP.getChipId());
 #else
-  char host[16];
-  snprintf(host, 16, "ESP%012llX", ESP.getEfuseMac());
+    char host[16];
+    snprintf(host, 16, "ESP%012llX", ESP.getEfuseMac());
 #endif
     return host;
   } else if (var == "IP") {
