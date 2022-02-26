@@ -26,3 +26,11 @@ const char index_html[] PROGMEM = "<!DOCTYPE html><html>"
 "</body>"
 "</html>";
 
+const char update_html[] PROGMEM = "<!DOCTYPE html><html>"
+"<head>"
+  "<meta http-equiv=\"refresh\" content=\"5;url=/\">"
+"</head>"
+"<body>"
+  "<h1>Config updated.</h1>"
+"</body>"
+"</html>";

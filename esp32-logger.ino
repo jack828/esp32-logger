@@ -160,7 +160,7 @@ void setup() {
     MDNS.addServiceTxt("_http", "_tcp", "location", config.getString("location"));
     setupNode();
 
-    request->redirect("/");
+    request->send(302, "text/html", update_html);
   });
 
   server.onNotFound([](AsyncWebServerRequest *request) {
