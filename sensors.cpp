@@ -68,7 +68,7 @@ void captureSensorsFields() {
 
 #ifdef SCT_013_PIN
   double irms = emon.calcIrms(1480);
-  Serial.printf("%f, %f\n", irms, irms * VOLTAGE);
+  sensors.addField(F("irms"), irms);
 #endif
 }
 
