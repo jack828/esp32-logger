@@ -11,5 +11,6 @@ extern Preferences config;
 
 void setNodeTags(void);
 void captureNodeFields(void);
+void nodeLoggerTask(void* parameters);
 
 #endif

@@ -9,10 +9,18 @@
 
 // Configuration
 #define LOG_PERIOD 60 * 1000 // Environment sensors
-// #define LOG_PERIOD 1000 // Power monitor
+#define NODE_LOG_PERIOD 60 * 1000 // 60 seconds
+#define SENSORS_LOG_PERIOD 1 * 1000 // 1 second
+
 #define WIFI_CHECK_PERIOD_MS 30000 // 10s keep alive period
 #define WIFI_TIMEOUT_MS 10000      // 10s WiFi connection timeout
 #define WIFI_RECOVER_TIME_MS 10000 // 10s after a failed connection attempt
+
+// This is defined using compile time flags, but clangd doesn't like it
+// And if it isn't defined when compiling with the Arduino IDE, this won't break anything
+#ifndef FIRMWARE_VERSION
+#define FIRMWARE_VERSION "NOT_SET"
+#endif
 
 /*
  * You can define any of these to enable sensors

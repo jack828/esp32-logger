@@ -20,18 +20,17 @@ bool logPoint(Point &point) {
   Serial.print(F("[ INFLUX ] Writing: "));
   Serial.println(client.pointToLineProtocol(point));
   if (!client.writePoint(point)) {
-    Serial.print(F("[ INFLUX ] Write failed: "));
+    Serial.print(F("[ INFLUX ] Write failed! Status Code: "));
+    Serial.print(client.getLastStatusCode());
+    Serial.print(F(", "));
     Serial.println(client.getLastErrorMessage());
-    failedCount++;
-    if (failedCount > 5) {
+    if (++failedCount > 5) {
       Serial.println(F("[ INFLUX ] Failed too often, restarting"));
       ESP.restart();
-    } else {
-      // wait a shorter time before trying again
-      // TODO this just gets reset in loop...
-      // delayTime = LOG_PERIOD / 10;
     }
+    return false;
   } else {
     failedCount = 0;
+    return true;
   }
 }

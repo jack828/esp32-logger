@@ -15,12 +15,6 @@
 #include <Wire.h>
 #endif
 
-// This is defined using compile time flags, but clangd doesn't like it
-// And if it isn't defined when compiling with the Arduino IDE, this won't break anything
-#ifndef FIRMWARE_VERSION
-#define FIRMWARE_VERSION "NOT_SET"
-#endif
-
 AsyncWebServer server(80);
 Preferences config;
 
@@ -163,7 +157,7 @@ void setup() {
   server.begin();
   AsyncElegantOTA.begin(&server);
 
-  // Only create the task after all setup is done, and we're ready
+  // Only create the tasks after all setup is done, and we're ready
   xTaskCreate(
     wifiKeepAlive,
     "wifiKeepAlive",  // Task name
@@ -171,6 +165,18 @@ void setup() {
     NULL,             // Parameter
     1,                // Task priority
     NULL              // Task handle
+  );
+
+  // Offset to (hopefully) prevent log messages from crashing into each other
+  delay(333);
+
+  xTaskCreate(
+    nodeLoggerTask,
+    "nodeLoggerTask",
+    8192,
+    NULL,
+    4,
+    NULL
   );
 } /* SETUP */
 
@@ -232,11 +238,8 @@ uint32_t delayTime;
 void loop() {
   delayTime = LOG_PERIOD;
 
-  captureNodeFields();
-  logPoint(node);
-  captureSensorFields();
+  /* captureSensorFields(); */
   /* logPoint(sensors); */
 
-  Serial.println(F("[ NODE ] Waiting..."));
   delay(delayTime);
 }
