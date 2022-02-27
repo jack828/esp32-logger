@@ -3,8 +3,6 @@
 Point sensors("sensors");
 
 void setupSensors() {
-  sensors.addTag(F("MAC"), WiFi.macAddress());
-
 #ifdef BME280_I2C
   Serial.println(F("[ BME280 ] has sensor"));
   boolean bme280Ok = bme280.begin(0x76, &Wire);
@@ -25,8 +23,16 @@ void setupSensors() {
 #endif
 }
 
+void setSensorsTags() {
+  sensors.clearTags();
+  sensors.addTag(F("MAC"), WiFi.macAddress());
+  sensors.addTag(F("name"), config.getString("name"));
+  sensors.addTag(F("location"), config.getString("location"));
+}
+
 void captureSensorFields() {
   sensors.clearFields();
+
 #ifdef BME280_I2C
   bme280.takeForcedMeasurement();
   temperature = bme280.readTemperature();

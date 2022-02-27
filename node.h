@@ -9,7 +9,7 @@ extern Point node;
 extern uint64_t setupMillis;
 extern Preferences config;
 
-void setupNode(void);
+void setNodeTags(void);
 void captureNodeFields(void);
 
 #endif

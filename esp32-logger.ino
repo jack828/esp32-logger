@@ -116,11 +116,13 @@ void setup() {
     ESP.restart();
   }
 
-  setupNode();
+  setNodeTags();
+  setSensorsTags();
 
 #ifdef HAS_I2C
   Wire.begin(SDA_PIN, SCL_PIN);
 #endif
+  setupSensors();
 
 #ifdef ESP8266
   char host[12];
@@ -158,7 +160,8 @@ void setup() {
     Serial.println(config.getString("location"));
     MDNS.addServiceTxt("_http", "_tcp", "location", config.getString("location"));
 
-    setupNode();
+    setNodeTags();
+    setSensorsTags();
 
     request->send(200, "text/html", update_html);
   });

@@ -2,6 +2,7 @@
 #define Sensors_h
 
 #include <InfluxDbClient.h>
+#include <Preferences.h>
 
 #ifdef BME280_I2C
 #include <Adafruit_BME280.h>
@@ -17,8 +18,10 @@ EnergyMonitor emon;
 #endif
 
 extern Point sensors;
+extern Preferences config;
 
 void setupSensors(void);
+void setSensorsTags(void);
 void captureSensorFields(void);
 
 #endif
