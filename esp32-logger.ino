@@ -3,13 +3,13 @@
 #include "data.h"
 #include "node.h"
 #include "sensors.h"
+#include "influx.h"
 
 #include <WiFi.h>
 #include <AsyncElegantOTA.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
 #include <Preferences.h>
-#include <InfluxDbClient.h>
 #if defined(SDA_PIN) && defined(SCL_PIN)
 #define HAS_I2C
 #include <Wire.h>
@@ -21,7 +21,6 @@
 #define FIRMWARE_VERSION "NOT_SET"
 #endif
 
-InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 AsyncWebServer server(80);
 Preferences config;
 
@@ -106,16 +105,7 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.println();
 
-  // Check server connection
-  if (client.validateConnection()) {
-    Serial.print(F("[ INFLUX ] Connected to: "));
-    Serial.println(client.getServerUrl());
-  } else {
-    Serial.print(F("[ INFLUX ] Connection failed: "));
-    Serial.println(client.getLastErrorMessage());
-    ESP.restart();
-  }
-
+  validateInfluxConnection();
   setNodeTags();
   setSensorsTags();
 
@@ -237,34 +227,15 @@ void wifiKeepAlive(void *parameter) {
   }
 }
 
-uint8_t failedCount = 0;
 uint32_t delayTime;
-
-void log(Point &point) {
-  Serial.print(F("[ INFLUX ] Writing: "));
-  Serial.println(client.pointToLineProtocol(point));
-  if (!client.writePoint(point)) {
-    Serial.print(F("[ INFLUX ] Write failed: "));
-    Serial.println(client.getLastErrorMessage());
-    failedCount++;
-    if (failedCount > 5) {
-      Serial.println(F("[ NODE ] Failed too often, restarting"));
-      ESP.restart();
-    } else {
-      // wait a shorter time before trying again
-      // TODO this just gets reset in loop...
-      delayTime = LOG_PERIOD / 10;
-    }
-  }
-}
 
 void loop() {
   delayTime = LOG_PERIOD;
 
   captureNodeFields();
-  log(node);
+  logPoint(node);
   captureSensorFields();
-  log(sensors);
+  /* logPoint(sensors); */
 
   Serial.println(F("[ NODE ] Waiting..."));
   delay(delayTime);
