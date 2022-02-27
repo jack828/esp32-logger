@@ -53,8 +53,11 @@
 #define BME280_I2C
 #endif
 #ifdef ESP_32
-#define SDA_PIN 21
-#define SCL_PIN 22
+// #define SDA_PIN 21
+// #define SCL_PIN 22
+#define SCT_013_PIN A0
+#define SCT_013_CALIBRATION 111.1
+#define VOLTAGE 256.0 // Pretty high where I live
 #define LED_PIN 2
 // #define BME280_I2C
 // #define SOIL_MOISTURE_PIN 33

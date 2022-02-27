@@ -19,7 +19,7 @@ void setupSensors() {
 #endif
 
 #ifdef SCT_013_PIN
-  emon.current(SCT_013_PIN, 111.1);
+  emon.current(SCT_013_PIN, SCT_013_CALIBRATION);
 #endif
 }
 
