@@ -1,4 +1,19 @@
 #include "sensors.h"
+#include "definitions.h"
+#include "influx.h"
+
+#ifdef BME280_I2C
+#include <Adafruit_BME280.h>
+Adafruit_BME280 bme280;
+double temperature = 0.0;
+double pressure = 0.0;
+double humidity = 0.0;
+double vpd = 0.0;
+#endif
+#ifdef SCT_013_PIN
+#include "EmonLib.h"
+EnergyMonitor emon;
+#endif
 
 Point sensors("sensors");
 
@@ -19,6 +34,7 @@ void setupSensors() {
 #endif
 
 #ifdef SCT_013_PIN
+  Serial.println(F("[ SCT013 ] has sensor"));
   emon.current(SCT_013_PIN, SCT_013_CALIBRATION);
 #endif
 }
@@ -30,7 +46,7 @@ void setSensorsTags() {
   sensors.addTag(F("location"), config.getString("location"));
 }
 
-void captureSensorFields() {
+void captureSensorsFields() {
   sensors.clearFields();
 
 #ifdef BME280_I2C
@@ -54,4 +70,27 @@ void captureSensorFields() {
   double irms = emon.calcIrms(1480);
   Serial.printf("%f, %f\n", irms, irms * VOLTAGE);
 #endif
+}
+
+/**
+ * Task: Wait the appropriate period, and log the `sensors` fields.
+ *
+ * If logging fails, it will wait progressively smaller portions of time.
+ */
+void sensorsLoggerTask(void *parameters) {
+  double delayTime = SENSORS_LOG_PERIOD;
+  for (;;) {
+    Serial.println(F("[ SENSORS ] Logger task"));
+    captureSensorsFields();
+    bool logOk = logPoint(sensors);
+    if (!logOk) {
+      // On failure, Decrease delay by 25%, 1 sec minimum
+      delayTime = min(delayTime * 0.75, 1000.0);
+    } else {
+      // On success, reset delay to normal
+      delayTime = SENSORS_LOG_PERIOD;
+    }
+    Serial.println(F("[ SENSORS ] Waiting..."));
+    vTaskDelay(SENSORS_LOG_PERIOD / portTICK_PERIOD_MS);
+  }
 }

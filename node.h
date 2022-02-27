@@ -1,7 +1,6 @@
 #ifndef Node_h
 #define Node_h
 
-#include "stdint.h"
 #include <InfluxDbClient.h>
 #include <Preferences.h>
 

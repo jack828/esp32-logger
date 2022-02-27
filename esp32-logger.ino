@@ -178,6 +178,17 @@ void setup() {
     4,
     NULL
   );
+
+  delay(333);
+
+  xTaskCreate(
+    sensorsLoggerTask,
+    "sensorsLoggerTask",
+    8192,
+    NULL,
+    4,
+    NULL
+  );
 } /* SETUP */
 
 /**
@@ -233,13 +244,6 @@ void wifiKeepAlive(void *parameter) {
   }
 }
 
-uint32_t delayTime;
-
 void loop() {
-  delayTime = LOG_PERIOD;
-
-  /* captureSensorFields(); */
-  /* logPoint(sensors); */
-
-  delay(delayTime);
+  /* beep boop nothing to do here! */
 }

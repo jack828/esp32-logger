@@ -8,7 +8,6 @@
 // #define ESP_8266 // Use this one if it might blow up
 
 // Configuration
-#define LOG_PERIOD 60 * 1000 // Environment sensors
 #define NODE_LOG_PERIOD 60 * 1000 // 60 seconds
 #define SENSORS_LOG_PERIOD 1 * 1000 // 1 second
 
@@ -81,17 +80,13 @@
 // YAY GLOBALS SORRYNOTSORRY
 
 // why, past me, did you do it like this?
+// TODO these are no longer necessary
+// Well...they're still "global" but only in `sensors.h`
 #ifdef BME680_I2C
 extern double temperature;
 extern double pressure;
 extern double humidity;
 extern double airQuality;
-extern double vpd;
-#endif
-#ifdef BME280_I2C
-extern double temperature;
-extern double pressure;
-extern double humidity;
 extern double vpd;
 #endif
 #ifdef BMP280_I2C
