@@ -173,7 +173,7 @@ void setup() {
   xTaskCreate(
     nodeLoggerTask,
     "nodeLoggerTask",
-    8192,
+    32768,
     NULL,
     4,
     NULL
@@ -184,7 +184,7 @@ void setup() {
   xTaskCreate(
     sensorsLoggerTask,
     "sensorsLoggerTask",
-    8192,
+    32768,
     NULL,
     4,
     NULL
