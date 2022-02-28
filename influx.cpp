@@ -20,8 +20,13 @@ bool logPoint(Point &point) {
   Serial.print(F("[ INFLUX ] Writing: "));
   Serial.println(client.pointToLineProtocol(point));
   if (!client.writePoint(point)) {
+    int16_t lastStatusCode = client.getLastStatusCode();
+    if (lastStatusCode == 204) {
+      // We didn't send any data!
+      return true;
+    }
     Serial.print(F("[ INFLUX ] Write failed! Status Code: "));
-    Serial.print(client.getLastStatusCode());
+    Serial.print(lastStatusCode);
     Serial.print(F(", "));
     Serial.println(client.getLastErrorMessage());
     if (++failedCount > 5) {
