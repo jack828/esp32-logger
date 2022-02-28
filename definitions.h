@@ -2,10 +2,10 @@
 #define Definitions_h
 
 // pick a board any board
-// #define ESP_32_OLED_BATT
+#define ESP_32_OLED_BATT
 // #define ESP_32_OLED
 // #define ESP_32
-#define ESP_32_U
+// #define ESP_32_U
 // #define ESP_8266 // Use this one if it might blow up
 
 // Configuration
@@ -40,12 +40,12 @@
 // Hardware specific config
 // so m a n y
 #ifdef ESP_32_OLED_BATT
-#define SDA_PIN 21
-#define SCL_PIN 22
+// #define SDA_PIN 21
+// #define SCL_PIN 22
 #define LED_PIN 16
 // #define LIGHT_SENSOR_PIN 36
-#define BME280_I2C
-#define OLED
+// #define BME280_I2C
+// #define OLED
 #endif
 #ifdef ESP_32_OLED
 #define SDA_PIN 5
