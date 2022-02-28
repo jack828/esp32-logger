@@ -69,6 +69,7 @@ void captureSensorsFields() {
 #ifdef SCT_013_PIN
   double irms = emon.calcIrms(1480);
   sensors.addField(F("irms"), irms);
+  sensors.addField(F("power"), irms * VOLTAGE);
 #endif
 }
 
