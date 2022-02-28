@@ -3,8 +3,9 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-#define ESP_32_OLED
+// #define ESP_32_OLED
 // #define ESP_32
+#define ESP_32_U
 // #define ESP_8266 // Use this one if it might blow up
 
 // Configuration
@@ -69,8 +70,14 @@
 // #define BME280_I2C
 // #define SOIL_MOISTURE_PIN 33
 #endif
-// #define BH1750_I2C // D22 SCL & D21 SDA
 // #define BME280_I2C // D22 SCL & D21 SDA
+// #define BH1750_I2C // D22 SCL & D21 SDA
+#ifdef ESP_32_U
+#define LED_PIN 2
+#define SDA_PIN 21
+#define SCL_PIN 22
+#define BME280_I2C
+#endif
 #ifdef ESP_8266
 #define LED_PIN LED_BUILTIN
 #define SCT_013_PIN A0
