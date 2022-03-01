@@ -84,27 +84,4 @@
 #define VOLTAGE 256.0 // Pretty high where I live
 #endif
 
-// YAY GLOBALS SORRYNOTSORRY
-
-// why, past me, did you do it like this?
-// TODO these are no longer necessary
-// Well...they're still "global" but only in `sensors.h`
-#ifdef BMP280_I2C
-extern double temperature;
-extern double pressure;
-#endif
-#ifdef BH1750_I2C
-extern double lux;
-#endif
-#ifdef DHT11_PIN
-#include <DHTesp.h>
-extern TempAndHumidity reading;
-#endif
-#ifdef LIGHT_SENSOR_PIN
-extern int lightLevel;
-#endif
-#ifdef SOIL_MOISTURE_PIN
-extern int soilMoisture;
-#endif
-
 #endif
