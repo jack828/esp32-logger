@@ -4,6 +4,7 @@
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 
 bool validateInfluxConnection() {
+  client.setWriteOptions(WriteOptions().writePrecision(WritePrecision::MS));
   bool influxOk = client.validateConnection();
   if (influxOk) {
     Serial.print(F("[ INFLUX ] Connected to: "));
