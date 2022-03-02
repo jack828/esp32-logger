@@ -165,7 +165,7 @@ void setup() {
   xTaskCreate(
     wifiKeepAlive,
     "wifiKeepAlive",  // Task name
-    2048,             // Stack size (bytes)
+    16192,            // Stack size (bytes)
     NULL,             // Parameter
     1,                // Task priority
     NULL              // Task handle
