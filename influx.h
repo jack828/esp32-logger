@@ -1,9 +1,9 @@
-#ifndef Log_H
-#define Log_H
+#ifndef Influx_H
+#define Influx_H
 
 #include <InfluxDbClient.h>
 
-void validateInfluxConnection();
+bool validateInfluxConnection();
 bool logPoint(Point &point);
 
 #endif

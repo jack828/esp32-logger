@@ -99,7 +99,11 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.println();
 
-  validateInfluxConnection();
+  boolean influxOk = validateInfluxConnection();
+  if (!influxOk) {
+    // literally no point in being here
+    ESP.restart();
+  }
   setNodeTags();
   setSensorsTags();
 
@@ -207,6 +211,12 @@ void wifiKeepAlive(void *parameter) {
     bool wifiConnected = (WiFi.RSSI() == 0) || WiFi.status() == WL_CONNECTED;
     Serial.println(wifiConnected ? F("OK") : F("NOT OK"));
     if (wifiConnected) {
+      bool influxOk = validateInfluxConnection();
+      if (!influxOk) {
+        Serial.println(F("[ NODE ] Rebooting..."));
+        Serial.flush();
+        ESP.restart();
+      }
       vTaskDelay(10000 / portTICK_PERIOD_MS);
       continue;
     }

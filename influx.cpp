@@ -3,14 +3,16 @@
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 
-void validateInfluxConnection() {
-  if (client.validateConnection()) {
+bool validateInfluxConnection() {
+  bool influxOk = client.validateConnection();
+  if (influxOk) {
     Serial.print(F("[ INFLUX ] Connected to: "));
     Serial.println(client.getServerUrl());
+    return true;
   } else {
     Serial.print(F("[ INFLUX ] Connection failed: "));
     Serial.println(client.getLastErrorMessage());
-    ESP.restart();
+    return false;
   }
 }
 
