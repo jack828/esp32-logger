@@ -81,6 +81,7 @@ OTA updates available via `http://<node-ip>/update`
  - flash-and-go setup with an app
  - optimise flash storage usage, remove strings etc
  - Maybe add a discovery version with the LCD that can be like a status page?
+ - if ran out of space change partition scheme for `Minimal SPIFFS (1.9MB APP with OTA/190KB SPIFFS)` - `--build-properties build.partitions=min_spiffs,upload.maximum_size=1966080`
 
 ## Useful links
 
