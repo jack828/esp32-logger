@@ -3,7 +3,8 @@
 
 #include <InfluxDbClient.h>
 
-bool validateInfluxConnection();
+void setupInfluxOptions(void);
+bool validateInfluxConnection(void);
 bool logPoint(Point &point);
 
 #endif

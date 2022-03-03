@@ -4,9 +4,12 @@
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
 
-bool validateInfluxConnection() {
+void setupInfluxOptions() {
   client.setWriteOptions(WriteOptions().writePrecision(WritePrecision::MS));
   client.setHTTPOptions(HTTPOptions().connectionReuse(true));
+}
+
+bool validateInfluxConnection() {
   xSemaphoreTake(mutex, portMAX_DELAY);
   bool influxOk = client.validateConnection();
   xSemaphoreGive(mutex);

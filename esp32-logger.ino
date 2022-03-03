@@ -99,6 +99,7 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.println();
 
+  setupInfluxOptions();
   boolean influxOk = validateInfluxConnection();
   if (!influxOk) {
     // literally no point in being here
