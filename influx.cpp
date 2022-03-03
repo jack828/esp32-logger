@@ -5,7 +5,8 @@ InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
 SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
 
 void setupInfluxOptions() {
-  client.setWriteOptions(WriteOptions().writePrecision(WritePrecision::MS));
+  // TODO this breaks submission - need to set timestamp manually?
+  // client.setWriteOptions(WriteOptions().writePrecision(WritePrecision::MS));
   client.setHTTPOptions(HTTPOptions().connectionReuse(true));
 }
 
