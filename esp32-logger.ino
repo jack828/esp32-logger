@@ -27,7 +27,7 @@ String processor(const String &var) {
     snprintf(host, 12, "ESP%08X", ESP.getChipId());
 #else
     char host[16];
-    snprintf(host, 16, "ESP%012llX", ESP.getEfuseMac());
+    snprintf(host, 16, "ESP%012lX", ESP.getEfuseMac());
 #endif
     return host;
   } else if (var == "IP") {
@@ -42,8 +42,8 @@ String processor(const String &var) {
     return config.getString("location");
   } else if (var == "UPTIME") {
     uint64_t uptime = millis() - setupMillis;
-    unsigned long seconds = uptime / 1000;
-    int days = seconds / 86400;
+    uint64_t seconds = uptime / 1000;
+    uint16_t days = seconds / 86400;
     seconds %= 86400;
     byte hours = seconds / 3600;
     seconds %= 3600;
@@ -51,7 +51,7 @@ String processor(const String &var) {
     seconds %= 60;
 
     char output[14];
-    snprintf(output, sizeof(output), "%02dd%02dh%02dm%02ds", days, hours, minutes, seconds);
+    snprintf(output, sizeof(output), "%02dd%02dh%02dm%02lus", days, hours, minutes, seconds);
     return output;
   }
   return "";
@@ -117,7 +117,7 @@ void setup() {
   snprintf(host, 12, "ESP%08X", ESP.getChipId());
 #else
   char host[16];
-  snprintf(host, 16, "ESP%012llX", ESP.getEfuseMac());
+  snprintf(host, 16, "ESP%012lX", ESP.getEfuseMac());
 #endif
 
   MDNS.begin(host);
