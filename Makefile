@@ -5,25 +5,25 @@ FQBN=esp32:esp32:esp32
 
 compile:
 	arduino-cli compile \
-    --fqbn $(FQBN) \
-    --log-level=info \
-    --build-path=$(PWD)/build \
-    --build-property compiler.cpp.extra_flags=-DFIRMWARE_VERSION=\"$(TAG)\" \
-    --build-property compiler.warning_level=all \
-    --warnings all \
-    .
+		--fqbn $(FQBN) \
+		--log-level=info \
+		--build-path=$(PWD)/build \
+		--build-property compiler.cpp.extra_flags=-DFIRMWARE_VERSION=\"$(TAG)\" \
+		--build-property compiler.warning_level=all \
+		--warnings all \
+		.
 
 upload:
 	arduino-cli upload \
-    -p $(PORT) \
-    --fqbn $(FQBN) \
-    --log-level=debug \
-    --input-dir=$(PWD)/build
+		-p $(PORT) \
+		--fqbn $(FQBN) \
+		--log-level=debug \
+		--input-dir=$(PWD)/build
 
 monitor:
 	arduino-cli monitor \
-    -p $(PORT) \
-    --config Baudrate=115200
+		-p $(PORT) \
+		--config Baudrate=115200
 
 clean:
 	rm -rf ./build
