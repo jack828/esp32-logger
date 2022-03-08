@@ -27,7 +27,7 @@ String processor(const String &var) {
     snprintf(host, 12, "ESP%08X", ESP.getChipId());
 #else
     char host[16];
-    snprintf(host, 16, "ESP%012lX", ESP.getEfuseMac());
+    snprintf(host, 16, "ESP%012" PRIX64, ESP.getEfuseMac());
 #endif
     return host;
   } else if (var == "IP") {
@@ -118,7 +118,7 @@ void setup() {
   snprintf(host, 12, "ESP%08X", ESP.getChipId());
 #else
   char host[16];
-  snprintf(host, 16, "ESP%012lX", ESP.getEfuseMac());
+  snprintf(host, 16, "ESP%012" PRIX64, ESP.getEfuseMac());
 #endif
 
   MDNS.begin(host);
