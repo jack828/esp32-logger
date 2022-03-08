@@ -36,6 +36,7 @@ void setupSensors() {
 #ifdef SCT_013_PIN
   Serial.println(F("[ SCT013 ] has sensor"));
   emon.current(SCT_013_PIN, SCT_013_CALIBRATION);
+  delay(5000); // Sensor needs to chill after boot or values spike
 #endif
 }
 
