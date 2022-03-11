@@ -86,6 +86,8 @@ OTA updates available via `http://<node-ip>/update`
  - lock/stop sending metrics when performing OTA
  - Automatic update fetching from internet somewhere? https://www.lab4iot.com/2021/02/21/esp32-secure-firmware-update-over-the-air-ota/
  - Hall effect sensor support https://moderndevice.com/product/current-sensor/
+ - update resolution of uptime + use when setting up batching https://forum.arduino.cc/t/question-about-esp32-millis-counter/699263
+ -
 
 ## Useful links
 
