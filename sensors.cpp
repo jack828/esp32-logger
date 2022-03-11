@@ -10,9 +10,14 @@ Adafruit_BME280 bme280;
 #include <bsec.h>
 Bsec iaqSensor;
 void checkIaqSensorStatus(void);
+void saveBsecState(void);
+void loadBsecState(void);
 const uint8_t bsec_config_iaq[] = {
 #include "config/generic_33v_3s_4d/bsec_iaq.txt"
 };
+#define STATE_SAVE_PERIOD UINT32_C(360 * 60 * 1000) // 360 mins - 4 times a day
+#define BSEC_SENSOR_COUNT 10
+uint8_t bsecState[BSEC_MAX_STATE_BLOB_SIZE] = {0};
 #endif
 #ifdef SCT_013_PIN
 #include "EmonLib.h"
@@ -47,6 +52,21 @@ void setupSensors() {
   checkIaqSensorStatus();
 
   iaqSensor.setConfig(bsec_config_iaq);
+
+  checkIaqSensorStatus();
+
+  if (config.getBytesLength("bsecState") == 0) {
+    // No state saved, zero fill
+    Serial.println("[ BME680 ] Zero filled state");
+    config.putBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+  } else {
+    config.getBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+    Serial.printf("[ BME680 ] Loaded state (%lu) ", config.getBytesLength("bsecState"));
+    for (int i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
+      Serial.printf("%d", bsecState[i]);
+    }
+    Serial.println();
+  }
 
   checkIaqSensorStatus();
 
