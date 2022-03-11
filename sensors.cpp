@@ -10,6 +10,9 @@ Adafruit_BME280 bme280;
 #include <bsec.h>
 Bsec iaqSensor;
 void checkIaqSensorStatus(void);
+const uint8_t bsec_config_iaq[] = {
+#include "config/generic_33v_3s_4d/bsec_iaq.txt"
+};
 #endif
 #ifdef SCT_013_PIN
 #include "EmonLib.h"
@@ -42,8 +45,12 @@ void setupSensors() {
                 iaqSensor.version.major_bugfix, iaqSensor.version.minor_bugfix);
 
   checkIaqSensorStatus();
-#define BSEC_SENSOR_COUNT 10
-  bsec_virtual_sensor_t sensorList[BSEC_SENSOR_COUNT] = {
+
+  iaqSensor.setConfig(bsec_config_iaq);
+
+  checkIaqSensorStatus();
+
+  bsec_virtual_sensor_t sensorList[] = {
       BSEC_OUTPUT_RAW_TEMPERATURE,
       BSEC_OUTPUT_RAW_PRESSURE,
       BSEC_OUTPUT_RAW_HUMIDITY,
@@ -55,7 +62,8 @@ void setupSensors() {
       BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
       BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY};
 
-  iaqSensor.updateSubscription(sensorList, BSEC_SENSOR_COUNT,
+  iaqSensor.updateSubscription(sensorList,
+                               sizeof(sensorList) / sizeof(sensorList[0]),
                                BSEC_SAMPLE_RATE_LP);
   checkIaqSensorStatus();
 #endif
