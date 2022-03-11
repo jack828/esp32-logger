@@ -23,6 +23,7 @@ As this README is likely to fall out of date as to what exactly is being tracked
 You need one of:
  - Adafruit BME 280 + Adafruit Unified Sensor
  - EmonLib + SCT-013-000 & associated hardware
+ - [Bosch BSEC Arduino Library](https://github.com/BoschSensortec/BSEC-Arduino-library)
 
 General libraries:
  - [InfluxDB Arduino Client](https://github.com/tobiasschuerg/InfluxDB-Client-for-Arduino)
@@ -83,6 +84,8 @@ OTA updates available via `http://<node-ip>/update`
  - Maybe add a discovery version with the LCD that can be like a status page?
  - if ran out of space change partition scheme for `Minimal SPIFFS (1.9MB APP with OTA/190KB SPIFFS)` - `--build-properties build.partitions=min_spiffs,upload.maximum_size=1966080`
  - lock/stop sending metrics when performing OTA
+ - Automatic update fetching from internet somewhere? https://www.lab4iot.com/2021/02/21/esp32-secure-firmware-update-over-the-air-ota/
+ - Hall effect sensor support https://moderndevice.com/product/current-sensor/
 
 ## Useful links
 

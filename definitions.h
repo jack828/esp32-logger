@@ -3,10 +3,12 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-// #define ESP_32_OLED
-#define ESP_32
+#define ESP_32_OLED
+// #define ESP_32
 // #define ESP_32_U
 // #define ESP_8266 // Use this one if it might blow up
+// TODO maybe do by BOARD_ID ?
+// #ifndef BOARD
 
 // Configuration
 #define NODE_LOG_PERIOD 60 * 1000 // 60 seconds
@@ -52,7 +54,8 @@
 #define SCL_PIN 4
 // this doesn't have one but :shrug:
 #define LED_PIN 16
-#define BME280_I2C
+// #define BME280_I2C
+#define BME680_I2C
 // #define OLED
 // #define OLED_FLIP_V
 // #define TOUCH_L_PIN 13

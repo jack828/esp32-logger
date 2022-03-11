@@ -6,6 +6,11 @@
 #include <Adafruit_BME280.h>
 Adafruit_BME280 bme280;
 #endif
+#ifdef BME680_I2C
+#include <bsec.h>
+Bsec iaqSensor;
+void checkIaqSensorStatus(void);
+#endif
 #ifdef SCT_013_PIN
 #include "EmonLib.h"
 EnergyMonitor emon;
@@ -29,12 +34,65 @@ void setupSensors() {
                      Adafruit_BME280::STANDBY_MS_0_5);
 #endif
 
+#ifdef BME680_I2C
+  Serial.println(F("[ BME680 ] has sensor"));
+  // boolean bme680Ok = bme680.begin(0x77, true);
+  // Serial.print(F("[ BME680 ] sensor "));
+  // Serial.print(bme680Ok ? F("") : F("NOT "));
+  iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
+  Serial.printf("[ BME680 ] BSEC library v%d.%d.%d.%d\n",
+                iaqSensor.version.major, iaqSensor.version.minor,
+                iaqSensor.version.major_bugfix, iaqSensor.version.minor_bugfix);
+
+  checkIaqSensorStatus();
+#define BSEC_SENSOR_COUNT 10
+  bsec_virtual_sensor_t sensorList[BSEC_SENSOR_COUNT] = {
+      BSEC_OUTPUT_RAW_TEMPERATURE,
+      BSEC_OUTPUT_RAW_PRESSURE,
+      BSEC_OUTPUT_RAW_HUMIDITY,
+      BSEC_OUTPUT_RAW_GAS,
+      BSEC_OUTPUT_IAQ,
+      BSEC_OUTPUT_STATIC_IAQ,
+      BSEC_OUTPUT_CO2_EQUIVALENT,
+      BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
+      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
+      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY};
+
+  iaqSensor.updateSubscription(sensorList, BSEC_SENSOR_COUNT,
+                               BSEC_SAMPLE_RATE_LP);
+  checkIaqSensorStatus();
+#endif
+
 #ifdef SCT_013_PIN
   Serial.println(F("[ SCT013 ] has sensor"));
   emon.current(SCT_013_PIN, SCT_013_CALIBRATION);
   delay(5000); // Sensor needs to chill after boot or values spike
 #endif
 }
+
+#ifdef BME680_I2C
+void checkIaqSensorStatus(void) {
+  if (iaqSensor.status != BSEC_OK) {
+    if (iaqSensor.status < BSEC_OK) {
+      Serial.print(F("[ BME680 ] BSEC error code: "));
+      Serial.println(iaqSensor.status);
+    } else {
+      Serial.print(F("[ BME680 ] BSEC warning code: "));
+      Serial.println(iaqSensor.status);
+    }
+  }
+
+  if (iaqSensor.bme680Status != BME680_OK) {
+    if (iaqSensor.bme680Status < BME680_OK) {
+      Serial.print(F("[ BME680 ] BME680 error code: "));
+      Serial.println(iaqSensor.status);
+    } else {
+      Serial.print(F("[ BME680 ] BME680 warning code: "));
+      Serial.println(iaqSensor.status);
+    }
+  }
+}
+#endif
 
 double calculateVpd(double temperature, double humidity) {
   double e = 2.71828;
@@ -65,6 +123,31 @@ void captureSensorsFields() {
   sensors.addField(F("pressure"), pressure);
   sensors.addField(F("humidity"), humidity);
   sensors.addField(F("vpd"), vpd);
+#endif
+
+#ifdef BME680_I2C
+  if (iaqSensor.run()) {
+    Serial.printf(
+        "Raw Temp %.2f\nPressure %.2f\nRaw rH %.2f\nGas R %.2f\nIAQ %.2f\nIAQ "
+        "acc %d\nTemp %.2f\nrH %.2f\nStaticIAQ %.2f\nco2e %.2f\nbVOCe %.2f\n",
+        iaqSensor.rawTemperature, iaqSensor.pressure, iaqSensor.rawHumidity,
+        iaqSensor.gasResistance, iaqSensor.iaq, iaqSensor.iaqAccuracy,
+        iaqSensor.temperature, iaqSensor.humidity, iaqSensor.staticIaq,
+        iaqSensor.co2Equivalent, iaqSensor.breathVocEquivalent);
+
+    double vpd = calculateVpd(iaqSensor.temperature, iaqSensor.humidity);
+
+    Serial.printf("%f, %f, %d",
+iaqSensor.runInStatus,
+iaqSensor.stabStatus,
+iaqSensor.status
+        );
+    sensors.addField(F("temperature"), iaqSensor.temperature);
+    sensors.addField(F("pressure"), iaqSensor.pressure / 100.0F);
+    sensors.addField(F("humidity"), iaqSensor.humidity);
+  } else {
+    checkIaqSensorStatus();
+  }
 #endif
 
 #ifdef SCT_013_PIN

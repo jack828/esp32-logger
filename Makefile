@@ -8,7 +8,7 @@ compile:
 		--fqbn $(FQBN) \
 		--log-level=info \
 		--build-path=$(PWD)/build \
-		--build-property compiler.cpp.extra_flags=-DFIRMWARE_VERSION=\"$(TAG)\" \
+		--build-property "compiler.cpp.extra_flags=-DFIRMWARE_VERSION=\"$(TAG)\" -lalgobsec" \
 		--build-property compiler.warning_level=all \
 		--warnings all \
 		.
