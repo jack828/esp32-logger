@@ -36,9 +36,6 @@ void setupSensors() {
 
 #ifdef BME680_I2C
   Serial.println(F("[ BME680 ] has sensor"));
-  // boolean bme680Ok = bme680.begin(0x77, true);
-  // Serial.print(F("[ BME680 ] sensor "));
-  // Serial.print(bme680Ok ? F("") : F("NOT "));
   iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
   Serial.printf("[ BME680 ] BSEC library v%d.%d.%d.%d\n",
                 iaqSensor.version.major, iaqSensor.version.minor,
@@ -128,23 +125,22 @@ void captureSensorsFields() {
 #ifdef BME680_I2C
   if (iaqSensor.run()) {
     Serial.printf(
-        "Raw Temp %.2f\nPressure %.2f\nRaw rH %.2f\nGas R %.2f\nIAQ %.2f\nIAQ "
+        "Pressure %.2f\nIAQ %.2f\nIAQ "
         "acc %d\nTemp %.2f\nrH %.2f\nStaticIAQ %.2f\nco2e %.2f\nbVOCe %.2f\n",
-        iaqSensor.rawTemperature, iaqSensor.pressure, iaqSensor.rawHumidity,
-        iaqSensor.gasResistance, iaqSensor.iaq, iaqSensor.iaqAccuracy,
-        iaqSensor.temperature, iaqSensor.humidity, iaqSensor.staticIaq,
-        iaqSensor.co2Equivalent, iaqSensor.breathVocEquivalent);
+        iaqSensor.pressure, iaqSensor.iaq,
+        iaqSensor.iaqAccuracy, iaqSensor.temperature, iaqSensor.humidity,
+        iaqSensor.staticIaq, iaqSensor.co2Equivalent,
+        iaqSensor.breathVocEquivalent);
 
     double vpd = calculateVpd(iaqSensor.temperature, iaqSensor.humidity);
 
-    Serial.printf("%f, %f, %d",
-iaqSensor.runInStatus,
-iaqSensor.stabStatus,
-iaqSensor.status
-        );
+    Serial.printf("%f, %f, %d", iaqSensor.runInStatus, iaqSensor.stabStatus,
+                  iaqSensor.status);
     sensors.addField(F("temperature"), iaqSensor.temperature);
     sensors.addField(F("pressure"), iaqSensor.pressure / 100.0F);
     sensors.addField(F("humidity"), iaqSensor.humidity);
+    sensors.addField(F("eCO2"), iaqSensor.co2Equivalent);
+    sensors.addField(F("bVOCe"), iaqSensor.breathVocEquivalent);
   } else {
     checkIaqSensorStatus();
   }
