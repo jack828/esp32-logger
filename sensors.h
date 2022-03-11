@@ -12,4 +12,7 @@ void setSensorsTags(void);
 void captureSensorFields(void);
 void sensorsLoggerTask(void* parameters);
 
+// Internal common sensor functions
+double calculateVpd(double temperature, double humidity);
+
 #endif

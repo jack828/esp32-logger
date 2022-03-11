@@ -5,10 +5,6 @@
 #ifdef BME280_I2C
 #include <Adafruit_BME280.h>
 Adafruit_BME280 bme280;
-double temperature = 0.0;
-double pressure = 0.0;
-double humidity = 0.0;
-double vpd = 0.0;
 #endif
 #ifdef SCT_013_PIN
 #include "EmonLib.h"
@@ -40,6 +36,14 @@ void setupSensors() {
 #endif
 }
 
+double calculateVpd(double temperature, double humidity) {
+  double e = 2.71828;
+  /* in pascals */
+  double SVP = 610.78 * pow(e, (temperature / (temperature + 238.3) * 17.2694));
+  double vpd = (SVP / 1000) * (1 - humidity / 100); // kPa
+  return vpd;
+}
+
 void setSensorsTags() {
   sensors.clearTags();
   sensors.addTag(F("MAC"), WiFi.macAddress());
@@ -52,14 +56,10 @@ void captureSensorsFields() {
 
 #ifdef BME280_I2C
   bme280.takeForcedMeasurement();
-  temperature = bme280.readTemperature();
-  pressure = bme280.readPressure() / 100.0F;
-  humidity = bme280.readHumidity();
-
-  double e = 2.71828;
-  /* in pascals */
-  double SVP = 610.78 * pow(e, (temperature / (temperature + 238.3) * 17.2694));
-  vpd = (SVP / 1000) * (1 - humidity / 100); // kPa
+  double temperature = bme280.readTemperature();
+  double pressure = bme280.readPressure() / 100.0F;
+  double humidity = bme280.readHumidity();
+  double vpd = calculateVpd(temperature, humidity);
 
   sensors.addField(F("temperature"), temperature);
   sensors.addField(F("pressure"), pressure);
