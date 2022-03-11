@@ -116,6 +116,7 @@ void checkIaqSensorStatus(void) {
       Serial.println(iaqSensor.status);
     }
   }
+  Serial.println(F("[ BME680 ] sensor OK"));
 }
 #endif
 
