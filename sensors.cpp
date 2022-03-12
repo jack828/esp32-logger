@@ -18,6 +18,7 @@ const uint8_t bsec_config_iaq[] = {
 #define STATE_SAVE_PERIOD UINT32_C(360 * 60 * 1000) // 360 mins - 4 times a day
 #define BSEC_SENSOR_COUNT 10
 uint8_t bsecState[BSEC_MAX_STATE_BLOB_SIZE] = {0};
+uint16_t stateUpdateCounter = 0;
 #endif
 #ifdef SCT_013_PIN
 #include "EmonLib.h"
@@ -60,8 +61,10 @@ void setupSensors() {
     Serial.println("[ BME680 ] Zero filled state");
     config.putBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
   } else {
+    stateUpdateCounter = 1;
     config.getBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
-    Serial.printf("[ BME680 ] Loaded state (%lu) ", config.getBytesLength("bsecState"));
+    Serial.printf("[ BME680 ] Loaded state (%lu) ",
+                  config.getBytesLength("bsecState"));
     for (int i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
       Serial.printf("%d", bsecState[i]);
     }
@@ -172,6 +175,22 @@ void captureSensorsFields() {
     // Good reading about what this field actually represents
     // https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BME680-strange-IAQ-and-CO2-values/m-p/9667/highlight/true#M1505
     sensors.addField(F("iaq"), iaqSensor.staticIaq);
+
+    if (stateUpdateCounter == 0) {
+      // Only persist state when calibration completes (maybe never)
+      if (iaqSensor.iaqAccuracy >= 3) {
+        stateUpdateCounter++;
+        iaqSensor.getState(bsecState);
+        config.putBytes("bsecState", bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+      }
+    } else {
+      // Update every STATE_SAVE_PERIOD milliseconds
+      if ((stateUpdateCounter * STATE_SAVE_PERIOD) < millis()) {
+        stateUpdateCounter++;
+        iaqSensor.getState(bsecState);
+        config.putBytes("bsecState", bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+      }
+    }
   } else {
     checkIaqSensorStatus();
   }
