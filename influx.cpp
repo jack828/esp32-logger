@@ -2,6 +2,8 @@
 #include "credentials.h"
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_DB);
+/* Use a mutex to prevent both tasks from writing at the same time */
+/* which causes a lock up */
 SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
 
 void setupInfluxOptions() {

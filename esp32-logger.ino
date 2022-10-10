@@ -71,6 +71,7 @@ void setup() {
     config.putString("location", "LOCATION_NOT_SET");
   }
 
+  /* <WIFI> */
   Serial.print(F("[ WIFI ] Connecting"));
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PSK);
@@ -98,7 +99,9 @@ void setup() {
   Serial.print(F(", IP: "));
   Serial.println(WiFi.localIP());
   Serial.println();
+  /* </WIFI> */
 
+  /* <INFLUXDB> */
   setupInfluxOptions();
   boolean influxOk = validateInfluxConnection();
   if (!influxOk) {
@@ -107,12 +110,16 @@ void setup() {
   }
   setNodeTags();
   setSensorsTags();
+  /* </INFLUXDB> */
 
+  /* <SENSORS> */
 #ifdef HAS_I2C
   Wire.begin(SDA_PIN, SCL_PIN);
 #endif
   setupSensors();
+  /* </SENSORS> */
 
+  /* <WEBSERVER/MDNS> */
 #ifdef ESP8266
   char host[12];
   snprintf(host, 12, "ESP%08X", ESP.getChipId());
@@ -161,6 +168,7 @@ void setup() {
 
   server.begin();
   AsyncElegantOTA.begin(&server);
+  /* </WEBSERVER/MDNS> */
 
   // Only create the tasks after all setup is done, and we're ready
   xTaskCreate(
@@ -199,8 +207,8 @@ void setup() {
 /**
  * Task: monitor the WiFi connection and keep it alive
  *
- * When a WiFi connection is established, this task will check it every 10 seconds
- * to make sure it's still alive.
+ * When a WiFi connection is established, this task will check it every 10
+ * seconds to make sure it's still alive.
  *
  * If not, a reconnect is attempted. If this fails to finish within the timeout,
  * the ESP32 will wait for it to recover and try again.
@@ -257,4 +265,5 @@ void wifiKeepAlive(void *parameter) {
 
 void loop() {
   /* beep boop nothing to do here! */
+  /* It's all handled in the tasks created in `setup` */
 }
