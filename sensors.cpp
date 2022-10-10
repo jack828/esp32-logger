@@ -56,12 +56,14 @@ void setupSensors() {
 
   checkIaqSensorStatus();
 
+  // TODO maybe we need to run this sensor in 5 minute read intervals
   if (config.getBytesLength("bsecState") == 0) {
     // No state saved, zero fill
     Serial.println("[ BME680 ] Zero filled state");
     config.putBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
   } else {
     stateUpdateCounter = 1;
+    // TODO not enough space in buffer 139 < 140
     config.getBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
     Serial.printf("[ BME680 ] Loaded state (%lu) ",
                   config.getBytesLength("bsecState"));
