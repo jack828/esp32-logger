@@ -87,7 +87,7 @@ OTA updates available via `http://<node-ip>/update`
  - Automatic update fetching from internet somewhere? https://www.lab4iot.com/2021/02/21/esp32-secure-firmware-update-over-the-air-ota/
  - Hall effect sensor support https://moderndevice.com/product/current-sensor/
  - update resolution of uptime + use when setting up batching https://forum.arduino.cc/t/question-about-esp32-millis-counter/699263
- -
+ - update energy monitor to https://innovatorsguru.com/pzem-004t-v3/ https://github.com/mandulaj/PZEM-004T-v30
 
 ## Useful links
 
@@ -105,6 +105,45 @@ This is a all-in-one kit from AliExpress.
  - LED on GPIO16 (was `(int8_t) 16` for me with  ESP32 Dev Module board)
  - Power switch
  - AMS1117 voltage regulator (has a high quiescent current!)
+
+## Monitoring information
+
+### Environment
+
+ - Temperature, Pressure, Humidity all done through BME280/BME680
+ - IAQ, eC02, bVOCe done via BME680 after calibration burn in period
+
+### Energy
+
+Performed via EmonLib and a split-core current transformer. In my case, I used an SCT-013-000, but there are many different varieties out there.
+
+Notably:
+ - SCT-013-XXX (split core, 30-150A)
+ - KCT38 (split core, 50-600A)
+ - BH-066-XXX (solid core, 10-400A)
+ - PZCT-02 (split core, 100A)
+ - BZCT30AL (solid core, 50/100A)
+ - PZEM-004T - comes with different CTs. Measures voltage, frequency, and power factor via MODBUS interface.
+
+When using EmonLib and a current transformer, there is some additional hardware to ensure the ESP32 can measure the current correctly.
+
+First, we need to convert the alternating current into an AC voltage, biased so the 0-3.3v ADC can read it without setting on fire :).
+
+We do this by applying a burden resistor to the CT (if not already installed) and then connecting the signal output to a voltage divider to offset the signal to the ADC range.
+
+Once complete, the signal now read by the ADC has the following performed:
+For each reading, we can define the number of samples for the library to calculate; the bigger the
+number of samples, the longer the method will take to calculate the Current.
+The library uses the root mean square to calculate the current:
+Supposing N equals the number of samples, and u(n) being the voltage sample that we get from
+the ADC:
+[(1) PAGE 10 EQUATION 1](https://www.researchgate.net/publication/336110101_IoT_Power_Monitoring_System_for_Smart_Environments/link/5d8eaae3299bf10cff15227c/download)
+This (1) Urms value is then multiplied by the calibration coefficients, based on the value we
+define at the beginning for each ADC input.
+Then using urms × calcoeff results in the current value, we call this Irms that will be used to
+calculate the apparent power by being multiplied with a voltage constant
+
+nice PCB layout https://github.com/bvarner/PZCT-02-BurdenShift
 
 
 # Author
