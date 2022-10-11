@@ -21,7 +21,7 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE html><html>
 
   <div>
     <h2>Firmware</h2>
-    <a href="/update">Please use the ElegantOTA solution -></a>
+    <a href="/update">Please use the ElegantOTA solution &rarr;</a>
   </div>
 </body>
 </html>)rawliteral";
