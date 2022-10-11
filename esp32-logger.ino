@@ -35,8 +35,8 @@ String processor(const String &var) {
     // TODO support
     char chipId[12] = "00000000000";
 #else
-    char chipId[13];
-    snprintf(chipId, 13, "%012" PRIu64, ESP.getEfuseMac());
+    char chipId[16];
+    snprintf(chipId, 16, "%015" PRIu64, ESP.getEfuseMac());
 #endif
     return chipId;
   } else if (var == "CHIP_ID_HEX") {
@@ -146,8 +146,8 @@ void setup() {
 #else
   char host[16];
   snprintf(host, 16, "esp%012" PRIx64, ESP.getEfuseMac());
-  char chipId[13];
-  snprintf(chipId, 13, "%012" PRIu64, ESP.getEfuseMac());
+  char chipId[16];
+  snprintf(chipId, 16, "%" PRIu64, ESP.getEfuseMac());
 #endif
 
   MDNS.begin(host);

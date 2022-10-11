@@ -3,7 +3,7 @@
 
 // pick a board any board
 // #define ESP_32_OLED_BATT
-#define ESP_32_OLED
+#define ESP_32_OLED 264505746706340
 // #define ESP_32
 // #define ESP_32_U
 // #define ESP_8266 // Use this one if it might blow up
@@ -22,6 +22,9 @@
 #ifndef FIRMWARE_VERSION
 #define FIRMWARE_VERSION "NOT_SET"
 #endif
+#ifndef CHIP_ID
+#define CHIP_ID ESP_32_OLED
+#endif
 
 /*
  * You can define any of these to enable sensors
@@ -39,17 +42,7 @@
  */
 
 // Hardware specific config
-// so m a n y
-#ifdef ESP_32_OLED_BATT
-// #define SDA_PIN 21
-// #define SCL_PIN 22
-#define LED_PIN 16
-// #define LIGHT_SENSOR_PIN 36
-// #define BME280_I2C
-// #define OLED
-#define SENSORS_LOG_PERIOD 60 * 1000
-#endif
-#ifdef ESP_32_OLED
+#if CHIP_ID == ESP_32_OLED
 #define SDA_PIN 5
 #define SCL_PIN 4
 // this doesn't have one but :shrug:
@@ -62,6 +55,16 @@
 // #define TOUCH_R_PIN 15
 // #define LIGHT_SENSOR_PIN 36 // SVP
 // #define DHT11_PIN 25
+#define SENSORS_LOG_PERIOD 60 * 1000
+#endif
+// so m a n y
+#ifdef ESP_32_OLED_BATT
+// #define SDA_PIN 21
+// #define SCL_PIN 22
+#define LED_PIN 16
+// #define LIGHT_SENSOR_PIN 36
+// #define BME280_I2C
+// #define OLED
 #define SENSORS_LOG_PERIOD 60 * 1000
 #endif
 #ifdef ESP_32
