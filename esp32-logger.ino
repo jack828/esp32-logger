@@ -24,10 +24,10 @@ String processor(const String &var) {
   if (var == "MDNS_HOSTNAME") {
 #ifdef ESP8266
     char host[12];
-    snprintf(host, 12, "ESP%08X", ESP.getChipId());
+    snprintf(host, 12, "esp%08X", ESP.getChipId());
 #else
     char host[16];
-    snprintf(host, 16, "ESP%012" PRIx64, ESP.getEfuseMac());
+    snprintf(host, 16, "esp%012" PRIx64, ESP.getEfuseMac());
 #endif
     return host;
   } else if (var == "IP") {
@@ -122,10 +122,10 @@ void setup() {
   /* <WEBSERVER/MDNS> */
 #ifdef ESP8266
   char host[12];
-  snprintf(host, 12, "ESP%08X", ESP.getChipId());
+  snprintf(host, 12, "esp%08X", ESP.getChipId());
 #else
   char host[16];
-  snprintf(host, 16, "ESP%012" PRIx64, ESP.getEfuseMac());
+  snprintf(host, 16, "esp%012" PRIx64, ESP.getEfuseMac());
 #endif
 
   MDNS.begin(host);
