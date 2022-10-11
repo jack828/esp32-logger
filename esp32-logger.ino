@@ -30,6 +30,24 @@ String processor(const String &var) {
     snprintf(host, 16, "esp%012" PRIx64, ESP.getEfuseMac());
 #endif
     return host;
+  } else if (var == "CHIP_ID") {
+#ifdef ESP8266
+    // TODO support
+    char chipId[12] = "00000000000";
+#else
+    char chipId[13];
+    snprintf(chipId, 13, "%012" PRIu64, ESP.getEfuseMac());
+#endif
+    return chipId;
+  } else if (var == "CHIP_ID_HEX") {
+#ifdef ESP8266
+    char chipIdHex[12];
+    snprintf(chipIdHex, 12, "%08X", ESP.getChipId());
+#else
+    char chipIdHex[16];
+    snprintf(chipIdHex, 16, "%012" PRIx64, ESP.getEfuseMac());
+#endif
+    return chipIdHex;
   } else if (var == "IP") {
     return WiFi.localIP().toString();
   } else if (var == "MAC") {
@@ -121,15 +139,20 @@ void setup() {
 
   /* <WEBSERVER/MDNS> */
 #ifdef ESP8266
+  // TODO support
+  char chipId[12] = "00000000000";
   char host[12];
   snprintf(host, 12, "esp%08X", ESP.getChipId());
 #else
   char host[16];
   snprintf(host, 16, "esp%012" PRIx64, ESP.getEfuseMac());
+  char chipId[13];
+  snprintf(chipId, 13, "%012" PRIu64, ESP.getEfuseMac());
 #endif
 
   MDNS.begin(host);
   Serial.printf("[ NODE ] MDNS listening http://%s.local\n", host);
+  Serial.printf("[ NODE ] Chip ID %s\n", chipId);
   MDNS.addService("_http", "_tcp", 80);
   MDNS.addServiceTxt("_http", "_tcp", "board", "ESP32-LOGGER");
   MDNS.addServiceTxt("_http", "_tcp", "name", config.getString("name"));

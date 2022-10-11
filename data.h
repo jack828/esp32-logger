@@ -1,7 +1,10 @@
+// TODO info as table for alignment
 const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE html><html>
 <body>
   <h1>ESP32 Logger</h1>
   <p>mDNS URL: <a href="http://%MDNS_HOSTNAME%.local">%MDNS_HOSTNAME%.local</a></p>
+  <p>Chip ID: %CHIP_ID%</p>
+  <p>Chip ID (hex): %CHIP_ID_HEX%</p>
   <p>IP: %IP%</p>
   <p>MAC: %MAC%</p>
   <p>Firmware: %FIRMWARE_VERSION%</p>
