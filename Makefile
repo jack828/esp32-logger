@@ -4,6 +4,7 @@ TAG=$(shell git describe --tags --abbrev=0 | tr -d '\n')
 PORT=/dev/ttyUSB0
 FQBN=esp32:esp32:esp32
 FILENAME=esp32-logger
+NODE_LIST_FILE="./.nodelist"
 
 compile:
 	arduino-cli compile \
@@ -38,10 +39,9 @@ deploy-node:
 	echo "[deploy] Built and uploaded on ${node} - http://esp$$CHIP_ID_HEX.local/";
 
 deploy:
-	@NODES="264505746706340"; \
-	for NODE in $$NODES; do \
+	while read NODE; do \
 		make deploy-node node=$$NODE; \
-	done
+	done < ${NODE_LIST_FILE}
 
 whereis:
 	@echo "TODO this should loop over NODES and log ID + location from config"; \
