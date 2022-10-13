@@ -63,6 +63,12 @@ Fork the repo, clone, and configure to match your setup.
 Please see [credentials.h](./credentials.h) for credential information. Use `.tpl` as a starting point.
 Please see [definitions.h](./definitions.h) for all configurables.
 
+Setup or update arduino-cli:
+
+```
+$ curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=~/.local/bin sh
+```
+
 ## Usage
 
 This project has been designed to use the [Arduino CLI](https://arduino.github.io/arduino-cli/latest/) by usage of a [Makefile](./Makefile).
