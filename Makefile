@@ -29,13 +29,14 @@ monitor:
 		--config Baudrate=115200
 
 deploy-node:
-	@echo "[deploy] Building for ${node}"; \
+	@set -e; \
+	echo "[deploy] Building for ${node}"; \
+		make compile node=${node}; \
 	CHIP_ID_HEX=$$(printf "%x" ${node}); \
-	make compile node=${node}; \
 	FILE=$(PWD)/build/$(FILENAME).ino.bin; \
 	MD5=$$(md5sum $$FILE | cut -d' ' -f1); \
 	MODE=firmware; \
-	curl --verbose --compressed -L -X POST -F "MD5=$$MD5" -F "name=$$MODE" -F "data=@$$FILE;filename=$$MODE" "http://esp$$CHIP_ID_HEX.local/update"; \
+		curl --verbose --compressed -L -X POST -F "MD5=$$MD5" -F "name=$$MODE" -F "data=@$$FILE;filename=$$MODE" "http://esp$$CHIP_ID_HEX.local/update"; \
 	echo "[deploy] Built and uploaded on ${node} - http://esp$$CHIP_ID_HEX.local/";
 
 deploy:
