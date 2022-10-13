@@ -47,5 +47,15 @@ deploy:
 whereis:
 	@echo "TODO this should loop over NODES and log ID + location from config"; \
 		echo "will need to make api endpoint on the node itself"
+
+# Finds (using avahi) locally available nodes and adds their IDs to .nodelist
+discover:
+	avahi-browse --resolve _http._tcp --parsable --terminate \
+	 | grep wlp \
+	 | grep ESP32-LOGGER \
+	 | cut -d'=' -f3 \
+	 | cut -d'"' -f1 \
+	 > ${NODE_LIST_FILE}
+
 clean:
 	rm -rf ./build

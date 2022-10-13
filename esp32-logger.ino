@@ -137,7 +137,7 @@ void setup() {
   setupSensors();
   /* </SENSORS> */
 
-  /* <WEBSERVER/MDNS> */
+  /* <MDNS> */
 #ifdef ESP8266
   // TODO support
   char chipId[12] = "00000000000";
@@ -154,10 +154,13 @@ void setup() {
   Serial.printf("[ NODE ] MDNS listening http://%s.local\n", host);
   Serial.printf("[ NODE ] Chip ID %s\n", chipId);
   MDNS.addService("_http", "_tcp", 80);
+  MDNS.addServiceTxt("_http", "_tcp", "id", (const char*) chipId);
   MDNS.addServiceTxt("_http", "_tcp", "board", "ESP32-LOGGER");
   MDNS.addServiceTxt("_http", "_tcp", "name", config.getString("name"));
   MDNS.addServiceTxt("_http", "_tcp", "location", config.getString("location"));
+  /* </MDNS> */
 
+  /* <WEBSERVER> */
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", index_html, processor);
     /* TODO ElegantOTA has a nice node script to compress html and output it
@@ -190,8 +193,9 @@ void setup() {
   });
 
   server.begin();
+  /* </WEBSERVER> */
+
   AsyncElegantOTA.begin(&server);
-  /* </WEBSERVER/MDNS> */
 
   // Only create the tasks after all setup is done, and we're ready
   xTaskCreate(
