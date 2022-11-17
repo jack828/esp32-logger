@@ -4,3 +4,6 @@
 [submodule "libraries/Adafruit_BME280_Library"]
 	path = libraries/Adafruit_BME280_Library
 	url = git@github.com:adafruit/Adafruit_BME280_Library.git
+[submodule "libraries/BSEC-Arduino-library"]
+	path = libraries/BSEC-Arduino-library
+	url = git@github.com:BoschSensortec/BSEC-Arduino-library.git
