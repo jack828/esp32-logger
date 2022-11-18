@@ -10,6 +10,7 @@ compile:
 	arduino-cli compile \
 		--fqbn $(FQBN) \
 		--log-level=info \
+		--libraries $(PWD)/libraries/ \
 		--build-path=$(PWD)/build \
 		--build-property 'compiler.cpp.extra_flags="-D FIRMWARE_VERSION="$(TAG)"" "-D CHIP_ID=${node}" -lalgobsec' \
 		--build-property 'compiler.warning_level=all' \
