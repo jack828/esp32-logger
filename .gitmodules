@@ -7,3 +7,6 @@
 [submodule "libraries/BSEC-Arduino-library"]
 	path = libraries/BSEC-Arduino-library
 	url = git@github.com:BoschSensortec/BSEC-Arduino-library.git
+[submodule "libraries/InfluxDB-Client-for-Arduino"]
+	path = libraries/InfluxDB-Client-for-Arduino
+	url = git@github.com:tobiasschuerg/InfluxDB-Client-for-Arduino.git
