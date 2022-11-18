@@ -10,3 +10,6 @@
 [submodule "libraries/InfluxDB-Client-for-Arduino"]
 	path = libraries/InfluxDB-Client-for-Arduino
 	url = git@github.com:tobiasschuerg/InfluxDB-Client-for-Arduino.git
+[submodule "libraries/AsyncElegantOTA"]
+	path = libraries/AsyncElegantOTA
+	url = git@github.com:ayushsharma82/AsyncElegantOTA.git
