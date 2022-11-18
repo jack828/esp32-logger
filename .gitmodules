@@ -16,3 +16,6 @@
 [submodule "libraries/AsyncTCP"]
 	path = libraries/AsyncTCP
 	url = git@github.com:me-no-dev/AsyncTCP.git
+[submodule "libraries/ESPAsyncWebServer"]
+	path = libraries/ESPAsyncWebServer
+	url = git@github.com:me-no-dev/ESPAsyncWebServer.git
