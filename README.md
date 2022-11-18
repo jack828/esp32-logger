@@ -20,14 +20,9 @@ As this README is likely to fall out of date as to what exactly is being tracked
 
 ## Libraries
 
-You need one of:
- - Adafruit BME 280 + Adafruit Unified Sensor
- - EmonLib + SCT-013-000 & associated hardware
- - [Bosch BSEC Arduino Library](https://github.com/BoschSensortec/BSEC-Arduino-library)
+All required libraries for the various minor variations in this project are kept as git submodules within `./libraries`.
 
-General libraries:
- - [InfluxDB Arduino Client](https://github.com/tobiasschuerg/InfluxDB-Client-for-Arduino)
- - [AsyncElegantOTA](https://github.com/ayushsharma82/AsyncElegantOTA)
+To initialise these, run `git submodule init && git submodule update` in the project root.
 
 ### EmonLib Patches
 
