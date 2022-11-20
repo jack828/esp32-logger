@@ -69,7 +69,7 @@ String processor(const String &var) {
     seconds %= 60;
 
     char output[14];
-    snprintf(output, sizeof(output), "%02dd%02dh%02dm%02lus", days, hours, minutes, seconds);
+    snprintf(output, sizeof(output), "%02dd%02dh%02dm%02llus", days, hours, minutes, seconds);
     return output;
   }
   return "";
