@@ -4,7 +4,7 @@
 // pick a board any board
 // #define ESP_32_OLED_BATT
 #define ESP_32_OLED 264505746706340
-// #define ESP_32
+#define ESP_32_POWER 171537337601956
 #define ESP_32_U    255866614099504
 // #define ESP_8266 // Use this one if it might blow up
 
@@ -21,7 +21,7 @@
 #define FIRMWARE_VERSION "NOT_SET"
 #endif
 #ifndef CHIP_ID
-#define CHIP_ID ESP_32_OLED
+#define CHIP_ID ESP_32_POWER
 #endif
 
 /*
@@ -75,7 +75,7 @@
 // #define OLED
 #define SENSORS_LOG_PERIOD 60 * 1000
 #endif
-#ifdef ESP_32
+#ifdef ESP_32_POWER
 // #define SDA_PIN 21
 // #define SCL_PIN 22
 #define SCT_013_PIN A0
