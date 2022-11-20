@@ -22,3 +22,6 @@
 [submodule "libraries/EmonLib"]
 	path = libraries/EmonLib
 	url = git@github.com:jack828/EmonLib.git
+[submodule "libraries/Adafruit_BusIO"]
+	path = libraries/Adafruit_BusIO
+	url = git@github.com:adafruit/Adafruit_BusIO.git
