@@ -24,6 +24,8 @@ All required libraries for the various minor variations in this project are kept
 
 To initialise these, run `git submodule init && git submodule update` in the project root.
 
+To update specific libraries to newer versions, run `git submodule update --remote libraries/EmonLib`.
+
 ### EmonLib Patches
 
 If you decide against the submodule approach for the libraries, an want to use the IDE provided ones:
