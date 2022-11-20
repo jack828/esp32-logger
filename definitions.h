@@ -7,8 +7,6 @@
 // #define ESP_32
 #define ESP_32_U    255866614099504
 // #define ESP_8266 // Use this one if it might blow up
-// TODO maybe do by BOARD_ID ?
-// #ifndef BOARD
 
 // Configuration
 #define NODE_LOG_PERIOD 60 * 1000 // 60 seconds
