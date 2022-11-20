@@ -68,7 +68,7 @@ String processor(const String &var) {
     byte minutes = seconds / 60;
     seconds %= 60;
 
-    char output[14];
+    char output[16];
     snprintf(output, sizeof(output), "%02dd%02dh%02dm%02llus", days, hours, minutes, seconds);
     return output;
   }
