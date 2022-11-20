@@ -26,6 +26,8 @@ To initialise these, run `git submodule init && git submodule update` in the pro
 
 ### EmonLib Patches
 
+If you decide against the submodule approach for the libraries, an want to use the IDE provided ones:
+
 To use the EmonLib library with the 12-bit ADC aboard the ESP32, you'll need to patch it.
  - Add the library using the board manager
  - Open the library in the editor of your choice (Neovim) and manually patch it
@@ -53,7 +55,7 @@ Replace the 3 occurrences of `1024` with `ADC_COUNTS` in lines 117, 119, 201.
 
 ## Setup
 
-Fork the repo, clone, and configure to match your setup.
+Fork the repo, clone, initialise submodules, and configure to match your setup.
 
 Please see [credentials.h](./credentials.h) for credential information. Use `.tpl` as a starting point.
 Please see [definitions.h](./definitions.h) for all configurables.

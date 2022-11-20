@@ -19,3 +19,6 @@
 [submodule "libraries/ESPAsyncWebServer"]
 	path = libraries/ESPAsyncWebServer
 	url = git@github.com:me-no-dev/ESPAsyncWebServer.git
+[submodule "libraries/EmonLib"]
+	path = libraries/EmonLib
+	url = git@github.com:jack828/EmonLib.git
