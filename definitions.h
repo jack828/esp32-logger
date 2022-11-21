@@ -1,6 +1,9 @@
 #ifndef Definitions_h
 #define Definitions_h
 
+// When enabled, prevents actually logging any metrics
+// #define TEST_MODE
+
 // pick a board any board
 // #define ESP_32_OLED_BATT
 #define ESP_32_OLED 264505746706340

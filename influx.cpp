@@ -33,7 +33,11 @@ bool logPoint(Point &point) {
   Serial.print(F("[ INFLUX ] Writing: "));
   Serial.println(client.pointToLineProtocol(point));
   xSemaphoreTake(mutex, portMAX_DELAY);
+#ifdef TEST_MODE
+  bool writeOk = 1;
+#else
   bool writeOk = client.writePoint(point);
+#endif
   xSemaphoreGive(mutex);
   if (!writeOk) {
     int16_t lastStatusCode = client.getLastStatusCode();
