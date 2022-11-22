@@ -78,7 +78,7 @@
 // #define OLED
 #define SENSORS_LOG_PERIOD 60 * 1000
 #endif
-#ifdef ESP_32_POWER
+#if CHIP_ID == ESP_32_POWER
 // #define SDA_PIN 21
 // #define SCL_PIN 22
 #define SCT_013_PIN A0
