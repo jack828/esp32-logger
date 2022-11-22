@@ -25,3 +25,6 @@
 [submodule "libraries/Adafruit_BusIO"]
 	path = libraries/Adafruit_BusIO
 	url = git@github.com:adafruit/Adafruit_BusIO.git
+[submodule "libraries/MHZ19"]
+	path = libraries/MHZ19
+	url = git@github.com:jack828/MHZ19.git
