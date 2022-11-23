@@ -27,7 +27,7 @@ void captureNodeFields() {
  * If logging fails, it will wait progressively smaller portions of time.
  */
 void nodeLoggerTask(void *parameters) {
-  double delayTime = NODE_LOG_PERIOD;
+  uint64_t delayTime = NODE_LOG_PERIOD;
   for (;;) {
     Serial.println(F("[ NODE ] Logger task"));
     captureNodeFields();
@@ -40,6 +40,6 @@ void nodeLoggerTask(void *parameters) {
       delayTime = NODE_LOG_PERIOD;
     }
     Serial.println(F("[ NODE ] Waiting..."));
-    vTaskDelay(NODE_LOG_PERIOD / portTICK_PERIOD_MS);
+    vTaskDelay(delayTime / portTICK_PERIOD_MS);
   }
 }

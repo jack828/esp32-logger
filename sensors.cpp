@@ -211,7 +211,7 @@ void captureSensorsFields() {
  * If logging fails, it will wait progressively smaller portions of time.
  */
 void sensorsLoggerTask(void *parameters) {
-  double delayTime = SENSORS_LOG_PERIOD;
+  uint64_t delayTime = SENSORS_LOG_PERIOD;
   for (;;) {
     Serial.println(F("[ SENSORS ] Logger task"));
     captureSensorsFields();
@@ -224,6 +224,6 @@ void sensorsLoggerTask(void *parameters) {
       delayTime = SENSORS_LOG_PERIOD;
     }
     Serial.println(F("[ SENSORS ] Waiting..."));
-    vTaskDelay(SENSORS_LOG_PERIOD / portTICK_PERIOD_MS);
+    vTaskDelay(delayTime / portTICK_PERIOD_MS);
   }
 }
