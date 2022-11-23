@@ -24,6 +24,11 @@ uint16_t stateUpdateCounter = 0;
 #include "EmonLib.h"
 EnergyMonitor emon;
 #endif
+#if defined(MHZ19_RX) && defined(MHZ19_TX)
+#define HAS_MHZ19
+#include "MHZ19.h"
+MHZ19 *mhz19 = new MHZ19(MHZ19_RX, MHZ19_TX);
+#endif
 
 Point sensors("sensors");
 
@@ -98,7 +103,15 @@ void setupSensors() {
   emon.current(SCT_013_PIN, SCT_013_CALIBRATION);
   delay(5000); // Sensor needs to chill after boot or values spike
 #endif
-}
+
+#ifdef HAS_MHZ19
+  mhz19->begin();
+  mhz19->setAutoCalibration(false); // if outdoors set to true
+  delay(3000);                      // apparently fixes a infinite warming issue
+  Serial.print(F(" [ MH-Z19 ] has sensor, status: "));
+  Serial.println(mhz19->getStatus());
+#endif
+} /* setupSensors */
 
 #ifdef BME680_I2C
 void checkIaqSensorStatus(void) {
@@ -203,7 +216,13 @@ void captureSensorsFields() {
   sensors.addField(F("irms"), irms);
   sensors.addField(F("power"), irms * VOLTAGE);
 #endif
-}
+
+#ifdef HAS_MHZ19
+  measurement_t measurement = mhz19->getMeasurement();
+  sensors.addField(F("co2"), measurement.co2_ppm);
+  sensors.addField(F("temperature"), (float)measurement.temperature);
+#endif
+} /* captureSensorsFields */
 
 /**
  * Task: Wait the appropriate period, and log the `sensors` fields.

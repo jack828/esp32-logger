@@ -8,7 +8,8 @@
 // #define ESP_32_OLED_BATT
 #define ESP_32_OLED 264505746706340
 #define ESP_32_POWER 171537337601956
-#define ESP_32_U    255866614099504
+#define ESP_32_U 255866614099504
+#define ESP_32_CO2 61743045906752
 // #define ESP_8266 // Use this one if it might blow up
 
 // Configuration
@@ -19,12 +20,13 @@
 #define WIFI_RECOVER_TIME_MS 10000 // 10s after a failed connection attempt
 
 // This is defined using compile time flags, but clangd doesn't like it
-// And if it isn't defined when compiling with the Arduino IDE, this won't break anything
+// And if it isn't defined when compiling with the Arduino IDE, this won't break
+// anything
 #ifndef FIRMWARE_VERSION
 #define FIRMWARE_VERSION "NOT_SET"
 #endif
 #ifndef CHIP_ID
-#define CHIP_ID ESP_32_POWER
+#define CHIP_ID ESP_32_CO2
 #endif
 
 /*
@@ -87,6 +89,14 @@
 #define LED_PIN 2
 #define SENSORS_LOG_PERIOD 1 * 1000
 #endif
+
+#if CHIP_ID == ESP_32_CO2
+#define MHZ19_RX 26
+#define MHZ19_TX 27
+#define LED_PIN 2
+#define SENSORS_LOG_PERIOD 60 * 1000
+#endif
+
 // #define BME280_I2C // D22 SCL & D21 SDA
 // #define BH1750_I2C // D22 SCL & D21 SDA
 #ifdef ESP_8266
