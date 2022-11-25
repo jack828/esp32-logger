@@ -219,9 +219,16 @@ void captureSensorsFields() {
 
 #ifdef HAS_MHZ19
   measurement_t measurement = mhz19->getMeasurement();
-  sensors.addField(F("co2"), measurement.co2_ppm);
-  sensors.addField(F("temperature"), (float)measurement.temperature);
+  // Only log sane values incase of accidental failures
+  if (measurement.co2_ppm > 400 && measurement.co2_ppm < 5000) {
+    sensors.addField(F("co2"), measurement.co2_ppm);
+  }
+  if (measurement.temperature != -1) {
+    sensors.addField(F("temperature"), (float)measurement.temperature);
+  }
+
 #endif
+
 } /* captureSensorsFields */
 
 /**
