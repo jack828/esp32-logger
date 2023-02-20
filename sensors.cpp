@@ -187,6 +187,7 @@ void captureSensorsFields() {
     sensors.addField(F("humidity"), iaqSensor.humidity);
     sensors.addField(F("eCO2"), iaqSensor.co2Equivalent);
     sensors.addField(F("bVOCe"), iaqSensor.breathVocEquivalent);
+    sensors.addField(F("vpd"), vpd);
     // Good reading about what this field actually represents
     // https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BME680-strange-IAQ-and-CO2-values/m-p/9667/highlight/true#M1505
     sensors.addField(F("iaq"), iaqSensor.staticIaq);
