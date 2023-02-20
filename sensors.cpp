@@ -70,7 +70,7 @@ void setupSensors() {
     stateUpdateCounter = 1;
     // TODO not enough space in buffer 139 < 140
     config.getBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
-    Serial.printf("[ BME680 ] Loaded state (%lu) ",
+    Serial.printf("[ BME680 ] Loaded state (%i) ",
                   config.getBytesLength("bsecState"));
     for (int i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
       Serial.printf("%d", bsecState[i]);
