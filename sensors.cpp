@@ -50,7 +50,7 @@ void setupSensors() {
 
 #ifdef BME680_I2C
   Serial.println(F("[ BME680 ] has sensor"));
-  iaqSensor.begin(BME680_I2C_ADDR_SECONDARY, Wire);
+  iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
   Serial.printf("[ BME680 ] BSEC library v%d.%d.%d.%d\n",
                 iaqSensor.version.major, iaqSensor.version.minor,
                 iaqSensor.version.major_bugfix, iaqSensor.version.minor_bugfix);
@@ -66,16 +66,19 @@ void setupSensors() {
   checkIaqSensorStatus();
 
   bsec_virtual_sensor_t sensorList[] = {
-      BSEC_OUTPUT_RAW_TEMPERATURE,
-      BSEC_OUTPUT_RAW_PRESSURE,
-      BSEC_OUTPUT_RAW_HUMIDITY,
-      BSEC_OUTPUT_RAW_GAS,
       BSEC_OUTPUT_IAQ,
       BSEC_OUTPUT_STATIC_IAQ,
       BSEC_OUTPUT_CO2_EQUIVALENT,
       BSEC_OUTPUT_BREATH_VOC_EQUIVALENT,
+      BSEC_OUTPUT_RAW_TEMPERATURE,
+      BSEC_OUTPUT_RAW_PRESSURE,
+      BSEC_OUTPUT_RAW_HUMIDITY,
+      BSEC_OUTPUT_RAW_GAS,
+      BSEC_OUTPUT_STABILIZATION_STATUS,
+      BSEC_OUTPUT_RUN_IN_STATUS,
       BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE,
-      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY};
+      BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_HUMIDITY,
+      BSEC_OUTPUT_GAS_PERCENTAGE};
 
   iaqSensor.updateSubscription(sensorList,
                                sizeof(sensorList) / sizeof(sensorList[0]),
@@ -100,23 +103,23 @@ void setupSensors() {
 
 #ifdef BME680_I2C
 void checkIaqSensorStatus(void) {
-  if (iaqSensor.status != BSEC_OK) {
-    if (iaqSensor.status < BSEC_OK) {
+  if (iaqSensor.bsecStatus != BSEC_OK) {
+    if (iaqSensor.bsecStatus < BSEC_OK) {
       Serial.print(F("[ BME680 ] BSEC error code: "));
-      Serial.println(iaqSensor.status);
+      Serial.println(iaqSensor.bsecStatus);
     } else {
       Serial.print(F("[ BME680 ] BSEC warning code: "));
-      Serial.println(iaqSensor.status);
+      Serial.println(iaqSensor.bsecStatus);
     }
   }
 
-  if (iaqSensor.bme680Status != BME680_OK) {
-    if (iaqSensor.bme680Status < BME680_OK) {
+  if (iaqSensor.bme68xStatus != BME68X_OK) {
+    if (iaqSensor.bme68xStatus < BME68X_OK) {
       Serial.print(F("[ BME680 ] BME680 error code: "));
-      Serial.println(iaqSensor.status);
+      Serial.println(iaqSensor.bme68xStatus);
     } else {
       Serial.print(F("[ BME680 ] BME680 warning code: "));
-      Serial.println(iaqSensor.status);
+      Serial.println(iaqSensor.bme68xStatus);
     }
   }
   Serial.println(F("[ BME680 ] sensor OK"));
@@ -211,7 +214,7 @@ void captureSensorsFields() {
     double vpd = calculateVpd(iaqSensor.temperature, iaqSensor.humidity);
 
     Serial.printf("%f, %f, %d\n", iaqSensor.runInStatus, iaqSensor.stabStatus,
-                  iaqSensor.status);
+                  iaqSensor.bsecStatus);
     sensors.addField(F("temperature"), iaqSensor.temperature);
     sensors.addField(F("pressure"), iaqSensor.pressure / 100.0F);
     sensors.addField(F("humidity"), iaqSensor.humidity);
