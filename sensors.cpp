@@ -61,22 +61,7 @@ void setupSensors() {
 
   checkIaqSensorStatus();
 
-  // TODO maybe we need to run this sensor in 5 minute read intervals
-  if (config.getBytesLength("bsecState") == 0) {
-    // No state saved, zero fill
-    Serial.println("[ BME680 ] Zero filled state");
-    config.putBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
-  } else {
-    stateUpdateCounter = 1;
-    // TODO not enough space in buffer 139 < 140
-    config.getBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
-    Serial.printf("[ BME680 ] Loaded state (%i) ",
-                  config.getBytesLength("bsecState"));
-    for (int i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
-      Serial.printf("%d", bsecState[i]);
-    }
-    Serial.println();
-  }
+  loadBsecState();
 
   checkIaqSensorStatus();
 
@@ -136,6 +121,51 @@ void checkIaqSensorStatus(void) {
   }
   Serial.println(F("[ BME680 ] sensor OK"));
 }
+
+void loadBsecState() {
+  // TODO maybe we need to run this sensor in 5 minute read intervals
+  if (config.getBytesLength("bsecState") == 0) {
+    // No state saved, zero fill
+    Serial.println("[ BME680 ] Zero filled state");
+    config.putBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+  } else {
+    stateUpdateCounter = 1;
+    config.getBytes("bsecState", &bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+    Serial.printf("[ BME680 ] Loaded state (%i) ",
+                  config.getBytesLength("bsecState"));
+    for (int i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
+      Serial.printf("%d", bsecState[i]);
+    }
+    iaqSensor.setState(bsecState);
+    Serial.println();
+  }
+}
+
+void saveBsecState() {
+  Serial.printf("[ BME680 ] counter %d, iaqAccuracy %d\n", stateUpdateCounter,
+                iaqSensor.iaqAccuracy);
+  Serial.printf("[ BME680 ] runInStatus %f, staticIaqAccuracy %d\n",
+                iaqSensor.runInStatus, iaqSensor.staticIaqAccuracy);
+  Serial.printf("[ BME680 ] iaq %f, staticIaq %f\n", iaqSensor.iaq,
+                iaqSensor.staticIaq);
+  if (stateUpdateCounter ==
+      0) { // if state was zero filled initially (as in, not set)
+    // Only persist state when calibration completes (maybe never)
+    if (iaqSensor.iaqAccuracy >= 3) {
+      stateUpdateCounter++;
+      iaqSensor.getState(bsecState);
+      config.putBytes("bsecState", bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+    }
+  } else {
+    // Update every STATE_SAVE_PERIOD milliseconds
+    if ((stateUpdateCounter * STATE_SAVE_PERIOD) < millis()) {
+      stateUpdateCounter++;
+      iaqSensor.getState(bsecState);
+      config.putBytes("bsecState", bsecState, BSEC_MAX_STATE_BLOB_SIZE);
+    }
+  }
+}
+
 #endif
 
 double calculateVpd(double temperature, double humidity) {
@@ -192,21 +222,7 @@ void captureSensorsFields() {
     // https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BME680-strange-IAQ-and-CO2-values/m-p/9667/highlight/true#M1505
     sensors.addField(F("iaq"), iaqSensor.staticIaq);
 
-    if (stateUpdateCounter == 0) {
-      // Only persist state when calibration completes (maybe never)
-      if (iaqSensor.iaqAccuracy >= 3) {
-        stateUpdateCounter++;
-        iaqSensor.getState(bsecState);
-        config.putBytes("bsecState", bsecState, BSEC_MAX_STATE_BLOB_SIZE);
-      }
-    } else {
-      // Update every STATE_SAVE_PERIOD milliseconds
-      if ((stateUpdateCounter * STATE_SAVE_PERIOD) < millis()) {
-        stateUpdateCounter++;
-        iaqSensor.getState(bsecState);
-        config.putBytes("bsecState", bsecState, BSEC_MAX_STATE_BLOB_SIZE);
-      }
-    }
+    saveBsecState();
   } else {
     checkIaqSensorStatus();
   }
