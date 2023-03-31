@@ -28,3 +28,6 @@
 [submodule "libraries/MHZ19"]
 	path = libraries/MHZ19
 	url = git@github.com:jack828/MHZ19.git
+[submodule "libraries/PZEM-004T-v30"]
+	path = libraries/PZEM-004T-v30
+	url = git@github.com:mandulaj/PZEM-004T-v30.git
