@@ -30,6 +30,12 @@ EnergyMonitor emon;
 MHZ19 *mhz19 = new MHZ19(MHZ19_RX, MHZ19_TX);
 #endif
 
+#if defined(PZEM_RX) && defined(PZEM_TX)
+#define HAS_PZEM
+#include <PZEM004Tv30.h>
+PZEM004Tv30 pzem(Serial2, 16, 17);
+#endif
+
 Point sensors("sensors");
 
 void setupSensors() {
@@ -95,6 +101,11 @@ void setupSensors() {
   delay(3000);                      // apparently fixes a infinite warming issue
   Serial.print(F(" [ MH-Z19 ] has sensor, status: "));
   Serial.println(mhz19->getStatus());
+#endif
+
+#ifdef HAS_PZEM
+  Serial.print(F(" [ PZEM ] has sensor, address: "));
+  Serial.println(pzem.readAddress(), HEX);
 #endif
 } /* setupSensors */
 
@@ -246,6 +257,36 @@ void captureSensorsFields() {
 
 #endif
 
+#ifdef HAS_PZEM
+  // Read the data from the sensor
+  float voltage = pzem.voltage();
+  float current = pzem.current();
+  float power = pzem.power();
+  float energy = pzem.energy();
+  float frequency = pzem.frequency();
+  float pf = pzem.pf();
+
+  // Check if the data is valid
+  if (isnan(voltage)) {
+    Serial.println("Error reading voltage");
+  } else if (isnan(current)) {
+    Serial.println("Error reading current");
+  } else if (isnan(power)) {
+    Serial.println("Error reading power");
+  } else if (isnan(energy)) {
+    Serial.println("Error reading energy");
+  } else if (isnan(frequency)) {
+    Serial.println("Error reading frequency");
+  } else if (isnan(pf)) {
+    Serial.println("Error reading power factor");
+  } else {
+    sensors.addField(F("voltage"), voltage);
+    sensors.addField(F("current"), current);
+    sensors.addField(F("power"), power);
+    sensors.addField(F("frequency"), frequency);
+    sensors.addField(F("pf"), pf);
+  }
+#endif
 } /* captureSensorsFields */
 
 /**

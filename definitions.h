@@ -5,11 +5,11 @@
 // #define TEST_MODE
 
 // pick a board any board
-// #define ESP_32_OLED_BATT
+#define ESP_32_OLED_BATT 1
 #define ESP_32_OLED 264505746706340
 #define ESP_32_POWER 171537337601956
 #define ESP_32_U 255866614099504
-#define ESP_32_CO2 61743045906752
+#define ESP_32_U_PWR_MON 61743045906752
 // #define ESP_8266 // Use this one if it might blow up
 
 // Configuration
@@ -26,7 +26,7 @@
 #define FIRMWARE_VERSION "NOT_SET"
 #endif
 #ifndef CHIP_ID
-#define CHIP_ID ESP_32_CO2
+#define CHIP_ID ESP_32_U_PWR_MON
 #endif
 
 /*
@@ -60,7 +60,7 @@
 // #define TOUCH_R_PIN 15
 // #define LIGHT_SENSOR_PIN 36 // SVP
 // #define DHT11_PIN 25
-#define SENSORS_LOG_PERIOD 60 * 1000
+#define SENSORS_LOG_PERIOD 2 * 1000
 #endif
 
 #if CHIP_ID == ESP_32_U
@@ -71,15 +71,6 @@
 #define SENSORS_LOG_PERIOD 60 * 1000
 #endif
 
-#ifdef ESP_32_OLED_BATT
-// #define SDA_PIN 21
-// #define SCL_PIN 22
-#define LED_PIN 16
-// #define LIGHT_SENSOR_PIN 36
-// #define BME280_I2C
-// #define OLED
-#define SENSORS_LOG_PERIOD 60 * 1000
-#endif
 #if CHIP_ID == ESP_32_POWER
 // #define SDA_PIN 21
 // #define SCL_PIN 22
@@ -97,12 +88,23 @@
 #define SENSORS_LOG_PERIOD 60 * 1000
 #endif
 
+#if CHIP_ID == ESP_32_OLED_BATT
+#define LED_PIN 2
+#define SENSORS_LOG_PERIOD 60 * 1000
+#endif
 // #define BME280_I2C // D22 SCL & D21 SDA
 // #define BH1750_I2C // D22 SCL & D21 SDA
 #ifdef ESP_8266
 #define LED_PIN LED_BUILTIN
 #define SCT_013_PIN A0
 #define VOLTAGE 256.0 // Pretty high where I live
+#define SENSORS_LOG_PERIOD 1 * 1000
+#endif
+
+#if CHIP_ID == ESP_32_U_PWR_MON
+#define PZEM_RX 26
+#define PZEM_TX 27
+#define LED_PIN 2
 #define SENSORS_LOG_PERIOD 1 * 1000
 #endif
 
