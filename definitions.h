@@ -10,12 +10,13 @@
 #define ESP_32_POWER 171537337601956
 #define ESP_32_U 255866614099504
 #define ESP_32_U_PWR_MON 61743045906752
+#define ESP_32_U_CO2 132098888405312
 // #define ESP_8266 // Use this one if it might blow up
 
 // Configuration
 #define NODE_LOG_PERIOD 60 * 1000 // 60 seconds
 
-#define WIFI_CHECK_PERIOD_MS 30000 // 10s keep alive period
+#define WIFI_CHECK_PERIOD_MS 30000 // 30s keep alive period
 #define WIFI_TIMEOUT_MS 10000      // 10s WiFi connection timeout
 #define WIFI_RECOVER_TIME_MS 10000 // 10s after a failed connection attempt
 
@@ -26,7 +27,7 @@
 #define FIRMWARE_VERSION "NOT_SET"
 #endif
 #ifndef CHIP_ID
-#define CHIP_ID ESP_32_U_PWR_MON
+#define CHIP_ID ESP_32_U_CO2
 #endif
 
 /*
@@ -81,7 +82,7 @@
 #define SENSORS_LOG_PERIOD 1 * 1000
 #endif
 
-#if CHIP_ID == ESP_32_CO2
+#if CHIP_ID == ESP_32_U_CO2
 #define MHZ19_RX 26
 #define MHZ19_TX 27
 #define LED_PIN 2
