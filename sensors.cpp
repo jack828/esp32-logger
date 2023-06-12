@@ -34,6 +34,8 @@ MHZ19 *mhz19 = new MHZ19(MHZ19_RX, MHZ19_TX);
 #define HAS_PZEM
 #include <PZEM004Tv30.h>
 PZEM004Tv30 pzem(Serial2, 16, 17);
+int failCount = 0;
+int failLimit = 5;
 #endif
 
 Point sensors("sensors");
@@ -269,22 +271,35 @@ void captureSensorsFields() {
   // Check if the data is valid
   if (isnan(voltage)) {
     Serial.println("Error reading voltage");
+    failCount++;
   } else if (isnan(current)) {
     Serial.println("Error reading current");
+    failCount++;
   } else if (isnan(power)) {
     Serial.println("Error reading power");
+    failCount++;
   } else if (isnan(energy)) {
     Serial.println("Error reading energy");
+    failCount++;
   } else if (isnan(frequency)) {
     Serial.println("Error reading frequency");
+    failCount++;
   } else if (isnan(pf)) {
     Serial.println("Error reading power factor");
+    failCount++;
   } else {
     sensors.addField(F("voltage"), voltage);
     sensors.addField(F("current"), current);
     sensors.addField(F("power"), power);
     sensors.addField(F("frequency"), frequency);
     sensors.addField(F("pf"), pf);
+    failCount = 0;
+  }
+
+  if (failCount >= failLimit) {
+    Serial.println(F("[ PZEM ] failed too often, restarting..."));
+    Serial.flush();
+    ESP.restart();
   }
 #endif
 } /* captureSensorsFields */
