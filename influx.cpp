@@ -45,6 +45,10 @@ bool logPoint(Point &point) {
       // We didn't send any data!
       return true;
     }
+    if (lastStatusCode == 200) {
+      // We good
+      return true;
+    }
     Serial.print(F("[ INFLUX ] Write failed! Status Code: "));
     Serial.print(lastStatusCode);
     Serial.print(F(", "));
