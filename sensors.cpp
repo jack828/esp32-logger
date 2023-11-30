@@ -252,9 +252,13 @@ void captureSensorsFields() {
   // Only log sane values incase of accidental failures
   if (measurement.co2_ppm > 400 && measurement.co2_ppm < 5000) {
     sensors.addField(F("co2"), measurement.co2_ppm);
+  } else {
+    Serial.printf("[ MHZ19 ] Invalid CO2 reading: %d\n", measurement.co2_ppm);
   }
   if (measurement.temperature != -1) {
     sensors.addField(F("temperature"), (float)measurement.temperature);
+  } else {
+    Serial.printf("[ MHZ19 ] Invalid temperature reading: %d\n", measurement.temperature);
   }
 
 #endif
