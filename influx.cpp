@@ -14,6 +14,8 @@ void setupInfluxOptions() {
 
 bool validateInfluxConnection() {
   xSemaphoreTake(mutex, portMAX_DELAY);
+  Serial.print(F("[ INFLUX ] Validating connection to: "));
+  Serial.println(INFLUXDB_URL);
   bool influxOk = client.validateConnection();
   xSemaphoreGive(mutex);
   if (influxOk) {
