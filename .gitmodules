@@ -31,3 +31,6 @@
 [submodule "libraries/PZEM-004T-v30"]
 	path = libraries/PZEM-004T-v30
 	url = git@github.com:mandulaj/PZEM-004T-v30.git
+[submodule "libraries/Adafruit_ADS1X15"]
+	path = libraries/Adafruit_ADS1X15
+	url = git@github.com:adafruit/Adafruit_ADS1X15.git

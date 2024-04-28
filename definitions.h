@@ -10,7 +10,7 @@
 #define ESP_32_POWER 171537337601956
 #define ESP_32_U 255866614099504
 #define ESP_32_U_PWR_MON 61743045906752
-#define ESP_32_U_CO2 132098888405312
+#define ESP_32_U_CH_MON 132098888405312
 // #define ESP_8266 // Use this one if it might blow up
 
 // Configuration
@@ -27,7 +27,7 @@
 #define FIRMWARE_VERSION "NOT_SET"
 #endif
 #ifndef CHIP_ID
-#define CHIP_ID ESP_32_U_CO2
+#define CHIP_ID ESP_32_U_CH_MON
 #endif
 
 /*
@@ -82,11 +82,17 @@
 #define SENSORS_LOG_PERIOD 1 * 1000
 #endif
 
-#if CHIP_ID == ESP_32_U_CO2
-#define MHZ19_RX 26
-#define MHZ19_TX 27
+#if CHIP_ID == ESP_32_U_CH_MON
+// #define MHZ19_RX 26
+// #define MHZ19_TX 27
+#define ADS1115_I2C
+#define ADS1115_ADDR 0x48 // ADDR to GND
+#define THERMISTOR_B 3435
+#define SERIES_RESISTOR 10000.0
+#define SDA_PIN 26
+#define SCL_PIN 25
 #define LED_PIN 2
-#define SENSORS_LOG_PERIOD 60 * 1000
+#define SENSORS_LOG_PERIOD 30 * 1000
 #endif
 
 #if CHIP_ID == ESP_32_OLED_BATT

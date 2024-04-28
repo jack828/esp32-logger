@@ -6,6 +6,7 @@
 #include <Adafruit_BME280.h>
 Adafruit_BME280 bme280;
 #endif
+
 #ifdef BME680_I2C
 #include <bsec.h>
 Bsec iaqSensor;
@@ -20,6 +21,7 @@ const uint8_t bsec_config_iaq[] = {
 uint8_t bsecState[BSEC_MAX_STATE_BLOB_SIZE] = {0};
 uint16_t stateUpdateCounter = 0;
 #endif
+
 #ifdef SCT_013_PIN
 #include "EmonLib.h"
 EnergyMonitor emon;
@@ -36,6 +38,12 @@ MHZ19 *mhz19 = new MHZ19(MHZ19_RX, MHZ19_TX);
 PZEM004Tv30 pzem(Serial2, 16, 17);
 int failCount = 0;
 int failLimit = 5;
+#endif
+
+#ifdef ADS1115_I2C
+#define HAS_ADS1115
+#include <Adafruit_ADS1X15.h>
+Adafruit_ADS1115 ads1115;
 #endif
 
 Point sensors("sensors");
@@ -108,6 +116,11 @@ void setupSensors() {
 #ifdef HAS_PZEM
   Serial.print(F(" [ PZEM ] has sensor, address: "));
   Serial.println(pzem.readAddress(), HEX);
+#endif
+
+#ifdef HAS_ADS1115
+  ads1115.begin(ADS1115_ADDR);
+  ads1115.setGain(GAIN_ONE); // 1x gain   +/- 4.096V  1 bit = 2mV
 #endif
 } /* setupSensors */
 
@@ -189,6 +202,32 @@ double calculateVpd(double temperature, double humidity) {
   return vpd;
 }
 
+#ifdef HAS_ADS1115
+float calculateTemperatureFromAdc(int adcInput) {
+  int32_t adcVsum = 0;
+  int counts = 10;
+  for (int i = 0; i < counts; i++) {
+    adcVsum += ads1115.readADC_SingleEnded(adcInput);
+  }
+  int16_t adcVal = adcVsum / counts;
+  float voltage = ads1115.computeVolts(adcVal);
+  // Calculate the resistance of the thermistor using the voltage divider
+  // formula
+  float resistance = (3.3 / voltage - 1) * SERIES_RESISTOR;
+
+  // Calculate the temperature in Celsius using the Steinhart-Hart equation
+  // using B value
+  float steinhart;
+  steinhart = resistance / SERIES_RESISTOR; // (R/Ro)
+  steinhart = log(steinhart);               // ln(R/Ro)
+  steinhart /= THERMISTOR_B;                // 1/B * ln(R/Ro)
+  steinhart += 1.0 / (25 + 273.15);         // + (1/To)
+  steinhart = 1.0 / steinhart;              // Invert
+  float temperature = steinhart - 273.15;   // Convert to Celsius
+  return temperature;
+}
+#endif
+
 void setSensorsTags() {
   sensors.clearTags();
   sensors.addTag(F("MAC"), WiFi.macAddress());
@@ -258,7 +297,8 @@ void captureSensorsFields() {
   if (measurement.temperature != -1) {
     sensors.addField(F("temperature"), (float)measurement.temperature);
   } else {
-    Serial.printf("[ MHZ19 ] Invalid temperature reading: %d\n", measurement.temperature);
+    Serial.printf("[ MHZ19 ] Invalid temperature reading: %d\n",
+                  measurement.temperature);
   }
 
 #endif
@@ -305,6 +345,24 @@ void captureSensorsFields() {
     Serial.flush();
     ESP.restart();
   }
+#endif
+
+#ifdef HAS_ADS1115
+  // Strictly in this order!
+  // ADC0 = CH FLOW
+  // ADC1 = CH RET
+  // ADC2 = DHW IN
+  // ADC3 = DHW OUT
+  float chFlowTemp = calculateTemperatureFromAdc(0);
+  float chRetTemp = calculateTemperatureFromAdc(1);
+  float dhwInTemp = calculateTemperatureFromAdc(2);
+  float dhwOutTemp = calculateTemperatureFromAdc(3);
+  Serial.printf("CH Flow: %f\nCH Ret: %f\nDHW In: %f\nDHW Out: %f\n",
+                chFlowTemp, chRetTemp, dhwInTemp, dhwOutTemp);
+  sensors.addField(F("ch_flow"), chFlowTemp);
+  sensors.addField(F("ch_ret"), chRetTemp);
+  sensors.addField(F("dhw_in"), dhwInTemp);
+  sensors.addField(F("dhw_out"), dhwOutTemp);
 #endif
 } /* captureSensorsFields */
 
